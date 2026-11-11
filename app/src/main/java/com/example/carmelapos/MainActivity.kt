@@ -22,10 +22,18 @@ class MainActivity : ComponentActivity() {
 
     private var webView: WebView? = null
 
+    private val cameraPermissionLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { /* Permission granted or denied */ }
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        if (checkSelfPermission(android.Manifest.permission.CAMERA) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+        }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -62,7 +70,11 @@ class MainActivity : ComponentActivity() {
                                 cacheMode = WebSettings.LOAD_DEFAULT
                                 setSupportZoom(false)
                             }
-                            webChromeClient = WebChromeClient()
+                            webChromeClient = object : android.webkit.WebChromeClient() {
+                                override fun onPermissionRequest(request: android.webkit.PermissionRequest?) {
+                                    request?.grant(request.resources)
+                                }
+                            }
                             webViewClient = WebViewClient()
                             loadUrl("file:///android_asset/index.html")
                         }
