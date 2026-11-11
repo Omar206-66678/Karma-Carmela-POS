@@ -1,7 +1,8 @@
 /**
- * Karma Carmela POS & Wholesale ERP - Ultra-Reliable Application Engine
- * PWA Offline & Installable Support, 100% Crash-Proof Touch Interactions,
- * Exact Payment Timestamps, Combined Partners, User Account Security & Modern Redesign.
+ * Karma Carmela POS & Wholesale ERP - Comprehensive Operating Engine
+ * Complete Tax Elimination (0% VAT), Full Treasury Management & Paper Vouchers,
+ * Single-User Shift Transition & Thermal Audits, Dedicated Customer/Supplier Pages,
+ * ZXing Mobile Barcode Scanner with Torch, Custom Product Picker & Universal Spooler.
  */
 
 // ==========================================================================
@@ -154,9 +155,9 @@ function generateCode128SVG(text, options = {}) {
 }
 
 // ==========================================================================
-// 4. REAL EGYPTIAN TAX AUTHORITY (ETA) QR GENERATOR
+// 4. EGYPTIAN QR CODE GENERATOR
 // ==========================================================================
-function generateEtaQrSVG(seller, vatNo, dateTime, total, vatAmount) {
+function generateEtaQrSVG(seller, crNo, dateTime, total) {
     return `<svg class="thermal-qr-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <rect width="100" height="100" fill="#FFFFFF"/>
         <rect x="5" y="5" width="26" height="26" fill="#0F172A"/>
@@ -347,12 +348,80 @@ const DEFAULT_SUPPLIER_PAYMENTS = [
         fullDateTime: 'الأربعاء 11 نوفمبر 2026 - الساعة 11:30:22 ص',
         timestamp: Date.now() - 14400000,
         amount: 8000.0,
-        method: 'تحويل بنكي',
-        notes: 'سداد دفعة توريد مكرونة وزيوت',
+        method: 'نقدًا بالخزينة',
+        notes: 'سداد دفعة توريد مكرونة وزيوت نقداً من الخزينة',
         cashierName: 'أحمد الشناوي',
         balanceBefore: 22800.0,
         balanceAfter: 14800.0,
         tafqeetWords: 'فقط ثمانية آلاف جنيهاً مصرياً لا غير'
+    }
+];
+
+const DEFAULT_EXPENSES = [
+    {
+        id: 'EXP-2026-001',
+        title: 'فاتورة كهرباء ومياه المخزن الرئيسي',
+        category: 'مرافق ومياه وكهرباء',
+        amount: 850.0,
+        recipient: 'شركة الكهرباء والمياه',
+        notes: 'سداد استهلاك الشهر الماضي مع إيصال رسمي رقم 98214',
+        date: '11 نوفمبر 2026',
+        time: '10:15 ص',
+        fullDateTime: 'الأربعاء 11 نوفمبر 2026 - الساعة 10:15:00 ص',
+        timestamp: Date.now() - 18000000,
+        cashierName: 'أحمد الشناوي'
+    },
+    {
+        id: 'EXP-2026-002',
+        title: 'نثريات وضيافة ونظافة الفرع',
+        category: 'نثريات وضيافة',
+        amount: 150.0,
+        recipient: 'عامل الخدمات',
+        notes: 'مشروبات ومستلزمات نظافة للفرع والمكتب',
+        date: '11 نوفمبر 2026',
+        time: '02:00 م',
+        fullDateTime: 'الأربعاء 11 نوفمبر 2026 - الساعة 02:00:00 م',
+        timestamp: Date.now() - 7200000,
+        cashierName: 'أحمد الشناوي'
+    }
+];
+
+const DEFAULT_INCOMES = [
+    {
+        id: 'INC-2026-001',
+        title: 'إيراد تأجير مساحة عرض لستاند خارجي',
+        category: 'إيرادات تأجير وعرض',
+        amount: 1500.0,
+        source: 'شركة المشروبات الوطنية',
+        notes: 'إيداع نقدي بالخزينة مقابل ستاند عرض بمدخل الفرع',
+        date: '11 نوفمبر 2026',
+        time: '09:30 ص',
+        fullDateTime: 'الأربعاء 11 نوفمبر 2026 - الساعة 09:30:00 ص',
+        timestamp: Date.now() - 25000000,
+        cashierName: 'أحمد الشناوي'
+    }
+];
+
+const DEFAULT_RETURNS = [
+    {
+        id: 'RET-2026-001',
+        type: 'sale', // 'sale' = مرتجع مبيعات, 'purchase' = مرتجع مشتريات
+        partnerType: 'customer',
+        partnerId: 2,
+        partnerName: 'سوبرماركت التوحيد والنور (الهرم)',
+        productId: 1,
+        productName: 'زيت طعام ممتاز خليط (قلية وتحمير)',
+        quantity: 2,
+        unitName: 'كرتونة (12 زجاجة)',
+        unitPrice: 795.0,
+        totalRefund: 1590.0,
+        refundMethod: 'cash', // 'cash' or 'credit'
+        reason: 'تلف بسيط في كرتون الشحن الخارجي',
+        date: '11 نوفمبر 2026',
+        time: '12:30 م',
+        fullDateTime: 'الأربعاء 11 نوفمبر 2026 - الساعة 12:30:00 م',
+        timestamp: Date.now() - 10000000,
+        cashierName: 'أحمد الشناوي'
     }
 ];
 
@@ -365,6 +434,40 @@ const DEFAULT_USER = {
     shiftStartTime: 'اليوم 08:00 ص',
     startingFloat: 500.0
 };
+
+const DEFAULT_CURRENT_SHIFT = {
+    shiftNumber: 104,
+    cashierName: 'أحمد الشناوي',
+    startTime: 'اليوم 08:00 ص',
+    startTimestamp: Date.now() - 28800000,
+    startingFloat: 500.0,
+    isActive: true,
+    flexibleMode: false
+};
+
+const DEFAULT_SHIFT_HISTORY = [
+    {
+        shiftNumber: 103,
+        cashierName: 'أحمد الشناوي',
+        startTime: '10 نوفمبر 2026 08:00 ص',
+        endTime: '10 نوفمبر 2026 10:00 م',
+        startingFloat: 500.0,
+        totalSales: 18450.0,
+        cashSales: 14200.0,
+        deferredSales: 4250.0,
+        customerPayments: 5000.0,
+        supplierPayments: 8000.0,
+        expenses: 1000.0,
+        otherIncomes: 1500.0,
+        returnsAmount: 0.0,
+        expectedCash: 11700.0,
+        actualCash: 11700.0,
+        difference: 0.0,
+        status: 'مغلقة ومطابقة',
+        invoicesCount: 24,
+        notes: 'إقفال ممتاز بدون أي عجز'
+    }
+];
 
 // ==========================================================================
 // 6. MAIN APPLICATION OBJECT (100% DEFENSIVE & ERROR-PROOF)
@@ -402,6 +505,31 @@ class CarmelaApp {
             if (!Array.isArray(this.supplierPayments)) this.supplierPayments = DEFAULT_SUPPLIER_PAYMENTS;
         } catch (e) { this.supplierPayments = DEFAULT_SUPPLIER_PAYMENTS; }
 
+        try {
+            this.expenses = JSON.parse(localStorage.getItem('carmela_expenses')) || DEFAULT_EXPENSES;
+            if (!Array.isArray(this.expenses)) this.expenses = DEFAULT_EXPENSES;
+        } catch (e) { this.expenses = DEFAULT_EXPENSES; }
+
+        try {
+            this.otherIncomes = JSON.parse(localStorage.getItem('carmela_other_incomes')) || DEFAULT_INCOMES;
+            if (!Array.isArray(this.otherIncomes)) this.otherIncomes = DEFAULT_INCOMES;
+        } catch (e) { this.otherIncomes = DEFAULT_INCOMES; }
+
+        try {
+            this.returns = JSON.parse(localStorage.getItem('carmela_returns')) || DEFAULT_RETURNS;
+            if (!Array.isArray(this.returns)) this.returns = DEFAULT_RETURNS;
+        } catch (e) { this.returns = DEFAULT_RETURNS; }
+
+        try {
+            this.shiftHistory = JSON.parse(localStorage.getItem('carmela_shift_history')) || DEFAULT_SHIFT_HISTORY;
+            if (!Array.isArray(this.shiftHistory)) this.shiftHistory = DEFAULT_SHIFT_HISTORY;
+        } catch (e) { this.shiftHistory = DEFAULT_SHIFT_HISTORY; }
+
+        try {
+            const rawShift = JSON.parse(localStorage.getItem('carmela_current_shift') || 'null');
+            this.currentShift = rawShift || DEFAULT_CURRENT_SHIFT;
+        } catch (e) { this.currentShift = DEFAULT_CURRENT_SHIFT; }
+
         // Normalize User Object
         try {
             const rawUser = JSON.parse(localStorage.getItem('carmela_user') || '{}');
@@ -423,20 +551,38 @@ class CarmelaApp {
         this.currentViewingOrder = null;
         this.currentLedgerCustomerId = null;
         this.currentLedgerSupplierId = null;
+        this.currentPartnerDetail = null; // { type: 'customer'|'supplier', id: number }
+        this.pickerTargetField = null; // for product picker modal
         this.isScreenLocked = false;
+        this.currentTreasuryFilter = 'all';
 
         // Camera Video Scanner Props
         this.scannerStream = null;
         this.scannerDetector = null;
+        this.zxingReader = null;
         this.scannerFacingMode = 'environment';
         this.scannerTorchActive = false;
         this.isScanningActive = false;
+
+        // Auto catch native print events
+        window.addEventListener('beforeprint', () => {
+            const g = document.getElementById('globalPrintContainer');
+            if (g && !g.innerHTML.trim()) {
+                const sheet = document.getElementById('printableSheetRoot');
+                const voucher = document.getElementById('voucherPrintArea');
+                if (sheet && sheet.innerHTML.trim()) {
+                    g.innerHTML = sheet.innerHTML;
+                } else if (voucher && voucher.innerHTML.trim()) {
+                    g.innerHTML = voucher.innerHTML;
+                }
+            }
+        });
 
         // Run init safely
         try {
             this.init();
         } catch (err) {
-            console.warn('Init completed with minor UI adjustments:', err);
+            console.warn('Init completed with adjustments:', err);
         }
     }
 
@@ -451,6 +597,8 @@ class CarmelaApp {
         this.renderHomeDashboard();
         this.renderOrdersTable();
         this.renderShiftDetails();
+        this.renderShiftHistoryTable();
+        this.renderTreasuryTable();
         this.initQuickBarcodes();
         this.initGlobalHardwareBarcodeScanner();
         this.setupBarcodeDetector();
@@ -458,94 +606,37 @@ class CarmelaApp {
     }
 
     // ==========================================================================
-    // PWA & BROWSER INSTALLATION (DOWNLOAD APP DIRECTLY)
-    // ==========================================================================
-    initPwa() {
-        // Register Service Worker for PWA
-        if ('serviceWorker' in navigator) {
-            try {
-                navigator.serviceWorker.register('./sw.js').then(() => {
-                    console.log('PWA ServiceWorker registered successfully');
-                }).catch(() => {});
-            } catch (e) {}
-        }
-
-        // Keep PWA install affordances visible across all browsers
-        const btns = document.querySelectorAll('.btn-pwa-install');
-        btns.forEach(btn => {
-            if (btn) btn.style.display = 'inline-flex';
-        });
-
-        // Listen for browser install prompt (Chromium / Android)
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            window.deferredPwaPrompt = e;
-            const installBtns = document.querySelectorAll('.btn-pwa-install');
-            installBtns.forEach(btn => {
-                if (btn) btn.style.display = 'inline-flex';
-            });
-        });
-
-        window.addEventListener('appinstalled', () => {
-            console.log('App was installed to device homescreen');
-            window.deferredPwaPrompt = null;
-        });
-    }
-
-    installPwaApp() {
-        if (window.deferredPwaPrompt) {
-            window.deferredPwaPrompt.prompt();
-            window.deferredPwaPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    alert('أهلاً بك! تم تثبيت تطبيق كارما كارميلا بنجاح على شاشة جهازك');
-                }
-                window.deferredPwaPrompt = null;
-            });
-        } else {
-            // Friendly PWA Installation Instructions Modal for iOS / Desktop / unsupported browsers
-            const guideModal = document.getElementById('pwaInstallGuideModal');
-            if (guideModal) {
-                guideModal.classList.add('active');
-            } else {
-                alert('لتثبيت التطبيق على هاتفك أو الكمبيوتر:\n1. من قائمة المتصفح (⋮) أو (Share)\n2. اختر "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية" (Install / Add to Home Screen)');
-            }
-        }
-    }
-
-    closePwaGuideModal() {
-        document.getElementById('pwaInstallGuideModal')?.classList.remove('active');
-    }
-
-    // ==========================================================================
-    // THEME & NAVIGATION
+    // THEME & PWA CONTROLS
     // ==========================================================================
     applySavedTheme() {
-        try {
-            const saved = localStorage.getItem('carmela_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', saved);
-        } catch (e) {}
+        const theme = localStorage.getItem('carmela_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        const icon = document.getElementById('themeToggleIcon');
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        }
     }
 
     toggleTheme() {
-        const current = document.documentElement.getAttribute('data-theme') || 'dark';
-        const next = current === 'dark' ? 'light' : 'dark';
+        const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = cur === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', next);
-        try { localStorage.setItem('carmela_theme', next); } catch (e) {}
-        playBeep(true);
+        localStorage.setItem('carmela_theme', next);
+        const icon = document.getElementById('themeToggleIcon');
+        if (icon) {
+            icon.className = next === 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+        }
     }
 
-    toggleSidebar() {
-        const overlay = document.getElementById('sidebarOverlay');
-        const drawer = document.getElementById('sidebarDrawer');
-        if (overlay) overlay.classList.toggle('active');
-        if (drawer) drawer.classList.toggle('active');
+    initPwa() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
     }
 
-    navTo(screenId) {
-        this.toggleSidebar();
-        this.switchScreen(screenId);
-    }
-
+    // ==========================================================================
+    // SCREEN NAVIGATION (DESKTOP TABS & MOBILE DOCK)
+    // ==========================================================================
     switchScreen(screenId) {
         // Hide all screens
         document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
@@ -566,7 +657,12 @@ class CarmelaApp {
 
         if (screenId === 'home') this.renderHomeDashboard();
         if (screenId === 'partners') this.renderPartnersScreen();
-        if (screenId === 'account') this.renderShiftDetails();
+        if (screenId === 'account') {
+            this.renderShiftDetails();
+            this.renderShiftHistoryTable();
+        }
+        if (screenId === 'treasury') this.renderTreasuryTable();
+        if (screenId === 'reports') this.renderOrdersTable();
         if (screenId === 'pos') setTimeout(() => document.getElementById('posSearchInput')?.focus(), 200);
     }
 
@@ -635,15 +731,47 @@ class CarmelaApp {
         }
     }
 
+    unlockScreenCancel() {
+        this.isScreenLocked = false;
+        document.getElementById('lockScreenModal')?.classList.remove('active');
+    }
+
     // ==========================================================================
-    // SHIFT & CASH DRAWER CALCULATIONS (DEFENSIVE)
+    // SHIFT & CASH DRAWER CALCULATIONS & TRANSITION (SINGLE USER FLOW)
     // ==========================================================================
-    renderShiftDetails() {
-        const cashSales = (this.orders || []).filter(o => o.paymentType === 'cash').reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+    getShiftFinancials() {
+        const floatVal = typeof this.currentShift.startingFloat === 'number' ? this.currentShift.startingFloat : 500;
+        const shiftOrders = this.orders || [];
+        const totalSales = shiftOrders.reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+        const cashSales = shiftOrders.filter(o => o.paymentType === 'cash').reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+        const deferredSales = totalSales - cashSales;
+
         const cashReceipts = (this.customerPayments || []).filter(p => (p.method || '').includes('نقد')).reduce((sum, p) => sum + (p.amount || 0), 0);
         const cashDisbursements = (this.supplierPayments || []).filter(p => (p.method || '').includes('نقد')).reduce((sum, p) => sum + (p.amount || 0), 0);
-        const floatVal = typeof this.currentUser.startingFloat === 'number' ? this.currentUser.startingFloat : 500;
-        const netCashInDrawer = floatVal + cashSales + cashReceipts - cashDisbursements;
+
+        const expensesTotal = (this.expenses || []).reduce((sum, e) => sum + (e.amount || 0), 0);
+        const otherIncomesTotal = (this.otherIncomes || []).reduce((sum, inc) => sum + (inc.amount || 0), 0);
+        const cashReturnsTotal = (this.returns || []).filter(r => r.refundMethod === 'cash').reduce((sum, r) => sum + (r.totalRefund || 0), 0);
+
+        const expectedCash = floatVal + cashSales + cashReceipts + otherIncomesTotal - cashDisbursements - expensesTotal - cashReturnsTotal;
+
+        return {
+            floatVal,
+            totalSales,
+            cashSales,
+            deferredSales,
+            cashReceipts,
+            cashDisbursements,
+            expensesTotal,
+            otherIncomesTotal,
+            cashReturnsTotal,
+            expectedCash,
+            invoicesCount: shiftOrders.length
+        };
+    }
+
+    renderShiftDetails() {
+        const fin = this.getShiftFinancials();
 
         const shiftStartEl = document.getElementById('shiftStartTimeDisplay');
         const shiftFloatEl = document.getElementById('shiftFloatDisplay');
@@ -651,35 +779,592 @@ class CarmelaApp {
         const shiftRecEl = document.getElementById('shiftReceiptsDisplay');
         const shiftDisbEl = document.getElementById('shiftDisbursementsDisplay');
         const shiftNetEl = document.getElementById('shiftNetDrawerDisplay');
+        const shiftNumEl = document.getElementById('accountShiftNumberBadge');
+        const shiftModeEl = document.getElementById('accountShiftModeBadge');
 
-        if (shiftStartEl) shiftStartEl.innerText = this.currentUser.shiftStartTime || 'اليوم 08:00 ص';
-        if (shiftFloatEl) shiftFloatEl.innerText = `${floatVal.toFixed(2)} ج.م`;
-        if (shiftCashSalesEl) shiftCashSalesEl.innerText = `${cashSales.toFixed(2)} ج.م`;
-        if (shiftRecEl) shiftRecEl.innerText = `${cashReceipts.toFixed(2)} ج.م`;
-        if (shiftDisbEl) shiftDisbEl.innerText = `${cashDisbursements.toFixed(2)} ج.م`;
-        if (shiftNetEl) shiftNetEl.innerText = `${netCashInDrawer.toFixed(2)} ج.م`;
-    }
-
-    closeShiftConfirm() {
-        const cashSales = (this.orders || []).filter(o => o.paymentType === 'cash').reduce((sum, o) => sum + (o.grandTotal || 0), 0);
-        const cashReceipts = (this.customerPayments || []).filter(p => (p.method || '').includes('نقد')).reduce((sum, p) => sum + (p.amount || 0), 0);
-        const cashDisbursements = (this.supplierPayments || []).filter(p => (p.method || '').includes('نقد')).reduce((sum, p) => sum + (p.amount || 0), 0);
-        const floatVal = typeof this.currentUser.startingFloat === 'number' ? this.currentUser.startingFloat : 500;
-        const netCash = floatVal + cashSales + cashReceipts - cashDisbursements;
-
-        if (confirm(`هل أنت متأكد من إقفال وتسليم الوردية الحالية؟\n` +
-            `• النقدية الفعلية المفترضة بالدرج: ${netCash.toFixed(2)} ج.م\n` +
-            `• مبيعات اليوم: ${cashSales.toFixed(2)} ج.م\n` +
-            `• مقبوضات العملاء: ${cashReceipts.toFixed(2)} ج.م\n` +
-            `• مدفوعات الموردين: ${cashDisbursements.toFixed(2)} ج.م\n\n` +
-            `سيتم طباعة تقرير الجرد المالي للوردية.`)) {
-            alert('تم إقفال وتسليم الوردية بنجاح!');
-            window.print();
+        if (shiftStartEl) shiftStartEl.innerText = this.currentShift.startTime || 'اليوم 08:00 ص';
+        if (shiftFloatEl) shiftFloatEl.innerText = `${fin.floatVal.toFixed(2)} ج.م`;
+        if (shiftCashSalesEl) shiftCashSalesEl.innerText = `${fin.cashSales.toFixed(2)} ج.م`;
+        if (shiftRecEl) shiftRecEl.innerText = `${fin.cashReceipts.toFixed(2)} ج.م`;
+        if (shiftDisbEl) shiftDisbEl.innerText = `${fin.cashDisbursements.toFixed(2)} ج.م`;
+        if (shiftNetEl) shiftNetEl.innerText = `${fin.expectedCash.toFixed(2)} ج.م`;
+        if (shiftNumEl) shiftNumEl.innerText = `وردية #${this.currentShift.shiftNumber || 104}`;
+        if (shiftModeEl) {
+            shiftModeEl.innerText = this.currentShift.flexibleMode ? 'الوضع المرن (بدون إغلاق إجباري)' : 'الوضع النظامي (جرد معتمد)';
+            shiftModeEl.style.background = this.currentShift.flexibleMode ? 'rgba(59, 130, 246, 0.2)' : 'rgba(16, 185, 129, 0.2)';
+            shiftModeEl.style.color = this.currentShift.flexibleMode ? '#60A5FA' : '#34D399';
         }
     }
 
+    renderShiftHistoryTable() {
+        const tbody = document.querySelector('#accountShiftHistoryTable tbody');
+        if (!tbody) return;
+
+        if (!this.shiftHistory || this.shiftHistory.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 18px;">لا توجد ورديات سابقة مؤرشفة</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = this.shiftHistory.map(s => `
+            <tr>
+                <td style="font-weight: bold; color: var(--primary-orange);">#${s.shiftNumber}</td>
+                <td>${s.startTime || '—'}</td>
+                <td>${s.endTime || '—'}</td>
+                <td style="font-weight: bold;">${(s.totalSales || 0).toFixed(2)} ج.م</td>
+                <td>${(s.expectedCash || 0).toFixed(2)} ج.م</td>
+                <td style="font-weight: bold; color: ${(s.difference || 0) === 0 ? 'var(--accent-emerald)' : 'var(--accent-rose)'};">
+                    ${(s.actualCash || 0).toFixed(2)} ج.م
+                </td>
+                <td>
+                    <span class="status-badge ${(s.difference || 0) === 0 ? 'paid' : 'credit'}">
+                        ${(s.difference || 0) === 0 ? 'مطابقة 100%' : (s.difference < 0 ? `عجز (${Math.abs(s.difference).toFixed(2)})` : `زيادة (${s.difference.toFixed(2)})`)}
+                    </span>
+                </td>
+                <td>
+                    <button type="button" class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.printShiftReport(app.shiftHistory.find(item => item.shiftNumber === ${s.shiftNumber}))">
+                        <i class="fa-solid fa-print"></i> طباعة
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    toggleFlexibleShiftMode() {
+        this.currentShift.flexibleMode = !this.currentShift.flexibleMode;
+        this.saveAll();
+        this.renderShiftDetails();
+        playBeep(true);
+        alert(this.currentShift.flexibleMode
+            ? 'تم تفعيل الوضع المرن للورديات: يمكنك العمل والبيع وتوريد البضاعة بدون إلزام بإغلاق الوردية.'
+            : 'تم تفعيل الوضع النظامي: يتم إجراء جرد وتسليم الوردية وطباعة التقرير عند نهاية اليوم.');
+    }
+
+    openCloseShiftModal() {
+        const fin = this.getShiftFinancials();
+
+        const cName = document.getElementById('shiftCloseCashierName');
+        const cStart = document.getElementById('shiftCloseStartTime');
+        const cFloat = document.getElementById('shiftCloseStartingFloat');
+        const cSales = document.getElementById('shiftCloseCashSales');
+        const cRec = document.getElementById('shiftCloseReceipts');
+        const cExp = document.getElementById('shiftCloseExpenses');
+        const cExpCash = document.getElementById('shiftCloseExpectedCash');
+        const cActual = document.getElementById('shiftActualCashCount');
+        const cDiff = document.getElementById('shiftDifferenceDisplay');
+
+        if (cName) cName.innerText = this.currentUser.displayName || 'أحمد الشناوي';
+        if (cStart) cStart.innerText = this.currentShift.startTime || 'اليوم 08:00 ص';
+        if (cFloat) cFloat.innerText = `${fin.floatVal.toFixed(2)} ج.م`;
+        if (cSales) cSales.innerText = `${fin.cashSales.toFixed(2)} ج.م`;
+        if (cRec) cRec.innerText = `${fin.cashReceipts.toFixed(2)} ج.م`;
+        if (cExp) cExp.innerText = `${(fin.cashDisbursements + fin.expensesTotal + fin.cashReturnsTotal).toFixed(2)} ج.م`;
+        if (cExpCash) cExpCash.innerText = `${fin.expectedCash.toFixed(2)} ج.م`;
+
+        if (cActual) {
+            cActual.value = fin.expectedCash.toFixed(2);
+        }
+        if (cDiff) {
+            cDiff.innerText = '0.00 ج.م (مطابق بالكامل)';
+            cDiff.style.color = 'var(--accent-emerald)';
+        }
+
+        document.getElementById('closeShiftModal')?.classList.add('active');
+    }
+
+    closeCloseShiftModal() {
+        document.getElementById('closeShiftModal')?.classList.remove('active');
+    }
+
+    calculateShiftDifference() {
+        const fin = this.getShiftFinancials();
+        const actualInput = parseFloat(document.getElementById('shiftActualCashCount')?.value) || 0;
+        const diff = actualInput - fin.expectedCash;
+        const cDiff = document.getElementById('shiftDifferenceDisplay');
+        if (!cDiff) return;
+
+        if (Math.abs(diff) < 0.01) {
+            cDiff.innerText = '0.00 ج.م (مطابق 100% بدون أي فروق)';
+            cDiff.style.color = 'var(--accent-emerald)';
+        } else if (diff < 0) {
+            cDiff.innerText = `عجز بمقدار ${Math.abs(diff).toFixed(2)} ج.م`;
+            cDiff.style.color = 'var(--accent-rose)';
+        } else {
+            cDiff.innerText = `زيادة بمقدار ${diff.toFixed(2)} ج.م`;
+            cDiff.style.color = '#38BDF8';
+        }
+    }
+
+    finalizeCloseShift(e) {
+        if (e) e.preventDefault();
+        const fin = this.getShiftFinancials();
+        const actualCash = parseFloat(document.getElementById('shiftActualCashCount')?.value) || fin.expectedCash;
+        const notes = document.getElementById('shiftCloseNotes')?.value || 'تم إقفال وتسليم الوردية بنجاح';
+        const diff = actualCash - fin.expectedCash;
+
+        const now = new Date();
+        const endTimeStr = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) + ' ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+        const closedRecord = {
+            shiftNumber: this.currentShift.shiftNumber,
+            cashierName: this.currentUser.displayName,
+            startTime: this.currentShift.startTime,
+            endTime: endTimeStr,
+            startingFloat: fin.floatVal,
+            totalSales: fin.totalSales,
+            cashSales: fin.cashSales,
+            deferredSales: fin.deferredSales,
+            customerPayments: fin.cashReceipts,
+            supplierPayments: fin.cashDisbursements,
+            expenses: fin.expensesTotal,
+            otherIncomes: fin.otherIncomesTotal,
+            returnsAmount: fin.cashReturnsTotal,
+            expectedCash: fin.expectedCash,
+            actualCash: actualCash,
+            difference: diff,
+            status: Math.abs(diff) < 0.01 ? 'مطابقة 100%' : (diff < 0 ? 'عجز مالي' : 'فائض مالي'),
+            invoicesCount: fin.invoicesCount,
+            notes: notes
+        };
+
+        // Add to history
+        this.shiftHistory.unshift(closedRecord);
+
+        // Immediate transition to new shift
+        const nextShiftNumber = (this.currentShift.shiftNumber || 104) + 1;
+        this.currentShift = {
+            shiftNumber: nextShiftNumber,
+            cashierName: this.currentUser.displayName,
+            startTime: `اليوم ${now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`,
+            startTimestamp: Date.now(),
+            startingFloat: 500.0,
+            isActive: true,
+            flexibleMode: this.currentShift.flexibleMode || false
+        };
+
+        this.saveAll();
+        playBeep(true);
+        this.closeCloseShiftModal();
+        this.renderShiftDetails();
+        this.renderShiftHistoryTable();
+        this.renderHomeDashboard();
+
+        // Print Shift Closing Thermal Statement
+        this.printShiftReport(closedRecord);
+
+        alert(`تم إنهاء الوردية #${closedRecord.shiftNumber} بنجاح!\n• تم ترحيل البيانات للأرشيف.\n• تم فتح الوردية الجديدة #${nextShiftNumber} تلقائياً.`);
+    }
+
+    openStartNewShiftModal() {
+        const nextNum = (this.currentShift.shiftNumber || 104) + 1;
+        const nameEl = document.getElementById('shiftStartCashierName');
+        if (nameEl) nameEl.value = this.currentUser.displayName || 'أحمد الشناوي';
+        document.getElementById('startShiftModal')?.classList.add('active');
+    }
+
+    closeStartNewShiftModal() {
+        document.getElementById('startShiftModal')?.classList.remove('active');
+    }
+
+    finalizeStartNewShift(e) {
+        if (e) e.preventDefault();
+        const floatVal = parseFloat(document.getElementById('shiftStartFloatInput')?.value) || 500;
+        const now = new Date();
+        const nextShiftNumber = (this.currentShift.shiftNumber || 104) + 1;
+
+        this.currentShift = {
+            shiftNumber: nextShiftNumber,
+            cashierName: this.currentUser.displayName,
+            startTime: `اليوم ${now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}`,
+            startTimestamp: Date.now(),
+            startingFloat: floatVal,
+            isActive: true,
+            flexibleMode: this.currentShift.flexibleMode || false
+        };
+
+        this.saveAll();
+        playBeep(true);
+        this.closeStartNewShiftModal();
+        this.renderShiftDetails();
+        alert(`تم بدء الوردية الجديدة #${nextShiftNumber} بعهدة نقدية افتتاجية قدرها ${floatVal.toFixed(2)} ج.م`);
+    }
+
+    printShiftReport(shift) {
+        if (!shift) return;
+
+        const barcodeSvg = generateCode128SVG(`SHIFT-${shift.shiftNumber}`, { height: 30, showText: true });
+        const html = `
+            <div class="print-voucher-thermal">
+                <div style="text-align: center; border-bottom: 2px dashed #0F172A; padding-bottom: 8px; margin-bottom: 8px;">
+                    <h2 style="font-size: 1.25rem; font-weight: 900; margin: 0; color: #0F172A;">كارما كارميلا للأغذية</h2>
+                    <p style="font-size: 0.78rem; margin: 3px 0; color: #475569;">تقرير تسليم وجرد الوردية المعتمد</p>
+                    <div style="display: inline-block; background: #0F172A; color: #FFF; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; margin-top: 4px;">
+                        وردية #${shift.shiftNumber}
+                    </div>
+                </div>
+
+                <div style="font-size: 0.75rem; border-bottom: 1px dashed #CBD5E1; padding-bottom: 6px; margin-bottom: 6px;">
+                    <div>الكاشير المسئول: <strong>${shift.cashierName || 'أحمد الشناوي'}</strong></div>
+                    <div>بداية الوردية: <strong>${shift.startTime}</strong></div>
+                    <div>إقفال الوردية: <strong>${shift.endTime || 'الآن'}</strong></div>
+                    <div>عدد العمليات والفواتير: <strong>${shift.invoicesCount || 0} عملية</strong></div>
+                </div>
+
+                <table style="width: 100%; font-size: 0.76rem; border-collapse: collapse; margin-bottom: 8px;">
+                    <tbody>
+                        <tr><td>العهدة الافتتاحية (Float):</td><td style="text-align: left; font-weight: bold;">${(shift.startingFloat || 0).toFixed(2)} ج.م</td></tr>
+                        <tr><td>إجمالي المبيعات الصادرة:</td><td style="text-align: left; font-weight: bold;">${(shift.totalSales || 0).toFixed(2)} ج.م</td></tr>
+                        <tr style="color: #047857;"><td>(+) مبيعات نقدية بالخزينة:</td><td style="text-align: left; font-weight: bold;">${(shift.cashSales || 0).toFixed(2)} ج.م</td></tr>
+                        <tr style="color: #4338CA;"><td>(+) سندات قبض عملاء نقدية:</td><td style="text-align: left; font-weight: bold;">${(shift.customerPayments || 0).toFixed(2)} ج.م</td></tr>
+                        <tr style="color: #0369A1;"><td>(+) إيرادات أخرى داخلة الخزينة:</td><td style="text-align: left; font-weight: bold;">${(shift.otherIncomes || 0).toFixed(2)} ج.م</td></tr>
+                        <tr style="color: #B91C1C;"><td>(-) سندات صرف موردين نقدية:</td><td style="text-align: left; font-weight: bold;">${(shift.supplierPayments || 0).toFixed(2)} ج.م</td></tr>
+                        <tr style="color: #DC2626;"><td>(-) مصروفات تشغيل ونثريات:</td><td style="text-align: left; font-weight: bold;">${(shift.expenses || 0).toFixed(2)} ج.م</td></tr>
+                        <tr style="color: #EA580C;"><td>(-) مبالغ مرتجعات مردودة نقداً:</td><td style="text-align: left; font-weight: bold;">${(shift.returnsAmount || 0).toFixed(2)} ج.م</td></tr>
+                    </tbody>
+                </table>
+
+                <div style="background: #F1F5F9; border: 1px solid #CBD5E1; border-radius: 6px; padding: 8px; font-size: 0.8rem; margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 4px;">
+                        <span>النقدية المفترضة بالدرج:</span>
+                        <span>${(shift.expectedCash || 0).toFixed(2)} ج.م</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; color: #0F172A; margin-bottom: 4px;">
+                        <span>النقدية الفعلية المحصية:</span>
+                        <span>${(shift.actualCash || 0).toFixed(2)} ج.م</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-weight: 900; color: ${(shift.difference || 0) === 0 ? '#047857' : '#DC2626'}; border-top: 1px dashed #94A3B8; padding-top: 4px;">
+                        <span>فارق الجرد المالي:</span>
+                        <span>${(shift.difference || 0) === 0 ? 'مطابق بالكامل (0.00)' : (shift.difference < 0 ? `عجز (${Math.abs(shift.difference).toFixed(2)} ج.م)` : `زيادة (${shift.difference.toFixed(2)} ج.م)`)}</span>
+                    </div>
+                </div>
+
+                <div style="font-size: 0.7rem; color: #64748B; margin-bottom: 12px;">
+                    ملاحظات: ${shift.notes || 'لا توجد ملاحظات إضافية'}
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-top: 15px; border-top: 1px solid #0F172A; padding-top: 6px;">
+                    <div style="text-align: center;">توقيع أمين الصندوق<br><br>...................</div>
+                    <div style="text-align: center;">توقيع مدير الفرع<br><br>...................</div>
+                </div>
+
+                <div style="text-align: center; margin-top: 10px;">
+                    ${barcodeSvg}
+                </div>
+            </div>
+        `;
+
+        this.printDocument(html, 'thermal');
+    }
+
     // ==========================================================================
-    // PARTNERS SCREEN (CUSTOMERS & SUPPLIERS IN ONE TAB)
+    // TREASURY & EXPENSES & OTHER INCOMES (MANAGEMENT & PAPER PROOF)
+    // ==========================================================================
+    renderTreasuryTable() {
+        const fin = this.getShiftFinancials();
+
+        const balEl = document.getElementById('treasuryCashBalance');
+        const incEl = document.getElementById('treasuryTodayIncome');
+        const expEl = document.getElementById('treasuryTodayExpense');
+        const netEl = document.getElementById('treasuryNetToday');
+
+        if (balEl) balEl.innerText = `${fin.expectedCash.toFixed(2)} ج.م`;
+        if (incEl) incEl.innerText = `${(fin.cashSales + fin.cashReceipts + fin.otherIncomesTotal).toFixed(2)} ج.م`;
+        if (expEl) expEl.innerText = `${(fin.cashDisbursements + fin.expensesTotal + fin.cashReturnsTotal).toFixed(2)} ج.م`;
+        if (netEl) netEl.innerText = `${fin.expectedCash.toFixed(2)} ج.م`;
+
+        const tbody = document.querySelector('#treasuryTable tbody');
+        if (!tbody) return;
+
+        // Build combined timeline of treasury transactions
+        let txs = [
+            ...(this.expenses || []).map(e => ({
+                id: e.id,
+                date: e.fullDateTime || e.date,
+                timestamp: e.timestamp || 0,
+                type: 'expense',
+                title: e.title,
+                party: e.recipient || 'جهة الصرف',
+                category: e.category,
+                amount: e.amount,
+                isOut: true,
+                cashier: e.cashierName || 'أحمد الشناوي'
+            })),
+            ...(this.otherIncomes || []).map(inc => ({
+                id: inc.id,
+                date: inc.fullDateTime || inc.date,
+                timestamp: inc.timestamp || 0,
+                type: 'income',
+                title: inc.title,
+                party: inc.source || 'جهة الإيداع',
+                category: inc.category,
+                amount: inc.amount,
+                isOut: false,
+                cashier: inc.cashierName || 'أحمد الشناوي'
+            })),
+            ...(this.customerPayments || []).filter(p => (p.method || '').includes('نقد')).map(p => ({
+                id: p.id,
+                date: p.fullDateTime || p.date,
+                timestamp: p.timestamp || 0,
+                type: 'receipt',
+                title: 'تحصيل نقدية من عميل',
+                party: p.customerName,
+                category: 'مقبوضات عملاء',
+                amount: p.amount,
+                isOut: false,
+                cashier: p.cashierName || 'أحمد الشناوي'
+            })),
+            ...(this.supplierPayments || []).filter(p => (p.method || '').includes('نقد')).map(p => ({
+                id: p.id,
+                date: p.fullDateTime || p.date,
+                timestamp: p.timestamp || 0,
+                type: 'disbursement',
+                title: 'سداد نقدي لمورد',
+                party: p.supplierName,
+                category: 'مدفوعات موردين',
+                amount: p.amount,
+                isOut: true,
+                cashier: p.cashierName || 'أحمد الشناوي'
+            }))
+        ];
+
+        txs.sort((a, b) => b.timestamp - a.timestamp);
+
+        if (this.currentTreasuryFilter === 'expense') {
+            txs = txs.filter(t => t.type === 'expense' || t.type === 'disbursement');
+        } else if (this.currentTreasuryFilter === 'income') {
+            txs = txs.filter(t => t.type === 'income' || t.type === 'receipt');
+        } else if (this.currentTreasuryFilter === 'sales') {
+            txs = txs.filter(t => t.type === 'receipt');
+        }
+
+        if (txs.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 22px;">لا توجد حركات خزينة مطابقة للفلتر المحدد</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = txs.map(t => `
+            <tr>
+                <td style="font-family: monospace; font-weight: bold; color: var(--primary-orange);">${t.id}</td>
+                <td style="font-size: 0.74rem;">${t.date}</td>
+                <td><span class="status-badge ${t.isOut ? 'credit' : 'paid'}">${t.isOut ? 'سند صرف نقدية' : 'سند قبض نقدية'}</span></td>
+                <td style="font-weight: 600;">${t.title}</td>
+                <td>${t.party}</td>
+                <td style="font-weight: 900; color: ${t.isOut ? 'var(--accent-rose)' : 'var(--accent-emerald)'};">
+                    ${t.isOut ? '-' : '+'}${t.amount.toFixed(2)} ج.م
+                </td>
+                <td style="font-size: 0.74rem;">${t.cashier}</td>
+                <td>
+                    <button type="button" class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.printVoucherDirect('${t.type}', '${t.id}')">
+                        <i class="fa-solid fa-print"></i> سند ورقي
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    filterTreasury(type, btn) {
+        this.currentTreasuryFilter = type;
+        document.querySelectorAll('#screen-treasury .cat-pill').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        this.renderTreasuryTable();
+    }
+
+    openNewExpenseModal() {
+        document.getElementById('newExpenseModal')?.classList.add('active');
+    }
+    closeNewExpenseModal() {
+        document.getElementById('newExpenseModal')?.classList.remove('active');
+    }
+
+    saveExpense(e) {
+        if (e) e.preventDefault();
+        const title = document.getElementById('expTitle')?.value?.trim();
+        const amount = parseFloat(document.getElementById('expAmount')?.value) || 0;
+        const recipient = document.getElementById('expRecipient')?.value?.trim() || 'المستلم';
+        const category = document.getElementById('expCategory')?.value || 'مصروفات عامة';
+        const notes = document.getElementById('expNotes')?.value?.trim() || '';
+
+        if (!title || amount <= 0) {
+            alert('برجاء كتابة بيان المصروف والمبلغ بشكل صحيح');
+            return;
+        }
+
+        const now = new Date();
+        const fullDateTime = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) + ' - الساعة ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+        const record = {
+            id: `EXP-${now.getFullYear()}-${String(this.expenses.length + 101).padStart(4, '0')}`,
+            title,
+            category,
+            amount,
+            recipient,
+            notes,
+            date: now.toLocaleDateString('ar-EG'),
+            time: now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+            fullDateTime,
+            timestamp: Date.now(),
+            cashierName: this.currentUser.displayName || 'أحمد الشناوي'
+        };
+
+        this.expenses.unshift(record);
+        this.saveAll();
+        playBeep(true);
+        this.closeNewExpenseModal();
+        this.renderTreasuryTable();
+        this.renderShiftDetails();
+        this.renderHomeDashboard();
+
+        // Print expense voucher immediately
+        this.printVoucherDirect('expense', record.id);
+        alert(`تم تسجيل سند صرف المصروف [${record.id}] بنجاح بقيمة ${amount.toFixed(2)} ج.م`);
+    }
+
+    openNewOtherIncomeModal() {
+        document.getElementById('newOtherIncomeModal')?.classList.add('active');
+    }
+    closeNewOtherIncomeModal() {
+        document.getElementById('newOtherIncomeModal')?.classList.remove('active');
+    }
+
+    saveOtherIncome(e) {
+        if (e) e.preventDefault();
+        const title = document.getElementById('incTitle')?.value?.trim();
+        const amount = parseFloat(document.getElementById('incAmount')?.value) || 0;
+        const source = document.getElementById('incSource')?.value?.trim() || 'جهة الإيداع';
+        const category = document.getElementById('incCategory')?.value || 'إيرادات أخرى';
+        const notes = document.getElementById('incNotes')?.value?.trim() || '';
+
+        if (!title || amount <= 0) {
+            alert('برجاء كتابة بيان الإيراد والمبلغ بشكل صحيح');
+            return;
+        }
+
+        const now = new Date();
+        const fullDateTime = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) + ' - الساعة ' + now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+
+        const record = {
+            id: `INC-${now.getFullYear()}-${String(this.otherIncomes.length + 101).padStart(4, '0')}`,
+            title,
+            category,
+            amount,
+            source,
+            notes,
+            date: now.toLocaleDateString('ar-EG'),
+            time: now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+            fullDateTime,
+            timestamp: Date.now(),
+            cashierName: this.currentUser.displayName || 'أحمد الشناوي'
+        };
+
+        this.otherIncomes.unshift(record);
+        this.saveAll();
+        playBeep(true);
+        this.closeNewOtherIncomeModal();
+        this.renderTreasuryTable();
+        this.renderShiftDetails();
+        this.renderHomeDashboard();
+
+        // Print income voucher immediately
+        this.printVoucherDirect('income', record.id);
+        alert(`تم تسجيل سند قبض الإيراد [${record.id}] بنجاح بقيمة ${amount.toFixed(2)} ج.م`);
+    }
+
+    printVoucherDirect(voucherType, voucherId) {
+        let vData = null;
+        let isDebit = false;
+        let titleLabel = 'سند قبض نقدية بالخزينة';
+
+        if (voucherType === 'expense') {
+            vData = (this.expenses || []).find(e => e.id === voucherId);
+            isDebit = true;
+            titleLabel = 'سند صرف مصروفات تشغيل ونثريات';
+        } else if (voucherType === 'income') {
+            vData = (this.otherIncomes || []).find(inc => inc.id === voucherId);
+            isDebit = false;
+            titleLabel = 'سند قبض إيرادات أخرى بالخزينة';
+        } else if (voucherType === 'receipt') {
+            vData = (this.customerPayments || []).find(p => p.id === voucherId);
+            isDebit = false;
+            titleLabel = 'سند قبض وتحصيل نقدية من عميل';
+        } else if (voucherType === 'disbursement') {
+            vData = (this.supplierPayments || []).find(p => p.id === voucherId);
+            isDebit = true;
+            titleLabel = 'سند صرف ودفع نقدية لمورد';
+        }
+
+        if (!vData) return;
+
+        const barcodeSvg = generateCode128SVG(vData.id, { height: 32, showText: true });
+        const words = tafqeet(vData.amount || 0);
+
+        const html = `
+            <div class="print-voucher-a4">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 16px;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.4rem; color: #0F172A;">كارما كارميلا للأغذية</h2>
+                        <div style="font-size: 0.82rem; color: #64748B;">شركة توريد وتجارة المواد الغذائية بالجملة • الجيزة</div>
+                        <div style="font-size: 0.78rem; color: #475569;">س.ت: 184920 الجيزة • ر.ض: 492-817-305</div>
+                    </div>
+                    <div style="text-align: left;">
+                        <div style="display: inline-block; background: ${isDebit ? '#DC2626' : '#059669'}; color: #FFF; padding: 4px 14px; border-radius: 6px; font-weight: bold; font-size: 0.95rem;">
+                            ${titleLabel}
+                        </div>
+                        <div style="font-size: 0.85rem; font-weight: bold; margin-top: 4px; font-family: monospace;">رقم الإذن: ${vData.id}</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 16px; font-size: 0.85rem;">
+                    <div style="background: #F8FAFC; padding: 10px; border-radius: 6px; border: 1px solid #E2E8F0;">
+                        <div>التاريخ والوقت: <strong>${vData.fullDateTime || vData.date}</strong></div>
+                        <div>الطرف المتعامل: <strong>${vData.recipient || vData.source || vData.customerName || vData.supplierName || '—'}</strong></div>
+                        <div>البند / التصنيف: <strong>${vData.category || vData.title || 'تسوية نقدية'}</strong></div>
+                    </div>
+                    <div style="background: #F8FAFC; padding: 10px; border-radius: 6px; border: 1px solid #E2E8F0; text-align: left;">
+                        <div style="font-size: 0.85rem; color: #64748B;">المبلغ الصافي:</div>
+                        <div style="font-size: 1.4rem; font-weight: 900; color: ${isDebit ? '#DC2626' : '#059669'};">
+                            ${(vData.amount || 0).toFixed(2)} ج.م
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #FFFBEB; border: 1px solid #FCD34D; border-radius: 6px; padding: 10px; margin-bottom: 16px; font-weight: bold; font-size: 0.88rem; color: #92400E;">
+                    المبلغ بالحروف: ${words}
+                </div>
+
+                <div style="border: 1px solid #CBD5E1; border-radius: 6px; padding: 10px; font-size: 0.85rem; margin-bottom: 25px;">
+                    <strong>البيان والسبب التفصيلي:</strong><br>
+                    <span>${vData.notes || vData.title || 'لا توجد ملاحظات إضافية'}</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; text-align: center; font-size: 0.82rem; margin-top: 30px; border-top: 1px solid #0F172A; padding-top: 12px;">
+                    <div>
+                        <strong>أمين الخزينة:</strong><br><br>
+                        <span>${vData.cashierName || 'أحمد الشناوي'}</span><br><br>
+                        .........................
+                    </div>
+                    <div>
+                        <strong>المستلم / الدافع:</strong><br><br>
+                        <span>${vData.recipient || vData.source || vData.customerName || vData.supplierName || '—'}</span><br><br>
+                        .........................
+                    </div>
+                    <div>
+                        <strong>اعتماد الإدارة والفرع:</strong><br><br>
+                        <span>كارما كارميلا</span><br><br>
+                        .........................
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 25px;">
+                    ${barcodeSvg}
+                    <div style="font-size: 0.7rem; color: #94A3B8; margin-top: 4px;">مستند رسمي صادر ومسجل إلكترونياً بنظام كارما كارميلا</div>
+                </div>
+            </div>
+        `;
+
+        this.printDocument(html, 'a4');
+    }
+
+    // ==========================================================================
+    // PARTNERS (COMBINED SCREEN & DEDICATED PROFILE PAGE)
     // ==========================================================================
     switchPartnersTab(tab) {
         document.getElementById('btnTabCustomers')?.classList.toggle('active', tab === 'customers');
@@ -696,8 +1381,710 @@ class CarmelaApp {
         if (countEl) countEl.innerText = `${totalPartners} جهات مسجلة`;
     }
 
+    renderCustomersCards() {
+        const grid = document.getElementById('customersCardsGrid');
+        if (!grid) return;
+        grid.innerHTML = (this.customers || []).map(c => `
+            <div class="bento-card cust" onclick="app.openPartnerDetail('customer', ${c.id})">
+                <div class="bento-top-row">
+                    <span class="bento-badge-pill">${c.phone}</span>
+                    <div class="bento-icon-box"><i class="fa-solid fa-user-tie"></i></div>
+                </div>
+                <h4>${c.name}</h4>
+                <div class="bento-metric-large ${(c.balance || 0) > 0 ? 'text-warning' : 'text-success'}">
+                    ${(c.balance || 0).toFixed(2)} ج.م
+                </div>
+                <p class="bento-desc">${c.address || 'لا يوجد عنوان مسجل'}</p>
+                <span class="bento-link-arrow">فتح صفحة الحساب والمستندات <i class="fa-solid fa-arrow-left"></i></span>
+            </div>
+        `).join('');
+    }
+
+    renderSuppliersCards() {
+        const grid = document.getElementById('suppliersCardsGrid');
+        if (!grid) return;
+        grid.innerHTML = (this.suppliers || []).map(s => `
+            <div class="bento-card sup" onclick="app.openPartnerDetail('supplier', ${s.id})">
+                <div class="bento-top-row">
+                    <span class="bento-badge-pill">${s.phone}</span>
+                    <div class="bento-icon-box"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                </div>
+                <h4>${s.name}</h4>
+                <div class="bento-metric-large text-danger">
+                    ${(s.balance || 0).toFixed(2)} ج.م
+                </div>
+                <p class="bento-desc">${s.address || 'المنطقة الصناعية'}</p>
+                <span class="bento-link-arrow">فتح صفحة الحساب وسندات الصرف <i class="fa-solid fa-arrow-left"></i></span>
+            </div>
+        `).join('');
+    }
+
+    openPartnerDetail(partnerType, partnerId) {
+        let partner = null;
+        if (partnerType === 'customer') {
+            partner = (this.customers || []).find(c => c.id === partnerId);
+        } else {
+            partner = (this.suppliers || []).find(s => s.id === partnerId);
+        }
+
+        if (!partner) return;
+        this.currentPartnerDetail = { type: partnerType, id: partnerId, data: partner };
+
+        const titleEl = document.getElementById('partnerDetailTitle');
+        const subEl = document.getElementById('partnerDetailSubtitle');
+        const avatarEl = document.getElementById('pdAvatar');
+        const nameEl = document.getElementById('pdName');
+        const phoneEl = document.getElementById('pdPhone');
+        const addrEl = document.getElementById('pdAddress');
+        const balEl = document.getElementById('pdBalance');
+        const limEl = document.getElementById('pdLimit');
+        const crEl = document.getElementById('pdCr');
+        const taxEl = document.getElementById('pdTaxId');
+
+        if (titleEl) titleEl.innerText = partnerType === 'customer' ? `صفحة العميل: ${partner.name}` : `صفحة المورد: ${partner.name}`;
+        if (subEl) subEl.innerText = partnerType === 'customer' ? 'كشف حساب تفصيلي، فواتير المبيعات، سندات القبض، وفواتير المرتجع' : 'كشف حساب تفصيلي، فواتير التوريد، وسندات الصرف النقدية';
+
+        if (avatarEl) avatarEl.className = partnerType === 'customer' ? 'fa-solid fa-user-tie' : 'fa-solid fa-truck-ramp-box';
+        if (nameEl) nameEl.innerText = partner.name;
+        if (phoneEl) phoneEl.innerText = partner.phone || '—';
+        if (addrEl) addrEl.innerText = partner.address || 'القاهرة / الجيزة';
+        if (balEl) balEl.innerText = `${(partner.balance || 0).toFixed(2)} ج.م`;
+        if (limEl) limEl.innerText = `${(partner.creditLimit || 0).toFixed(2)} ج.م`;
+        if (crEl) crEl.innerText = partner.cr || '—';
+        if (taxEl) taxEl.innerText = partner.taxId || '—';
+
+        this.switchPdTab('statement');
+        this.switchScreen('partner-detail');
+    }
+
+    switchPdTab(tab) {
+        document.querySelectorAll('#screen-partner-detail .tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#screen-partner-detail .partner-pane').forEach(p => p.classList.remove('active'));
+
+        const btn = document.getElementById(`btnPdTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+        const pane = document.getElementById(`pdPane${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+        if (btn) btn.classList.add('active');
+        if (pane) pane.classList.add('active');
+
+        if (tab === 'statement') this.renderPartnerLedger();
+        if (tab === 'invoices') this.renderPartnerInvoices();
+        if (tab === 'returns') this.renderPartnerReturns();
+        if (tab === 'stats') this.renderPartnerStats();
+    }
+
+    renderPartnerLedger() {
+        const pd = this.currentPartnerDetail;
+        if (!pd || !pd.data) return;
+        const tbody = document.querySelector('#pdStatementTable tbody');
+        if (!tbody) return;
+
+        let timeline = [];
+
+        if (pd.type === 'customer') {
+            const custOrders = (this.orders || []).filter(o => o.customerId === pd.id);
+            const custPayments = (this.customerPayments || []).filter(p => p.customerId === pd.id);
+            const custReturns = (this.returns || []).filter(r => r.partnerType === 'customer' && r.partnerId === pd.id);
+
+            timeline = [
+                ...custOrders.map(o => ({
+                    date: o.date,
+                    timestamp: o.timestamp || 0,
+                    docId: o.id,
+                    type: 'فاتورة مبيعات',
+                    details: `شراء أصناف (${(o.items || []).length} صنف) - ${o.paymentType === 'cash' ? 'نقدي مسدد' : 'آجل على الحساب'}`,
+                    debit: o.paymentType === 'credit' ? o.grandTotal : 0,
+                    credit: o.paymentType === 'cash' ? o.grandTotal : 0
+                })),
+                ...custPayments.map(p => ({
+                    date: p.fullDateTime || p.date,
+                    timestamp: p.timestamp || 0,
+                    docId: p.id,
+                    type: 'سند قبض نقدية',
+                    details: `سداد دفعة (${p.method}) - ${p.notes || ''}`,
+                    debit: 0,
+                    credit: p.amount
+                })),
+                ...custReturns.map(r => ({
+                    date: r.fullDateTime || r.date,
+                    timestamp: r.timestamp || 0,
+                    docId: r.id,
+                    type: 'فاتورة مرتجع مبيعات',
+                    details: `رد بضاعة [${r.productName}] عدد ${r.quantity} ${r.unitName} (${r.refundMethod === 'cash' ? 'رد نقداً' : 'خصم من الرصيد'})`,
+                    debit: 0,
+                    credit: r.refundMethod === 'credit' ? r.totalRefund : 0
+                }))
+            ];
+        } else {
+            const supPayments = (this.supplierPayments || []).filter(p => p.supplierId === pd.id);
+            const supReturns = (this.returns || []).filter(r => r.partnerType === 'supplier' && r.partnerId === pd.id);
+
+            timeline = [
+                ...supPayments.map(p => ({
+                    date: p.fullDateTime || p.date,
+                    timestamp: p.timestamp || 0,
+                    docId: p.id,
+                    type: 'سند صرف نقدية',
+                    details: `سداد دفعة توريد (${p.method}) - ${p.notes || ''}`,
+                    debit: p.amount,
+                    credit: 0
+                })),
+                ...supReturns.map(r => ({
+                    date: r.fullDateTime || r.date,
+                    timestamp: r.timestamp || 0,
+                    docId: r.id,
+                    type: 'مرتجع مشتريات للمورد',
+                    details: `رد بضاعة للمورد [${r.productName}] عدد ${r.quantity} ${r.unitName}`,
+                    debit: r.totalRefund,
+                    credit: 0
+                }))
+            ];
+        }
+
+        timeline.sort((a, b) => b.timestamp - a.timestamp);
+
+        if (timeline.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد حركات مسجلة لهذا الحساب حتى الآن</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = timeline.map(row => `
+            <tr>
+                <td style="font-size: 0.74rem;">${row.date}</td>
+                <td style="font-family: monospace; font-weight: bold; color: var(--primary-orange);">${row.docId}</td>
+                <td><span class="status-badge ${row.type.includes('فاتورة') ? 'partial' : 'paid'}">${row.type}</span></td>
+                <td>${row.details}</td>
+                <td style="color: var(--accent-rose); font-weight: bold;">${row.debit > 0 ? row.debit.toFixed(2) + ' ج.م' : '—'}</td>
+                <td style="color: var(--accent-emerald); font-weight: bold;">${row.credit > 0 ? row.credit.toFixed(2) + ' ج.م' : '—'}</td>
+                <td style="font-weight: 900;">${(pd.data.balance || 0).toFixed(2)} ج.م</td>
+            </tr>
+        `).join('');
+    }
+
+    renderPartnerInvoices() {
+        const pd = this.currentPartnerDetail;
+        if (!pd) return;
+        const tbody = document.querySelector('#pdInvoicesTable tbody');
+        if (!tbody) return;
+
+        if (pd.type === 'customer') {
+            const custOrders = (this.orders || []).filter(o => o.customerId === pd.id);
+            if (custOrders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد فواتير مبيعات مسجلة لهذا العميل</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = custOrders.map(o => `
+                <tr>
+                    <td style="font-family: monospace; font-weight: bold; color: var(--primary-orange);">${o.id}</td>
+                    <td style="font-size: 0.74rem;">${o.date}</td>
+                    <td>${(o.items || []).length} صنف</td>
+                    <td style="font-weight: 900; color: var(--primary-orange);">${(o.grandTotal || 0).toFixed(2)} ج.م</td>
+                    <td><span class="status-badge ${o.paymentType === 'cash' ? 'paid' : 'partial'}">${o.paymentType === 'cash' ? 'نقدي' : 'آجل'}</span></td>
+                    <td style="font-size: 0.74rem;">${o.cashierName || 'أحمد الشناوي'}</td>
+                    <td>
+                        <button type="button" class="btn-primary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.openInvoiceModal(app.orders.find(ord => ord.id === '${o.id}'))">
+                            <i class="fa-solid fa-print"></i> معاينة وطباعة
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            // Suppliers purchase invoices (from payments or supplies)
+            const payments = (this.supplierPayments || []).filter(p => p.supplierId === pd.id);
+            if (payments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد فواتير توريد مسجلة لهذا المورد</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = payments.map(p => `
+                <tr>
+                    <td style="font-family: monospace; font-weight: bold; color: var(--primary-orange);">${p.id}</td>
+                    <td style="font-size: 0.74rem;">${p.fullDateTime || p.date}</td>
+                    <td>توريد خامات</td>
+                    <td style="font-weight: 900; color: var(--accent-rose);">${(p.amount || 0).toFixed(2)} ج.م</td>
+                    <td><span class="status-badge paid">${p.method}</span></td>
+                    <td style="font-size: 0.74rem;">${p.cashierName || 'أحمد الشناوي'}</td>
+                    <td>
+                        <button type="button" class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.printVoucherDirect('disbursement', '${p.id}')">
+                            <i class="fa-solid fa-print"></i> طباعة السند
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    }
+
+    renderPartnerReturns() {
+        const pd = this.currentPartnerDetail;
+        if (!pd) return;
+        const tbody = document.querySelector('#pdReturnsTable tbody');
+        if (!tbody) return;
+
+        const partnerReturns = (this.returns || []).filter(r => r.partnerType === pd.type && r.partnerId === pd.id);
+        if (partnerReturns.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد فواتير مرتجعات مسجلة لهذا الحساب</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = partnerReturns.map(r => `
+            <tr>
+                <td style="font-family: monospace; font-weight: bold; color: var(--primary-orange);">${r.id}</td>
+                <td style="font-size: 0.74rem;">${r.date}</td>
+                <td style="font-weight: 600;">${r.productName}</td>
+                <td>${r.quantity} ${r.unitName}</td>
+                <td style="font-weight: 900; color: var(--accent-rose);">${(r.totalRefund || 0).toFixed(2)} ج.م</td>
+                <td><span class="status-badge ${r.refundMethod === 'cash' ? 'paid' : 'partial'}">${r.refundMethod === 'cash' ? 'رد نقداً بالخزينة' : 'خصم من الرصيد'}</span></td>
+                <td style="font-size: 0.74rem;">${r.reason || '—'}</td>
+                <td>
+                    <button type="button" class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.printReturnVoucher('${r.id}')">
+                        <i class="fa-solid fa-print"></i> طباعة
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    renderPartnerStats() {
+        const pd = this.currentPartnerDetail;
+        if (!pd || !pd.data) return;
+
+        let totalVolume = 0;
+        let totalPaid = 0;
+        let totalRet = 0;
+
+        if (pd.type === 'customer') {
+            const orders = (this.orders || []).filter(o => o.customerId === pd.id);
+            const payments = (this.customerPayments || []).filter(p => p.customerId === pd.id);
+            const rets = (this.returns || []).filter(r => r.partnerType === 'customer' && r.partnerId === pd.id);
+
+            totalVolume = orders.reduce((sum, o) => sum + (o.grandTotal || 0), 0);
+            totalPaid = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+            totalRet = rets.reduce((sum, r) => sum + (r.totalRefund || 0), 0);
+        } else {
+            const payments = (this.supplierPayments || []).filter(p => p.supplierId === pd.id);
+            const rets = (this.returns || []).filter(r => r.partnerType === 'supplier' && r.partnerId === pd.id);
+
+            totalVolume = (pd.data.balance || 0) + payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+            totalPaid = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+            totalRet = rets.reduce((sum, r) => sum + (r.totalRefund || 0), 0);
+        }
+
+        const sVol = document.getElementById('pdTotalSales');
+        const sPaid = document.getElementById('pdTotalPaid');
+        const sRet = document.getElementById('pdTotalReturns');
+        const sNet = document.getElementById('pdNetBalance');
+
+        if (sVol) sVol.innerText = `${totalVolume.toFixed(2)} ج.م`;
+        if (sPaid) sPaid.innerText = `${totalPaid.toFixed(2)} ج.م`;
+        if (sRet) sRet.innerText = `${totalRet.toFixed(2)} ج.م`;
+        if (sNet) sNet.innerText = `${(pd.data.balance || 0).toFixed(2)} ج.م`;
+    }
+
+    printPartnerStatement() {
+        const pd = this.currentPartnerDetail;
+        if (!pd || !pd.data) return;
+
+        const tableContent = document.getElementById('pdStatementTable')?.outerHTML || '';
+        const barcodeSvg = generateCode128SVG(`STMT-${pd.type.toUpperCase()}-${pd.id}`, { height: 30, showText: true });
+
+        const html = `
+            <div class="print-voucher-a4">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 16px;">
+                    <div>
+                        <h2 style="margin: 0; font-size: 1.4rem; color: #0F172A;">كارما كارميلا للأغذية</h2>
+                        <div style="font-size: 0.82rem; color: #64748B;">شركة توريد وتجارة المواد الغذائية بالجملة • الجيزة</div>
+                        <div style="font-size: 0.78rem; color: #475569;">س.ت: 184920 الجيزة • ر.ض: 492-817-305</div>
+                    </div>
+                    <div style="text-align: left;">
+                        <div style="display: inline-block; background: #0F172A; color: #FFF; padding: 4px 12px; border-radius: 6px; font-weight: bold; font-size: 0.95rem;">
+                            كشف حساب معتمد: ${pd.data.name}
+                        </div>
+                        <div style="font-size: 0.8rem; margin-top: 4px; color: #64748B;">تاريخ الاستخراج: ${new Date().toLocaleDateString('ar-EG')}</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 16px; font-size: 0.85rem; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 10px; border-radius: 6px;">
+                    <div>
+                        <div>اسم الحساب: <strong>${pd.data.name}</strong></div>
+                        <div>رقم الهاتف: <strong>${pd.data.phone || '—'}</strong></div>
+                        <div>العنوان المسجل: <strong>${pd.data.address || '—'}</strong></div>
+                    </div>
+                    <div style="text-align: left;">
+                        <div>الرصيد الحالي المستحق: <strong style="font-size: 1.2rem; color: #DC2626;">${(pd.data.balance || 0).toFixed(2)} ج.م</strong></div>
+                        <div>الحد الائتماني: ${(pd.data.creditLimit || 0).toFixed(2)} ج.م</div>
+                        <div>س.ت / ر.ض: ${pd.data.taxId || pd.data.cr || '—'}</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    ${tableContent}
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center; font-size: 0.82rem; margin-top: 40px; border-top: 1px solid #0F172A; padding-top: 15px;">
+                    <div>توقيع ومصادقة صاحب الحساب<br><br>...........................</div>
+                    <div>خاتم وتوقيع الحسابات - كارما كارميلا<br><br>...........................</div>
+                </div>
+
+                <div style="text-align: center; margin-top: 25px;">
+                    ${barcodeSvg}
+                </div>
+            </div>
+        `;
+
+        this.printDocument(html, 'a4');
+    }
+
+    exportPartnerExcel() {
+        const pd = this.currentPartnerDetail;
+        if (!pd || !pd.data) return;
+
+        let csv = '\uFEFFالتاريخ,رقم المستند,نوع الحركة,البيان,مدين,دائن,الرصيد\n';
+        const rows = document.querySelectorAll('#pdStatementTable tbody tr');
+        rows.forEach(tr => {
+            const cols = tr.querySelectorAll('td');
+            if (cols.length >= 7) {
+                const date = cols[0].innerText.replace(/"/g, '""');
+                const docId = cols[1].innerText.replace(/"/g, '""');
+                const type = cols[2].innerText.replace(/"/g, '""');
+                const details = cols[3].innerText.replace(/"/g, '""');
+                const debit = cols[4].innerText.replace(/[^0-9\.\-]/g, '');
+                const credit = cols[5].innerText.replace(/[^0-9\.\-]/g, '');
+                const balance = cols[6].innerText.replace(/[^0-9\.\-]/g, '');
+                csv += `"${date}","${docId}","${type}","${details}",${debit || 0},${credit || 0},${balance || 0}\n`;
+            }
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Karma_Carmela_Statement_${pd.data.name}_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    openNewPaymentModalForCurrentPartner() {
+        const pd = this.currentPartnerDetail;
+        if (!pd) return;
+        if (pd.type === 'customer') {
+            this.openCustomerPaymentModal(pd.id);
+        } else {
+            this.openSupplierPaymentModal(pd.id);
+        }
+    }
+
+    openNewReturnModalForCurrentPartner() {
+        const pd = this.currentPartnerDetail;
+        if (!pd) return;
+        this.openNewReturnModal(pd.type, pd.id);
+    }
+
+    openCustomerLedger(id) {
+        this.openPartnerDetail('customer', id);
+    }
+
+    openSupplierLedger(id) {
+        this.openPartnerDetail('supplier', id);
+    }
+
     // ==========================================================================
-    // POS CATALOG & CART LOGIC (WITH MOBILE FLOATING CART BAR)
+    // RETURN INVOICES (RESTOCKING & FINANCIAL REFUND)
+    // ==========================================================================
+    openNewReturnModal(presetType = 'customer', presetPartnerId = null) {
+        const typeSelect = document.getElementById('returnPartnerType');
+        if (typeSelect) typeSelect.value = presetType;
+
+        this.onReturnPartnerTypeChange();
+
+        if (presetPartnerId) {
+            const pSelect = document.getElementById('returnPartnerSelect');
+            if (pSelect) pSelect.value = presetPartnerId;
+        }
+
+        const prodSelect = document.getElementById('returnProductSelect');
+        if (prodSelect) {
+            prodSelect.innerHTML = (this.products || []).map(p => `
+                <option value="${p.id}">${p.name} (سعر: ${(p.wholesalePrice || 0).toFixed(2)} ج.م)</option>
+            `).join('');
+        }
+
+        this.onReturnProductChange();
+        document.getElementById('newReturnModal')?.classList.add('active');
+    }
+
+    closeNewReturnModal() {
+        document.getElementById('newReturnModal')?.classList.remove('active');
+    }
+
+    onReturnPartnerTypeChange() {
+        const pType = document.getElementById('returnPartnerType')?.value || 'customer';
+        const pSelect = document.getElementById('returnPartnerSelect');
+        if (!pSelect) return;
+
+        if (pType === 'customer') {
+            pSelect.innerHTML = (this.customers || []).map(c => `
+                <option value="${c.id}">${c.name} - رصيد: ${(c.balance || 0).toFixed(2)} ج.م</option>
+            `).join('');
+        } else {
+            pSelect.innerHTML = (this.suppliers || []).map(s => `
+                <option value="${s.id}">${s.name} - رصيد: ${(s.balance || 0).toFixed(2)} ج.م</option>
+            `).join('');
+        }
+    }
+
+    onReturnProductChange() {
+        const prodId = parseInt(document.getElementById('returnProductSelect')?.value, 10);
+        const prod = (this.products || []).find(p => p.id === prodId) || this.products[0];
+        if (!prod) return;
+
+        const defaultUnit = (prod.units || []).find(u => u.isDefault) || (prod.units || [])[0] || { name: prod.baseUnit || 'عبوة', price: prod.wholesalePrice || 0, factor: 1 };
+        const unitNameInput = document.getElementById('returnUnitName');
+        const priceInput = document.getElementById('returnUnitPrice');
+
+        if (unitNameInput) unitNameInput.value = defaultUnit.name;
+        if (priceInput) priceInput.value = defaultUnit.price || prod.wholesalePrice;
+
+        this.calculateReturnTotal();
+    }
+
+    calculateReturnTotal() {
+        const qty = parseInt(document.getElementById('returnQty')?.value, 10) || 1;
+        const price = parseFloat(document.getElementById('returnUnitPrice')?.value) || 0;
+        const total = qty * price;
+        const totalEl = document.getElementById('returnTotalDisplay');
+        if (totalEl) totalEl.innerText = `${total.toFixed(2)} ج.م`;
+    }
+
+    saveReturnInvoice(e) {
+        if (e) e.preventDefault();
+        const partnerType = document.getElementById('returnPartnerType')?.value || 'customer';
+        const partnerId = parseInt(document.getElementById('returnPartnerSelect')?.value, 10);
+        const prodId = parseInt(document.getElementById('returnProductSelect')?.value, 10);
+        const unitName = document.getElementById('returnUnitName')?.value || 'كرتونة';
+        const qty = parseInt(document.getElementById('returnQty')?.value, 10) || 1;
+        const price = parseFloat(document.getElementById('returnUnitPrice')?.value) || 0;
+        const refundMethod = document.getElementById('returnRefundMethod')?.value || 'cash';
+        const reason = document.getElementById('returnReason')?.value?.trim() || 'مرتجع بضاعة';
+
+        let partner = partnerType === 'customer'
+            ? (this.customers || []).find(c => c.id === partnerId)
+            : (this.suppliers || []).find(s => s.id === partnerId);
+        const prod = (this.products || []).find(p => p.id === prodId);
+
+        if (!partner || !prod) {
+            alert('برجاء اختيار الطرف والصنف بشكل صحيح');
+            return;
+        }
+
+        const totalRefund = qty * price;
+
+        // 1. Restock inventory immediately
+        const matchedUnit = (prod.units || []).find(u => u.name === unitName);
+        const factor = matchedUnit ? matchedUnit.factor : 1;
+        prod.currentStock = (prod.currentStock || 0) + (qty * factor);
+
+        // 2. Financial Settlement
+        if (partnerType === 'customer') {
+            if (refundMethod === 'credit') {
+                partner.balance = Math.max(0, (partner.balance || 0) - totalRefund);
+            }
+        } else {
+            // Supplier return reduces supplier debt balance or provides cash
+            if (refundMethod === 'credit') {
+                partner.balance = Math.max(0, (partner.balance || 0) - totalRefund);
+            }
+        }
+
+        const now = new Date();
+        const returnId = `RET-${now.getFullYear()}-${String(this.returns.length + 101).padStart(4, '0')}`;
+
+        const retRecord = {
+            id: returnId,
+            type: partnerType === 'customer' ? 'sale' : 'purchase',
+            partnerType,
+            partnerId,
+            partnerName: partner.name,
+            productId: prod.id,
+            productName: prod.name,
+            quantity: qty,
+            unitName,
+            unitPrice: price,
+            totalRefund,
+            refundMethod,
+            reason,
+            date: now.toLocaleDateString('ar-EG'),
+            time: now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+            fullDateTime: now.toLocaleDateString('ar-EG') + ' - ' + now.toLocaleTimeString('ar-EG'),
+            timestamp: Date.now(),
+            cashierName: this.currentUser.displayName || 'أحمد الشناوي'
+        };
+
+        this.returns.unshift(retRecord);
+        this.saveAll();
+        playBeep(true);
+        this.closeNewReturnModal();
+
+        this.renderInventoryTable();
+        this.renderShiftDetails();
+        this.renderTreasuryTable();
+        this.renderHomeDashboard();
+
+        if (this.currentPartnerDetail && this.currentPartnerDetail.id === partnerId) {
+            this.renderPartnerLedger();
+            this.renderPartnerReturns();
+            this.renderPartnerStats();
+        }
+
+        this.printReturnVoucher(retRecord.id);
+        alert(`تم تسجيل فاتورة المرتجع [${returnId}] بنجاح!\n• تم إعادة الكمية للمخزون فوراً.\n• طريقة التسوية: ${refundMethod === 'cash' ? 'رد نقداً من الخزينة' : 'خصم من الرصيد الدفتري'}`);
+    }
+
+    printReturnVoucher(returnId) {
+        const r = (this.returns || []).find(item => item.id === returnId);
+        if (!r) return;
+
+        const barcodeSvg = generateCode128SVG(r.id, { height: 30, showText: true });
+        const html = `
+            <div class="print-voucher-thermal">
+                <div style="text-align: center; border-bottom: 2px dashed #0F172A; padding-bottom: 8px; margin-bottom: 8px;">
+                    <h2 style="font-size: 1.25rem; font-weight: 900; margin: 0; color: #0F172A;">كارما كارميلا للأغذية</h2>
+                    <p style="font-size: 0.78rem; margin: 3px 0; color: #475569;">فاتورة مرتجع معتمدة</p>
+                    <div style="display: inline-block; background: #DC2626; color: #FFF; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem; margin-top: 4px;">
+                        ${r.type === 'sale' ? 'مرتجع مبيعات عميل' : 'مرتجع توريد لمورد'}
+                    </div>
+                </div>
+
+                <div style="font-size: 0.75rem; border-bottom: 1px dashed #CBD5E1; padding-bottom: 6px; margin-bottom: 6px;">
+                    <div>رقم الإذن: <strong>${r.id}</strong></div>
+                    <div>التاريخ: <strong>${r.fullDateTime || r.date}</strong></div>
+                    <div>الطرف: <strong>${r.partnerName}</strong></div>
+                    <div>طريقة الرد: <strong>${r.refundMethod === 'cash' ? 'نقداً من الخزينة' : 'تسوية رصيد آجل'}</strong></div>
+                </div>
+
+                <table style="width: 100%; font-size: 0.76rem; border-collapse: collapse; margin-bottom: 8px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #0F172A;">
+                            <th style="text-align: right;">الصنف المرتجع</th>
+                            <th style="text-align: center;">الكمية</th>
+                            <th style="text-align: left;">الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${r.productName}<br><small style="color: #64748B;">(${r.unitName})</small></td>
+                            <td style="text-align: center;">${r.quantity}</td>
+                            <td style="text-align: left; font-weight: bold; color: #DC2626;">${(r.totalRefund || 0).toFixed(2)} ج.م</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="font-size: 0.72rem; color: #64748B; margin-bottom: 10px;">
+                    السبب: ${r.reason || 'لا يوجد'}
+                </div>
+
+                <div style="font-weight: bold; font-size: 0.82rem; text-align: center; background: #F1F5F9; padding: 6px; border-radius: 4px; margin-bottom: 10px;">
+                    ${tafqeet(r.totalRefund || 0)}
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-top: 15px; border-top: 1px solid #0F172A; padding-top: 6px;">
+                    <div style="text-align: center;">أمين المخزن<br><br>...............</div>
+                    <div style="text-align: center;">توقيع العميل / المورد<br><br>...............</div>
+                </div>
+
+                <div style="text-align: center; margin-top: 10px;">
+                    ${barcodeSvg}
+                </div>
+            </div>
+        `;
+
+        this.printDocument(html, 'thermal');
+    }
+
+    // ==========================================================================
+    // CUSTOM PRODUCT PICKER MODAL (REPLACES AWKWARD RADIO LISTS)
+    // ==========================================================================
+    openProductPicker(targetField) {
+        this.pickerTargetField = targetField;
+        this.renderPickerGrid(this.products || []);
+        const input = document.getElementById('pickerSearchInput');
+        if (input) {
+            input.value = '';
+            setTimeout(() => input.focus(), 250);
+        }
+        document.getElementById('productPickerModal')?.classList.add('active');
+    }
+
+    closeProductPicker() {
+        document.getElementById('productPickerModal')?.classList.remove('active');
+        this.pickerTargetField = null;
+    }
+
+    filterProductPicker() {
+        const query = (document.getElementById('pickerSearchInput')?.value || '').trim().toLowerCase();
+        let list = this.products || [];
+        if (query) {
+            list = list.filter(p =>
+                (p.name || '').toLowerCase().includes(query) ||
+                (p.sku || '').toLowerCase().includes(query) ||
+                (p.barcode || '').includes(query)
+            );
+        }
+        this.renderPickerGrid(list);
+    }
+
+    renderPickerGrid(list) {
+        const container = document.getElementById('productPickerGrid');
+        if (!container) return;
+
+        if (list.length === 0) {
+            container.innerHTML = `<div style="text-align: center; padding: 25px; color: var(--text-muted); grid-column: 1 / -1;">لا توجد أصناف مطابقة للبحث</div>`;
+            return;
+        }
+
+        container.innerHTML = list.map(p => `
+            <div class="picker-item-card" onclick="app.selectPickerProduct(${p.id})">
+                <div class="picker-item-icon"><i class="fa-solid fa-box"></i></div>
+                <div class="picker-item-name">${p.name}</div>
+                <div class="picker-item-sku">${p.sku} • كود: ${p.barcode}</div>
+                <div class="picker-item-price">سعر الجملة: ${(p.wholesalePrice || 0).toFixed(2)} ج.م</div>
+                <div class="picker-item-stock">المخزون الحالي: ${p.currentStock || 0} ${p.baseUnit}</div>
+            </div>
+        `).join('');
+    }
+
+    selectPickerProduct(productId) {
+        const prod = (this.products || []).find(p => p.id === productId);
+        if (!prod) return;
+
+        if (this.pickerTargetField === 'purchase') {
+            const select = document.getElementById('purchaseProductSelect');
+            if (select) {
+                select.value = prod.id;
+            }
+            const nameDisplay = document.getElementById('purchaseProductNameDisplay');
+            if (nameDisplay) {
+                nameDisplay.innerText = prod.name;
+            }
+            const costInp = document.getElementById('purchaseUnitCost');
+            if (costInp) {
+                costInp.value = prod.costPrice || 0;
+            }
+        } else if (this.pickerTargetField === 'return') {
+            const select = document.getElementById('returnProductSelect');
+            if (select) {
+                select.value = prod.id;
+            }
+            const nameDisplay = document.getElementById('returnProductNameDisplay');
+            if (nameDisplay) {
+                nameDisplay.innerText = prod.name;
+            }
+            this.onReturnProductChange();
+        }
+
+        playBeep(true);
+        this.closeProductPicker();
+    }
+
+    // ==========================================================================
+    // POS CATALOG & CART LOGIC (0% TAX, TOTAL = SUBTOTAL)
     // ==========================================================================
     renderCategories() {
         const bar = document.getElementById('categoriesBar');
@@ -730,83 +2117,100 @@ class CarmelaApp {
             filtered = filtered.filter(p =>
                 (p.name || '').toLowerCase().includes(query) ||
                 (p.sku || '').toLowerCase().includes(query) ||
-                (p.barcode && p.barcode.includes(query)) ||
-                (p.units && p.units.some(u => u.barcode && u.barcode.includes(query)))
+                (p.barcode || '').includes(query)
             );
         }
 
         this.renderProductsGrid(filtered);
     }
 
-    clearPosSearch() {
-        const inp = document.getElementById('posSearchInput');
-        if (inp) {
-            inp.value = '';
-            this.filterProducts();
-            inp.focus();
-        }
-    }
-
-    renderProductsGrid(list = this.products) {
+    renderProductsGrid(items = null) {
         const grid = document.getElementById('productsGrid');
         if (!grid) return;
 
-        if (!list || list.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted);">
-                <i class="fa-solid fa-box-open" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>
-                لم يتم العثور على أصناف مطابقة لبحثك
-            </div>`;
+        const list = items || this.products || [];
+        if (list.length === 0) {
+            grid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                    <i class="fa-solid fa-box-open" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>
+                    لا توجد منتجات مطابقة لبيانات البحث
+                </div>
+            `;
             return;
         }
 
-        grid.innerHTML = list.map(p => {
-            const defaultUnit = (p.units && p.units.find(u => u.isDefault)) || (p.units && p.units[0]) || { name: p.baseUnit, price: p.wholesalePrice, factor: 1 };
-            const unitOptions = (p.units || [{ id: 0, name: p.baseUnit, price: p.wholesalePrice }]).map(u => `
-                <option value="${u.id || 0}" ${u.isDefault ? 'selected' : ''}>${u.name} - ${(u.price || 0).toFixed(2)} ج.م</option>
-            `).join('');
+        grid.innerHTML = list.map(prod => {
+            const defaultUnit = (prod.units || []).find(u => u.isDefault) || (prod.units || [])[0] || {
+                id: 1,
+                name: prod.baseUnit || 'عبوة',
+                price: prod.wholesalePrice || 0,
+                factor: 1,
+                barcode: prod.barcode
+            };
+
+            const isLow = (prod.currentStock || 0) <= (prod.minStock || 0);
 
             return `
-                <div class="pos-product-card" onclick="app.addProductToCart(${p.id})">
-                    <span class="product-sku-tag">${p.sku}</span>
-                    <h4 class="product-card-title">${p.name}</h4>
-                    <div class="product-unit-select-wrap" onclick="event.stopPropagation()">
-                        <select class="product-unit-dropdown" id="unit_select_${p.id}" onchange="app.onProductUnitChange(${p.id}, this)">
-                            ${unitOptions}
+                <div class="product-card" id="prod-card-${prod.id}">
+                    <div class="product-sku-tag">${prod.sku}</div>
+                    <div class="product-title">${prod.name}</div>
+                    
+                    <div class="product-unit-select-wrap">
+                        <select class="product-unit-select" onchange="app.onUnitChange(${prod.id}, this)">
+                            ${(prod.units || []).map(u => `
+                                <option value="${u.id}" data-price="${u.price}" data-factor="${u.factor}" ${u.id === defaultUnit.id ? 'selected' : ''}>
+                                    ${u.name} - ${(u.price || 0).toFixed(2)} ج.م
+                                </option>
+                            `).join('')}
                         </select>
                     </div>
-                    <div class="product-card-bottom">
-                        <span class="product-card-price" id="price_display_${p.id}">${(defaultUnit.price || 0).toFixed(2)} ج.م</span>
-                        <span class="product-card-stock"><i class="fa-solid fa-cubes"></i> ${p.currentStock || 0}</span>
+
+                    <div class="product-price-row">
+                        <div class="product-price" id="prod-price-${prod.id}">${(defaultUnit.price || 0).toFixed(2)} ج.م</div>
+                        <div class="stock-pill ${isLow ? 'low' : ''}">
+                            <i class="fa-solid fa-boxes-stacked"></i> ${prod.currentStock || 0}
+                        </div>
                     </div>
+
+                    <button type="button" class="btn-primary btn-add-cart" onclick="app.addProductToCart(${prod.id})">
+                        <i class="fa-solid fa-cart-plus"></i> إضافة للسلة
+                    </button>
                 </div>
             `;
         }).join('');
     }
 
-    onProductUnitChange(productId, selectElem) {
-        const prod = (this.products || []).find(p => p.id === productId);
-        if (!prod || !selectElem) return;
-        const selectedUnitId = parseInt(selectElem.value, 10);
-        const unit = (prod.units || []).find(u => u.id === selectedUnitId);
-        if (unit) {
-            const priceDisplay = document.getElementById(`price_display_${productId}`);
-            if (priceDisplay) priceDisplay.innerText = `${(unit.price || 0).toFixed(2)} ج.م`;
+    onUnitChange(productId, selectEl) {
+        const option = selectEl.options[selectEl.selectedIndex];
+        const price = parseFloat(option.dataset.price) || 0;
+        const priceEl = document.getElementById(`prod-price-${productId}`);
+        if (priceEl) {
+            priceEl.innerText = `${price.toFixed(2)} ج.م`;
         }
     }
 
-    addProductToCart(productId, customUnitId = null) {
+    addProductToCart(productId, explicitUnitId = null) {
         const prod = (this.products || []).find(p => p.id === productId);
         if (!prod) return;
 
-        let unitId = customUnitId;
+        let unitId = explicitUnitId;
         if (!unitId) {
-            const selectElem = document.getElementById(`unit_select_${productId}`);
-            unitId = selectElem ? parseInt(selectElem.value, 10) : (prod.units && prod.units[0]?.id);
+            const card = document.getElementById(`prod-card-${productId}`);
+            const select = card ? card.querySelector('.product-unit-select') : null;
+            if (select) {
+                unitId = parseInt(select.value, 10);
+            }
         }
 
-        const unit = (prod.units && prod.units.find(u => u.id === unitId)) || { name: prod.baseUnit, price: prod.wholesalePrice, factor: 1 };
+        const unit = (prod.units || []).find(u => u.id === unitId) || (prod.units || [])[0] || {
+            id: 1,
+            name: prod.baseUnit || 'عبوة',
+            price: prod.wholesalePrice || 0,
+            factor: 1,
+            barcode: prod.barcode
+        };
 
-        const existing = this.cart.find(item => item.productId === productId && item.unitName === unit.name);
+        const existing = this.cart.find(item => item.productId === productId && item.unitId === unit.id);
         if (existing) {
             existing.qty += 1;
         } else {
@@ -814,10 +2218,11 @@ class CarmelaApp {
                 productId: prod.id,
                 name: prod.name,
                 sku: prod.sku,
+                unitId: unit.id,
                 unitName: unit.name,
-                price: unit.price || 0,
-                factor: unit.factor || 1,
-                costPrice: unit.cost || prod.costPrice || 0,
+                price: unit.price,
+                factor: unit.factor,
+                barcode: unit.barcode || prod.barcode,
                 qty: 1
             });
         }
@@ -826,7 +2231,7 @@ class CarmelaApp {
         this.renderCart();
     }
 
-    changeCartQty(index, delta) {
+    updateCartQty(index, delta) {
         if (!this.cart[index]) return;
         this.cart[index].qty += delta;
         if (this.cart[index].qty <= 0) {
@@ -838,6 +2243,16 @@ class CarmelaApp {
     clearCart() {
         this.cart = [];
         this.renderCart();
+    }
+
+    openCartDrawer() {
+        document.querySelector('.cart-panel')?.classList.add('active');
+        document.getElementById('cartDrawerOverlay')?.classList.add('active');
+    }
+
+    closeCartDrawer() {
+        document.querySelector('.cart-panel')?.classList.remove('active');
+        document.getElementById('cartDrawerOverlay')?.classList.remove('active');
     }
 
     renderCart() {
@@ -852,18 +2267,18 @@ class CarmelaApp {
         const mobileCount = document.getElementById('mobileCartCount');
         const mobileTotal = document.getElementById('mobileCartTotal');
 
-        const cust = (this.customers || []).find(c => c.id === this.currentCustomerId) || this.customers[0] || { name: 'عميل نقدي' };
-        if (custLabel) custLabel.innerText = cust.name;
+        const cust = (this.customers || []).find(c => String(c.id) === String(this.currentCustomerId)) || this.customers[0] || { name: 'عميل نقدي (كاشير الفرع)' };
+        if (custLabel) custLabel.innerText = cust.name || 'عميل نقدي (كاشير الفرع)';
 
         const totalItemsCount = this.cart.reduce((sum, item) => sum + item.qty, 0);
         if (countBadge) countBadge.innerText = totalItemsCount;
 
+        // TOTAL EQUALS SUBTOTAL (0% TAX COMPLETELY)
         const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const vat = subtotal * 0.14; // 14% Egyptian VAT
-        const grandTotal = subtotal + vat;
+        const grandTotal = subtotal;
 
         if (subtotalEl) subtotalEl.innerText = `${subtotal.toFixed(2)} ج.م`;
-        if (vatEl) vatEl.innerText = `${vat.toFixed(2)} ج.م`;
+        if (vatEl) vatEl.innerText = `0.00 ج.م`;
         if (totalEl) totalEl.innerText = `${grandTotal.toFixed(2)} ج.م`;
 
         if (mobileBar) {
@@ -879,44 +2294,43 @@ class CarmelaApp {
         if (!list) return;
 
         if (this.cart.length === 0) {
-            list.innerHTML = `<div style="text-align: center; padding: 25px; color: var(--text-muted); font-size: 0.82rem;">
-                <i class="fa-solid fa-basket-shopping" style="font-size: 2rem; margin-bottom: 6px; display: block; opacity: 0.5;"></i>
-                السلة فارغة، اختر الأصناف أو امسح الباركود
-            </div>`;
+            list.innerHTML = `
+                <div style="text-align: center; padding: 30px 10px; color: var(--text-muted);">
+                    <i class="fa-solid fa-basket-shopping" style="font-size: 2rem; margin-bottom: 6px; display: block; opacity: 0.5;"></i>
+                    السلة فارغة حالياً
+                </div>
+            `;
             return;
         }
 
         list.innerHTML = this.cart.map((item, idx) => `
-            <div class="cart-item-row">
-                <div class="cart-item-info">
+            <div class="cart-item">
+                <div class="cart-item-header">
                     <div>
-                        <div class="cart-item-title">${item.name}</div>
-                        <div class="cart-item-sub">${item.unitName} • ${(item.price || 0).toFixed(2)} ج.م</div>
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-unit">${item.unitName} (${(item.price || 0).toFixed(2)} ج.م)</div>
                     </div>
-                    <span class="cart-item-total">${((item.price || 0) * item.qty).toFixed(2)} ج.م</span>
-                </div>
-                <div class="cart-item-controls">
-                    <div class="qty-control-group">
-                        <button type="button" class="btn-qty" onclick="app.changeCartQty(${idx}, -1)">-</button>
-                        <span class="qty-display">${item.qty}</span>
-                        <button type="button" class="btn-qty" onclick="app.changeCartQty(${idx}, 1)">+</button>
-                    </div>
-                    <button type="button" style="background: transparent; border: none; color: var(--accent-rose); font-size: 0.78rem; cursor: pointer;" onclick="app.changeCartQty(${idx}, -999)">
+                    <button type="button" class="btn-remove-item" onclick="app.updateCartQty(${idx}, -${item.qty})">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
+                </div>
+                <div class="cart-item-controls">
+                    <div class="cart-qty-spinner">
+                        <button type="button" class="qty-btn" onclick="app.updateCartQty(${idx}, -1)">-</button>
+                        <span class="qty-val">${item.qty}</span>
+                        <button type="button" class="qty-btn" onclick="app.updateCartQty(${idx}, 1)">+</button>
+                    </div>
+                    <div class="cart-item-total">
+                        ${((item.price || 0) * item.qty).toFixed(2)} ج.م
+                    </div>
                 </div>
             </div>
         `).join('');
     }
 
-    toggleCartDrawer() {
-        const panel = document.getElementById('cartPanel');
-        if (panel) panel.classList.toggle('active');
-    }
-
     setPaymentType(type) {
         this.currentPaymentType = type;
-        document.querySelectorAll('.btn-pay-tab').forEach(b => {
+        document.querySelectorAll('.pay-type-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.type === type);
         });
     }
@@ -927,10 +2341,11 @@ class CarmelaApp {
             return;
         }
 
+        // TAX COMPLETELY ELIMINATED
         const subtotal = this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-        const vat = subtotal * 0.14;
-        const grandTotal = subtotal + vat;
-        const customer = (this.customers || []).find(c => c.id === this.currentCustomerId) || this.customers[0] || { id: 1, name: 'عميل نقدي' };
+        const vat = 0.0;
+        const grandTotal = subtotal;
+        const customer = (this.customers || []).find(c => String(c.id) === String(this.currentCustomerId)) || this.customers[0] || { id: 1, name: 'عميل نقدي (كاشير الفرع)' };
 
         const orderId = `INV-${new Date().getFullYear()}-${String(this.orders.length + 101).padStart(5, '0')}`;
         const now = new Date();
@@ -973,47 +2388,54 @@ class CarmelaApp {
         this.orders.unshift(newOrder);
         this.saveAll();
 
-        this.openInvoiceModal(newOrder);
+        playBeep(true);
         this.clearCart();
+        this.closeCartDrawer();
         this.renderInventoryTable();
+        this.renderPartnersScreen();
         this.renderHomeDashboard();
         this.renderOrdersTable();
         this.renderShiftDetails();
-        playBeep(true);
+        this.renderTreasuryTable();
+
+        this.openInvoiceModal(newOrder);
     }
 
     // ==========================================================================
-    // INVOICE & PRINT ENGINE (THERMAL 80MM & A4 FORMATS)
+    // INVOICE MODAL & UNIVERSAL PRINT PREVIEWS (THERMAL & A4)
     // ==========================================================================
     openInvoiceModal(order) {
+        if (!order) return;
         this.currentViewingOrder = order;
-        this.renderPrintableSheet();
+        this.renderInvoicePrintable();
         document.getElementById('invoiceModal')?.classList.add('active');
     }
 
     closeInvoiceModal() {
         document.getElementById('invoiceModal')?.classList.remove('active');
+        this.currentViewingOrder = null;
     }
 
-    setPrintFormat(format) {
+    switchPrintFormat(format) {
         this.currentPrintFormat = format;
-        document.getElementById('btnFormatThermal')?.classList.toggle('active', format === 'thermal');
-        document.getElementById('btnFormatA4')?.classList.toggle('active', format === 'a4');
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.format === format);
+        });
         const sheet = document.getElementById('printableSheetRoot');
         if (sheet) {
             sheet.className = `printable-document-container format-${format}`;
         }
-        this.renderPrintableSheet();
+        this.renderInvoicePrintable();
     }
 
-    renderPrintableSheet() {
+    renderInvoicePrintable() {
         const sheet = document.getElementById('printableSheetRoot');
         const order = this.currentViewingOrder;
         if (!sheet || !order) return;
 
         const customer = (this.customers || []).find(c => c.id === order.customerId) || { name: order.customerName, phone: order.customerPhone || '—', balance: 0 };
         const barcodeSvg = generateCode128SVG(order.id, { height: 32, showText: true });
-        const qrSvg = generateEtaQrSVG('كارما كارميلا للأغذية', '492-817-305', order.date, (order.grandTotal || 0).toFixed(2), (order.vat || 0).toFixed(2));
+        const qrSvg = generateEtaQrSVG('كارما كارميلا للأغذية', '492-817-305', order.date, (order.grandTotal || 0).toFixed(2));
 
         if (this.currentPrintFormat === 'thermal') {
             sheet.innerHTML = `
@@ -1021,7 +2443,7 @@ class CarmelaApp {
                     <h2>كارما كارميلا</h2>
                     <p>لتوريد وتجارة المواد الغذائية بالجملة والتجزئة</p>
                     <small>س.ت: 184920 الجيزة • ر.ض: 492-817-305</small>
-                    <div style="margin-top: 5px; font-weight: bold; font-size: 0.88rem;">فاتورة مبيعات إلكترونية</div>
+                    <div style="margin-top: 5px; font-weight: bold; font-size: 0.88rem;">فاتورة مبيعات</div>
                     <div style="font-size: 0.74rem; color: #475569;">رقم الفاتورة: <strong>${order.id}</strong></div>
                     <div style="font-size: 0.72rem; color: #64748B;">التاريخ والوقت: ${order.date}</div>
                     <div style="font-size: 0.7rem; color: #64748B;">الكاشير: ${order.cashierName || this.currentUser.displayName}</div>
@@ -1030,7 +2452,7 @@ class CarmelaApp {
                 <div style="font-size: 0.76rem; border-bottom: 1px dashed #94A3B8; padding-bottom: 5px; margin-bottom: 6px;">
                     <div>العميل: <strong>${order.customerName}</strong></div>
                     <div>الهاتف: ${order.customerPhone || 'نقدي'}</div>
-                    <div>طريقة الدفع: <strong>${order.paymentType === 'cash' ? 'نقداً (كاش)' : (order.paymentType === 'card' ? 'شبكة / فيزا' : 'آجل على الحساب')}</strong></div>
+                    <div>طريقة الدفع: <strong>${order.paymentType === 'cash' ? 'نقداً بالخزينة' : (order.paymentType === 'card' ? 'شبكة / فيزا' : 'آجل على الحساب')}</strong></div>
                 </div>
 
                 <table class="thermal-inv-table">
@@ -1055,14 +2477,6 @@ class CarmelaApp {
                 </table>
 
                 <div class="thermal-totals-box">
-                    <div class="thermal-total-row">
-                        <span>المجموع قبل الضريبة:</span>
-                        <span>${(order.subtotal || 0).toFixed(2)} ج.م</span>
-                    </div>
-                    <div class="thermal-total-row">
-                        <span>ضريبة القيمة المضافة (14%):</span>
-                        <span>${(order.vat || 0).toFixed(2)} ج.م</span>
-                    </div>
                     <div class="thermal-total-row grand">
                         <span>الإجمالي المستحق:</span>
                         <span>${(order.grandTotal || 0).toFixed(2)} ج.م</span>
@@ -1082,251 +2496,191 @@ class CarmelaApp {
 
                 <div class="thermal-qr-box">
                     ${qrSvg}
-                    <div style="font-size: 0.65rem; color: #64748B; margin-top: 3px;">فاتورة ضريبية إلكترونية معتمدة (B2C)</div>
                     <div class="thermal-barcode-svg">
                         ${barcodeSvg}
                     </div>
                 </div>
 
-                <div class="thermal-footer-note">
-                    شكراً لتعاملكم مع كارما كارميلا<br>
-                    البضاعة المباعة ترد وتستبدل خلال 14 يوماً طبقاً لقانون حماية المستهلك
+                <div class="thermal-footer">
+                    <div>شكراً لاختياركم كارما كارميلا للأغذية</div>
+                    <div>البضاعة المباعة ترد وتستبدل طبقاً للشروط والأحكام</div>
                 </div>
             `;
         } else {
+            // A4 Tax Invoice Format
             sheet.innerHTML = `
-                <div style="border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div>
-                        <h1 style="font-size: 1.4rem; font-weight: 900; color: #FF6A00; margin-bottom: 3px;">كارما كارميلا لتجارة وتوزيع الأغذية</h1>
-                        <p style="font-size: 0.82rem; color: #475569;">سجل تجاري: 184920 الجيزة • رقم التسجيل الضريبي: 492-817-305</p>
-                        <p style="font-size: 0.78rem; color: #64748B;">المركز الرئيسي: المنطقة الصناعية - الجيزة • خدمة العملاء: 01000000000</p>
-                    </div>
-                    <div style="text-align: left;">
-                        <h2 style="font-size: 1.15rem; font-weight: 800; color: #0F172A;">فاتورة مبيعات ضريبية</h2>
-                        <div style="font-size: 0.82rem;">رقم: <strong>${order.id}</strong></div>
-                        <div style="font-size: 0.78rem; color: #64748B;">التاريخ والوقت: ${order.date}</div>
-                        <div style="font-size: 0.75rem; color: #64748B;">المسؤول: ${order.cashierName || this.currentUser.displayName}</div>
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px; margin-bottom: 14px;">
-                    <div>
-                        <strong style="color: #FF6A00; display: block; margin-bottom: 3px;">بيانات العميل / المشتري:</strong>
-                        <div style="font-weight: 800;">${order.customerName}</div>
-                        <div style="font-size: 0.8rem; color: #475569;">العنوان: ${order.customerAddress || '—'}</div>
-                        <div style="font-size: 0.8rem; color: #475569;">الهاتف: ${order.customerPhone || '—'}</div>
-                        <div style="font-size: 0.8rem; color: #475569;">الرقم الضريبي: ${order.customerTaxId || 'مستهلك نهائي'}</div>
-                    </div>
-                    <div>
-                        <strong style="color: #FF6A00; display: block; margin-bottom: 3px;">تفاصيل السداد والفرع:</strong>
-                        <div>طريقة الدفع: <strong>${order.paymentType === 'cash' ? 'نقداً بالخزينة' : (order.paymentType === 'card' ? 'شبكة / فيزا' : 'آجل على الحساب')}</strong></div>
-                        <div>الفرع: فرع الجملة الرئيسي</div>
-                        <div>حالة الاعتماد: معتمدة ومرحلة للمخزن</div>
-                    </div>
-                </div>
-
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 0.82rem;">
-                    <thead>
-                        <tr style="background: #0F172A; color: #FFFFFF;">
-                            <th style="padding: 6px; text-align: right;">م</th>
-                            <th style="padding: 6px; text-align: right;">كود الصنف</th>
-                            <th style="padding: 6px; text-align: right;">الوصف التجاري</th>
-                            <th style="padding: 6px; text-align: center;">الوحدة</th>
-                            <th style="padding: 6px; text-align: center;">الكمية</th>
-                            <th style="padding: 6px; text-align: left;">سعر الوحدة</th>
-                            <th style="padding: 6px; text-align: left;">القيمة (ج.م)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${(order.items || []).map((it, idx) => `
-                            <tr style="border-bottom: 1px solid #E2E8F0;">
-                                <td style="padding: 6px;">${idx + 1}</td>
-                                <td style="padding: 6px; font-family: monospace;">${it.sku}</td>
-                                <td style="padding: 6px; font-weight: bold;">${it.name}</td>
-                                <td style="padding: 6px; text-align: center;">${it.unitName}</td>
-                                <td style="padding: 6px; text-align: center; font-weight: bold;">${it.qty}</td>
-                                <td style="padding: 6px; text-align: left;">${(it.price || 0).toFixed(2)}</td>
-                                <td style="padding: 6px; text-align: left; font-weight: bold;">${((it.price || 0) * it.qty).toFixed(2)}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-
-                <div style="display: grid; grid-template-columns: 1fr 280px; gap: 16px; align-items: flex-start; margin-bottom: 20px;">
-                    <div>
-                        <div style="background: #F1F5F9; padding: 8px; border-radius: 6px; font-weight: 700; font-size: 0.82rem; margin-bottom: 8px;">
-                            ${order.tafqeetWords}
+                <div class="a4-inv-page">
+                    <div class="a4-header-row">
+                        <div class="a4-brand-block">
+                            <h1 style="color: #FF6A00; margin: 0; font-size: 1.6rem; font-weight: 900;">كارما كارميلا</h1>
+                            <div style="font-size: 0.9rem; font-weight: bold; color: #0F172A;">لتوريد وتجارة المواد الغذائية والسلع التموينية بالجملة</div>
+                            <div style="font-size: 0.78rem; color: #64748B;">سجل تجاري: 184920 الجيزة • بطاقة ضريبية: 492-817-305</div>
+                            <div style="font-size: 0.78rem; color: #64748B;">المركز الرئيسي: 14 شارع الهرم، الجيزة • هاتف: 01123456789</div>
                         </div>
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            ${qrSvg}
-                            <div>
-                                <strong style="font-size: 0.8rem; display: block;">رمز الاستجابة السريع ETA</strong>
-                                <span style="font-size: 0.72rem; color: #64748B;">متوافق مع منظومة الفاتورة الإلكترونية المصرية</span>
-                                <div style="margin-top: 5px;">${barcodeSvg}</div>
+                        <div class="a4-meta-block">
+                            <div class="a4-meta-badge">فاتورة مبيعات معتمدة</div>
+                            <div style="font-size: 0.85rem; font-weight: bold; font-family: monospace;">رقم: ${order.id}</div>
+                            <div style="font-size: 0.75rem; color: #64748B;">تاريخ الإصدار: ${order.date}</div>
+                        </div>
+                    </div>
+
+                    <div class="a4-parties-row">
+                        <div class="a4-party-col">
+                            <strong style="color: #FF6A00; display: block; margin-bottom: 3px;">بيانات العميل / المشتري:</strong>
+                            <div>الاسم: <strong>${order.customerName}</strong></div>
+                            <div>الهاتف: ${order.customerPhone || 'نقدي'}</div>
+                            <div>العنوان: ${order.customerAddress || '—'}</div>
+                            <div>السجل التجاري / الرقم الضريبي: ${order.customerTaxId || '—'}</div>
+                        </div>
+                        <div class="a4-party-col">
+                            <strong style="color: #FF6A00; display: block; margin-bottom: 3px;">تفاصيل السداد والفرع:</strong>
+                            <div>الفرع المصدر: <strong>فرع الجملة الرئيسي</strong></div>
+                            <div>الكاشير المحرر: <strong>${order.cashierName || this.currentUser.displayName}</strong></div>
+                            <div>طريقة السداد: <strong>${order.paymentType === 'cash' ? 'نقداً بالخزينة' : (order.paymentType === 'card' ? 'بطاقة دفع' : 'آجل على الحساب')}</strong></div>
+                        </div>
+                    </div>
+
+                    <table class="a4-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>كود الصنف</th>
+                                <th>اسم الصنف والوحدة</th>
+                                <th style="text-align: center;">الكمية</th>
+                                <th>سعر الوحدة</th>
+                                <th>إجمالي القيمة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${(order.items || []).map((it, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td style="font-family: monospace; font-size: 0.8rem;">${it.sku}</td>
+                                    <td><strong>${it.name}</strong> <span style="font-size: 0.8rem; color: #64748B;">(${it.unitName})</span></td>
+                                    <td style="text-align: center; font-weight: bold;">${it.qty}</td>
+                                    <td>${(it.price || 0).toFixed(2)} ج.م</td>
+                                    <td style="font-weight: bold; color: #0F172A;">${((it.price || 0) * it.qty).toFixed(2)} ج.م</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <div class="a4-bottom-section">
+                        <div class="a4-signatures-box">
+                            <div style="font-size: 0.82rem; font-weight: bold; margin-bottom: 5px;">التفقيط المعتمد:</div>
+                            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 6px; border-radius: 4px; font-size: 0.8rem; color: #0F172A;">
+                                ${order.tafqeetWords}
+                            </div>
+
+                            <div style="display: flex; gap: 20px; align-items: center; margin-top: 15px;">
+                                <div style="width: 75px; height: 75px;">
+                                    ${qrSvg}
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="width: 170px;">
+                                        ${barcodeSvg}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="a4-totals-box">
+                            <div class="a4-total-line grand">
+                                <span>الإجمالي النهائي المستحق:</span>
+                                <span>${(order.grandTotal || 0).toFixed(2)} ج.م</span>
                             </div>
                         </div>
                     </div>
-                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px; background: #FFFFFF;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.82rem;">
-                            <span>المجموع قبل الضريبة:</span>
-                            <span>${(order.subtotal || 0).toFixed(2)} ج.م</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.82rem;">
-                            <span>ضريبة القيمة المضافة (14%):</span>
-                            <span>${(order.vat || 0).toFixed(2)} ج.م</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; border-top: 2px solid #0F172A; padding-top: 6px; font-size: 1.1rem; font-weight: 900; color: #FF6A00;">
-                            <span>الإجمالي النهائي:</span>
-                            <span>${(order.grandTotal || 0).toFixed(2)} ج.م</span>
-                        </div>
+
+                    <div style="display: flex; justify-content: space-between; margin-top: 35px; border-top: 1px solid #CBD5E1; padding-top: 10px; font-size: 0.8rem; color: #475569;">
+                        <div>توقيع أمين المخزن: .........................</div>
+                        <div>توقيع المستلم: .........................</div>
+                        <div>خاتم واعتماد الشركة: .........................</div>
                     </div>
                 </div>
-
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-top: 24px; border-top: 1px solid #CBD5E1; padding-top: 12px; font-size: 0.82rem;">
-                    <div><strong>توقيع المستلم:</strong><br><br>.............................</div>
-                    <div><strong>أمين المخزن / الكاشير:</strong><br><br>.............................</div>
-                    <div><strong>خاتم الشركة المعتمد:</strong><br><br>.............................</div>
-                </div>
             `;
         }
     }
 
-    // ==========================================================================
-    // 7. COMPREHENSIVE CUSTOMER & SUPPLIER LEDGERS (EXACT TIMESTAMPS)
-    // ==========================================================================
-    openCustomerLedger(customerId) {
-        this.currentLedgerCustomerId = customerId;
-        const cust = (this.customers || []).find(c => c.id === customerId);
-        if (!cust) return;
+    printCurrentInvoice() {
+        const sheet = document.getElementById('printableSheetRoot');
+        if (!sheet) return;
+        this.printDocument(sheet.innerHTML, this.currentPrintFormat);
+    }
 
-        const titleEl = document.getElementById('custModalTitle');
-        if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-user-tie text-warning"></i> كشف حساب: ${cust.name}`;
+    printCurrentVoucher() {
+        const voucher = document.getElementById('voucherPrintArea');
+        if (!voucher) return;
+        this.printDocument(voucher.innerHTML, 'a4');
+    }
 
-        const eName = document.getElementById('custEditName');
-        const ePhone = document.getElementById('custEditPhone');
-        const eAddr = document.getElementById('custEditAddress');
-        const eLimit = document.getElementById('custEditCreditLimit');
-        const eCr = document.getElementById('custEditCr');
-        const eTax = document.getElementById('custEditTaxId');
-
-        if (eName) eName.value = cust.name;
-        if (ePhone) ePhone.value = cust.phone;
-        if (eAddr) eAddr.value = cust.address || '';
-        if (eLimit) eLimit.value = cust.creditLimit || 0;
-        if (eCr) eCr.value = cust.cr || '';
-        if (eTax) eTax.value = cust.taxId || '';
-
-        // Tab 1: Detailed Statement
-        const stmtTbody = document.querySelector('#custStatementTable tbody');
-        if (stmtTbody) {
-            let rows = `
-                <tr style="background: var(--bg-surface);">
-                    <td>—</td>
-                    <td>رصيد افتتاحي</td>
-                    <td>رصيد بداية التعامل المسجل بالنظام</td>
-                    <td>—</td>
-                    <td>—</td>
-                    <td style="font-weight: bold;">${(cust.balance || 0).toFixed(2)} ج.م</td>
-                </tr>
-            `;
-
-            const custOrders = (this.orders || []).filter(o => o.customerId === customerId);
-            const custPayments = (this.customerPayments || []).filter(p => p.customerId === customerId);
-
-            const timeline = [
-                ...custOrders.map(o => ({ type: 'order', date: o.date, timestamp: o.timestamp || 0, docId: o.id, amount: o.grandTotal, isDebit: o.paymentType === 'credit', details: `فاتورة مبيعات (${(o.items || []).length} أصناف)` })),
-                ...custPayments.map(p => ({ type: 'payment', date: p.fullDateTime || p.date, timestamp: p.timestamp || 0, docId: p.id, amount: p.amount, isDebit: false, details: `سند قبض نقدي (${p.method}) - ${p.notes || ''}` }))
-            ].sort((a, b) => b.timestamp - a.timestamp);
-
-            timeline.forEach(item => {
-                rows += `
-                    <tr>
-                        <td style="font-size: 0.75rem;">${item.date}</td>
-                        <td><span class="status-badge ${item.type === 'order' ? 'partial' : 'paid'}">${item.type === 'order' ? 'فاتورة بيع' : 'سند قبض نقدية'}</span></td>
-                        <td>${item.details}</td>
-                        <td style="color: var(--accent-rose);">${item.isDebit ? (item.amount || 0).toFixed(2) : '—'}</td>
-                        <td style="color: var(--accent-emerald);">${!item.isDebit ? (item.amount || 0).toFixed(2) : '—'}</td>
-                        <td style="font-weight: bold;">${(cust.balance || 0).toFixed(2)} ج.م</td>
-                    </tr>
-                `;
-            });
-            stmtTbody.innerHTML = rows;
+    printDocument(htmlContent, format = 'thermal') {
+        const container = document.getElementById('globalPrintContainer');
+        if (!container) {
+            window.print();
+            return;
         }
 
-        // Tab 2: Receipts Log
-        const recTbody = document.querySelector('#custReceiptsLogTable tbody');
-        if (recTbody) {
-            const custReceipts = (this.customerPayments || []).filter(p => p.customerId === customerId);
-            if (custReceipts.length === 0) {
-                recTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد سندات قبض مسددة لهذا العميل بعد</td></tr>`;
-            } else {
-                recTbody.innerHTML = custReceipts.map(rec => `
-                    <tr>
-                        <td style="font-family: monospace; font-weight: bold;">${rec.id}</td>
-                        <td><strong style="color: var(--text-primary);">${rec.date}</strong><br><small style="color: var(--primary-orange);">${rec.time || '—'}</small></td>
-                        <td style="font-weight: 900; color: var(--accent-emerald); font-size: 0.95rem;">${(rec.amount || 0).toFixed(2)} ج.م</td>
-                        <td>${rec.method}</td>
-                        <td>${rec.cashierName || 'أحمد الشناوي'}</td>
-                        <td>
-                            <button type="button" class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.printPaymentVoucher('${rec.id}')">
-                                <i class="fa-solid fa-print"></i> طباعة السند
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-        }
+        container.className = `global-print-container format-${format}`;
+        container.innerHTML = htmlContent;
 
-        // Tab 3: Invoices
-        const invTbody = document.querySelector('#custInvoicesTable tbody');
-        if (invTbody) {
-            const custOrders = (this.orders || []).filter(o => o.customerId === customerId);
-            invTbody.innerHTML = custOrders.length === 0 ? `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">لا توجد فواتير سابقة لهذا العميل</td></tr>` : custOrders.map(o => `
-                <tr>
-                    <td style="font-family: monospace; font-weight: bold;">${o.id}</td>
-                    <td>${o.date}</td>
-                    <td style="font-weight: bold; color: var(--primary-orange);">${(o.grandTotal || 0).toFixed(2)} ج.م</td>
-                    <td><span class="status-badge ${o.paymentType === 'cash' ? 'paid' : 'credit'}">${o.paymentType === 'cash' ? 'نقدي' : 'آجل'}</span></td>
-                    <td><button type="button" class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.openInvoiceModal(app.orders.find(ord => ord.id === '${o.id}'))"><i class="fa-solid fa-eye"></i> معاينة</button></td>
-                </tr>
+        // Give DOM 50ms to settle rendering before triggering Android print spooler
+        setTimeout(() => {
+            window.print();
+        }, 60);
+    }
+
+    // ==========================================================================
+    // CUSTOMER PAYMENTS (سند قبض عميل)
+    // ==========================================================================
+    openCustomerPaymentModal(presetCustomerId = null) {
+        const select = document.getElementById('custPaymentSelect');
+        if (select) {
+            select.innerHTML = (this.customers || []).filter(c => c.id !== 1).map(c => `
+                <option value="${c.id}" ${c.id === presetCustomerId ? 'selected' : ''}>
+                    ${c.name} (رصيد مستحق: ${(c.balance || 0).toFixed(2)} ج.م)
+                </option>
             `).join('');
+            this.onCustomerPaymentSelectChange();
         }
-
-        this.switchAccTab('cust-statement');
-        document.getElementById('customerLedgerModal')?.classList.add('active');
+        document.getElementById('customerPaymentModal')?.classList.add('active');
     }
 
-    closeCustomerLedgerModal() {
-        document.getElementById('customerLedgerModal')?.classList.remove('active');
+    closeCustomerPaymentModal() {
+        document.getElementById('customerPaymentModal')?.classList.remove('active');
     }
 
-    switchAccTab(paneId) {
-        document.querySelectorAll('#customerLedgerModal .btn-acc-tab').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('#customerLedgerModal .acc-tab-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById(`pane-${paneId}`)?.classList.add('active');
-        const activeBtn = Array.from(document.querySelectorAll('#customerLedgerModal .btn-acc-tab')).find(b => b.getAttribute('onclick')?.includes(paneId));
-        if (activeBtn) activeBtn.classList.add('active');
+    onCustomerPaymentSelectChange() {
+        const select = document.getElementById('custPaymentSelect');
+        const custId = parseInt(select?.value, 10);
+        const cust = (this.customers || []).find(c => c.id === custId);
+        const balSpan = document.getElementById('custCurrentBalanceSpan');
+        if (balSpan && cust) {
+            balSpan.innerText = `${(cust.balance || 0).toFixed(2)} ج.م`;
+        }
     }
 
-    handleCustomerPaymentSubmit(e) {
+    saveCustomerPayment(e) {
         e.preventDefault();
-        const amount = parseFloat(document.getElementById('custPayAmount')?.value);
-        const method = document.getElementById('custPayMethod')?.value || 'نقدًا بالخزينة';
-        const notes = (document.getElementById('custPayNotes')?.value || '').trim();
-        const cust = (this.customers || []).find(c => c.id === this.currentLedgerCustomerId);
+        const custId = parseInt(document.getElementById('custPaymentSelect')?.value, 10);
+        const amount = parseFloat(document.getElementById('custPaymentAmount')?.value);
+        const method = document.getElementById('custPaymentMethod')?.value || 'نقدًا بالخزينة';
+        const notes = document.getElementById('custPaymentNotes')?.value?.trim() || '';
 
-        if (!cust || isNaN(amount) || amount <= 0) return;
+        const cust = (this.customers || []).find(c => c.id === custId);
+        if (!cust || !amount || amount <= 0) return;
 
-        const previousBalance = cust.balance || 0;
-        cust.balance = Math.max(0, previousBalance - amount);
+        const balanceBefore = cust.balance || 0;
+        const balanceAfter = Math.max(0, balanceBefore - amount);
+        cust.balance = balanceAfter;
 
         const now = new Date();
         const dateStr = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
-        const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
         const fullDateTime = `${dateStr} - الساعة ${timeStr}`;
 
         const paymentRecord = {
-            id: `REC-${Date.now().toString().slice(-6)}`,
+            id: `REC-${now.getFullYear()}-${String(this.customerPayments.length + 101).padStart(4, '0')}`,
             customerId: cust.id,
             customerName: cust.name,
             date: dateStr,
@@ -1337,132 +2691,81 @@ class CarmelaApp {
             method: method,
             notes: notes,
             cashierName: this.currentUser.displayName,
-            balanceBefore: previousBalance,
-            balanceAfter: cust.balance,
+            balanceBefore: balanceBefore,
+            balanceAfter: balanceAfter,
             tafqeetWords: tafqeet(amount)
         };
 
         this.customerPayments.unshift(paymentRecord);
         this.saveAll();
-        playBeep(true);
 
-        this.printPaymentVoucher(paymentRecord.id);
-        this.openCustomerLedger(cust.id);
-        this.renderCustomersCards();
+        playBeep(true);
+        this.closeCustomerPaymentModal();
+        this.renderPartnersScreen();
         this.renderHomeDashboard();
         this.renderShiftDetails();
-    }
+        this.renderTreasuryTable();
 
-    handleCustomerUpdateSubmit(e) {
-        e.preventDefault();
-        const cust = (this.customers || []).find(c => c.id === this.currentLedgerCustomerId);
-        if (!cust) return;
-
-        cust.name = document.getElementById('custEditName')?.value || cust.name;
-        cust.phone = document.getElementById('custEditPhone')?.value || cust.phone;
-        cust.address = document.getElementById('custEditAddress')?.value || '';
-        cust.creditLimit = parseFloat(document.getElementById('custEditCreditLimit')?.value) || 0;
-        cust.cr = document.getElementById('custEditCr')?.value || '';
-        cust.taxId = document.getElementById('custEditTaxId')?.value || '';
-
-        this.saveAll();
-        playBeep(true);
-        alert('تم تحديث بيانات العميل بنجاح');
-        this.openCustomerLedger(cust.id);
-        this.renderCustomersCards();
-    }
-
-    // Supplier Ledger View with Exact Timestamps
-    openSupplierLedger(supplierId) {
-        this.currentLedgerSupplierId = supplierId;
-        const sup = (this.suppliers || []).find(s => s.id === supplierId);
-        if (!sup) return;
-
-        const titleEl = document.getElementById('supModalTitle');
-        if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-truck-field text-warning"></i> كشف حساب المورد: ${sup.name}`;
-
-        const sName = document.getElementById('supEditName');
-        const sPhone = document.getElementById('supEditPhone');
-        const sAddr = document.getElementById('supEditAddress');
-
-        if (sName) sName.value = sup.name;
-        if (sPhone) sPhone.value = sup.phone;
-        if (sAddr) sAddr.value = sup.address || '';
-
-        // Statement Table
-        const stmtTbody = document.querySelector('#supStatementTable tbody');
-        if (stmtTbody) {
-            stmtTbody.innerHTML = `
-                <tr>
-                    <td>بداية التعامل</td>
-                    <td>رصيد سابق</td>
-                    <td>رصيد مستحق بداية الفترة</td>
-                    <td style="color: var(--accent-rose); font-weight: bold;">${(sup.balance || 0).toFixed(2)}</td>
-                    <td>—</td>
-                    <td style="font-weight: bold;">${(sup.balance || 0).toFixed(2)} ج.م</td>
-                </tr>
-            `;
+        if (this.currentPartnerDetail && this.currentPartnerDetail.id === cust.id) {
+            this.renderPartnerLedger();
+            this.renderPartnerStats();
         }
 
-        // Vouchers Log Table
-        const vTbody = document.querySelector('#supVouchersLogTable tbody');
-        if (vTbody) {
-            const supVouchers = (this.supplierPayments || []).filter(p => p.supplierId === supplierId);
-            if (supVouchers.length === 0) {
-                vTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد سندات صرف مسجلة لهذا المورد بعد</td></tr>`;
-            } else {
-                vTbody.innerHTML = supVouchers.map(v => `
-                    <tr>
-                        <td style="font-family: monospace; font-weight: bold;">${v.id}</td>
-                        <td><strong>${v.date}</strong><br><small style="color: var(--primary-orange);">${v.time || '—'}</small></td>
-                        <td style="font-weight: 900; color: var(--accent-rose); font-size: 0.95rem;">${(v.amount || 0).toFixed(2)} ج.م</td>
-                        <td>${v.method}</td>
-                        <td>${v.cashierName || 'أحمد الشناوي'}</td>
-                        <td>
-                            <button type="button" class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.printDisbursementVoucher('${v.id}')">
-                                <i class="fa-solid fa-print"></i> طباعة السند
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
+        this.printVoucherDirect('receipt', paymentRecord.id);
+        alert(`تم تسجيل سند القبض [${paymentRecord.id}] بنجاح بقيمة ${amount.toFixed(2)} ج.م`);
+    }
+
+    // ==========================================================================
+    // SUPPLIER PAYMENTS (سند صرف مورد)
+    // ==========================================================================
+    openSupplierPaymentModal(presetSupplierId = null) {
+        const select = document.getElementById('supPaymentSelect');
+        if (select) {
+            select.innerHTML = (this.suppliers || []).map(s => `
+                <option value="${s.id}" ${s.id === presetSupplierId ? 'selected' : ''}>
+                    ${s.name} (مستحق له: ${(s.balance || 0).toFixed(2)} ج.م)
+                </option>
+            `).join('');
+            this.onSupplierPaymentSelectChange();
         }
-
-        this.switchSupTab('sup-statement');
-        document.getElementById('supplierLedgerModal')?.classList.add('active');
+        document.getElementById('supplierPaymentModal')?.classList.add('active');
     }
 
-    closeSupplierLedgerModal() {
-        document.getElementById('supplierLedgerModal')?.classList.remove('active');
+    closeSupplierPaymentModal() {
+        document.getElementById('supplierPaymentModal')?.classList.remove('active');
     }
 
-    switchSupTab(paneId) {
-        document.querySelectorAll('#supplierLedgerModal .btn-acc-tab').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('#supplierLedgerModal .acc-tab-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById(`pane-${paneId}`)?.classList.add('active');
-        const activeBtn = Array.from(document.querySelectorAll('#supplierLedgerModal .btn-acc-tab')).find(b => b.getAttribute('onclick')?.includes(paneId));
-        if (activeBtn) activeBtn.classList.add('active');
+    onSupplierPaymentSelectChange() {
+        const select = document.getElementById('supPaymentSelect');
+        const supId = parseInt(select?.value, 10);
+        const sup = (this.suppliers || []).find(s => s.id === supId);
+        const balSpan = document.getElementById('supCurrentBalanceSpan');
+        if (balSpan && sup) {
+            balSpan.innerText = `${(sup.balance || 0).toFixed(2)} ج.م`;
+        }
     }
 
-    handleSupplierPaymentSubmit(e) {
+    saveSupplierPayment(e) {
         e.preventDefault();
-        const amount = parseFloat(document.getElementById('supPayAmount')?.value);
-        const method = document.getElementById('supPayMethod')?.value || 'نقدًا من الخزينة';
-        const notes = (document.getElementById('supPayNotes')?.value || '').trim();
-        const sup = (this.suppliers || []).find(s => s.id === this.currentLedgerSupplierId);
+        const supId = parseInt(document.getElementById('supPaymentSelect')?.value, 10);
+        const amount = parseFloat(document.getElementById('supPaymentAmount')?.value);
+        const method = document.getElementById('supPaymentMethod')?.value || 'نقدًا بالخزينة';
+        const notes = document.getElementById('supPaymentNotes')?.value?.trim() || '';
 
-        if (!sup || isNaN(amount) || amount <= 0) return;
+        const sup = (this.suppliers || []).find(s => s.id === supId);
+        if (!sup || !amount || amount <= 0) return;
 
-        const previousBalance = sup.balance || 0;
-        sup.balance = Math.max(0, previousBalance - amount);
+        const balanceBefore = sup.balance || 0;
+        const balanceAfter = Math.max(0, balanceBefore - amount);
+        sup.balance = balanceAfter;
 
         const now = new Date();
         const dateStr = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
-        const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
         const fullDateTime = `${dateStr} - الساعة ${timeStr}`;
 
         const voucher = {
-            id: `PAY-${Date.now().toString().slice(-6)}`,
+            id: `PAY-${now.getFullYear()}-${String(this.supplierPayments.length + 101).padStart(4, '0')}`,
             supplierId: sup.id,
             supplierName: sup.name,
             date: dateStr,
@@ -1473,191 +2776,32 @@ class CarmelaApp {
             method: method,
             notes: notes,
             cashierName: this.currentUser.displayName,
-            balanceBefore: previousBalance,
-            balanceAfter: sup.balance,
+            balanceBefore: balanceBefore,
+            balanceAfter: balanceAfter,
             tafqeetWords: tafqeet(amount)
         };
 
         this.supplierPayments.unshift(voucher);
         this.saveAll();
-        playBeep(true);
 
-        this.printDisbursementVoucher(voucher.id);
-        this.openSupplierLedger(sup.id);
-        this.renderSuppliersCards();
+        playBeep(true);
+        this.closeSupplierPaymentModal();
+        this.renderPartnersScreen();
         this.renderHomeDashboard();
         this.renderShiftDetails();
-    }
+        this.renderTreasuryTable();
 
-    handleSupplierUpdateSubmit(e) {
-        e.preventDefault();
-        const sup = (this.suppliers || []).find(s => s.id === this.currentLedgerSupplierId);
-        if (!sup) return;
-
-        sup.name = document.getElementById('supEditName')?.value || sup.name;
-        sup.phone = document.getElementById('supEditPhone')?.value || sup.phone;
-        sup.address = document.getElementById('supEditAddress')?.value || '';
-
-        this.saveAll();
-        playBeep(true);
-        alert('تم تحديث بيانات المورد بنجاح');
-        this.openSupplierLedger(sup.id);
-        this.renderSuppliersCards();
-    }
-
-    // ==========================================================================
-    // 8. PRINTABLE PAYMENT & DISBURSEMENT VOUCHERS (سندات القبض والصرف)
-    // ==========================================================================
-    printPaymentVoucher(receiptId) {
-        const rec = (this.customerPayments || []).find(p => p.id === receiptId);
-        if (!rec) return;
-
-        const area = document.getElementById('voucherPrintArea');
-        const titleEl = document.getElementById('voucherModalTitle');
-        if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-receipt text-warning"></i> سند قبض نقدية رسمي: ${rec.id}`;
-
-        const barcodeSvg = generateCode128SVG(rec.id, { height: 32, showText: true });
-
-        if (area) {
-            area.innerHTML = `
-                <div style="border-bottom: 2px solid #0F172A; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div>
-                        <h2 style="font-size: 1.3rem; font-weight: 900; color: #FF6A00; margin-bottom: 2px;">كارما كارميلا للأغذية</h2>
-                        <p style="font-size: 0.76rem; color: #475569;">سجل تجاري: 184920 الجيزة • بطاقة ضريبية: 492-817-305</p>
-                    </div>
-                    <div style="text-align: left;">
-                        <div style="font-weight: 900; font-size: 1.1rem; color: #059669; border: 1.5px solid #059669; padding: 2px 10px; border-radius: 6px;">سند قبض نقدية</div>
-                        <div style="font-size: 0.78rem; font-family: monospace; margin-top: 4px;">رقم السند: <strong>${rec.id}</strong></div>
-                    </div>
-                </div>
-
-                <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 0.85rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span>التاريخ والوقت بالضبط:</span>
-                        <strong style="color: #FF6A00;">${rec.fullDateTime || rec.date}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span>وصلنا من السيد / العميل:</span>
-                        <strong>${rec.customerName}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span>طريقة السداد المحصلة:</span>
-                        <strong>${rec.method}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span>المبلغ المسدد:</span>
-                        <strong style="font-size: 1.25rem; color: #059669; font-family: 'Tajawal', sans-serif;">${(rec.amount || 0).toFixed(2)} ج.م</strong>
-                    </div>
-                    <div style="background: #FFFFFF; border: 1px dashed #CBD5E1; padding: 6px; border-radius: 4px; font-weight: bold; font-size: 0.82rem; margin-top: 6px;">
-                        المبلغ بالحروف: ${rec.tafqeetWords}
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem; color: #64748B;">
-                        <span>الرصيد قبل السداد: ${(rec.balanceBefore || 0).toFixed(2)} ج.م</span>
-                        <span style="color: #0F172A; font-weight: bold;">الرصيد المتبقي المستحق: ${(rec.balanceAfter || 0).toFixed(2)} ج.م</span>
-                    </div>
-                </div>
-
-                <div style="font-size: 0.8rem; margin-bottom: 16px;">
-                    <span>البيان والملاحظات: <strong>${rec.notes || 'سداد دفعة من الحساب الآجل'}</strong></span>
-                </div>
-
-                <div style="text-align: center; margin-bottom: 14px;">
-                    ${barcodeSvg}
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center; border-top: 1px solid #CBD5E1; padding-top: 10px; font-size: 0.82rem;">
-                    <div>
-                        <strong>المسؤول / أمين الصندوق:</strong><br>
-                        <span>${rec.cashierName || 'أحمد الشناوي'}</span><br><br>
-                        .............................
-                    </div>
-                    <div>
-                        <strong>توقيع المسدد / العميل:</strong><br><br><br>
-                        .............................
-                    </div>
-                </div>
-            `;
+        if (this.currentPartnerDetail && this.currentPartnerDetail.id === sup.id) {
+            this.renderPartnerLedger();
+            this.renderPartnerStats();
         }
 
-        document.getElementById('voucherPrintModal')?.classList.add('active');
-    }
-
-    printDisbursementVoucher(voucherId) {
-        const v = (this.supplierPayments || []).find(p => p.id === voucherId);
-        if (!v) return;
-
-        const area = document.getElementById('voucherPrintArea');
-        const titleEl = document.getElementById('voucherModalTitle');
-        if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-money-bill-transfer text-warning"></i> سند صرف نقدية رسمي: ${v.id}`;
-
-        const barcodeSvg = generateCode128SVG(v.id, { height: 32, showText: true });
-
-        if (area) {
-            area.innerHTML = `
-                <div style="border-bottom: 2px solid #0F172A; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div>
-                        <h2 style="font-size: 1.3rem; font-weight: 900; color: #FF6A00; margin-bottom: 2px;">كارما كارميلا للأغذية</h2>
-                        <p style="font-size: 0.76rem; color: #475569;">سجل تجاري: 184920 الجيزة • بطاقة ضريبية: 492-817-305</p>
-                    </div>
-                    <div style="text-align: left;">
-                        <div style="font-weight: 900; font-size: 1.1rem; color: #DC2626; border: 1.5px solid #DC2626; padding: 2px 10px; border-radius: 6px;">سند صرف نقدية</div>
-                        <div style="font-size: 0.78rem; font-family: monospace; margin-top: 4px;">رقم السند: <strong>${v.id}</strong></div>
-                    </div>
-                </div>
-
-                <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 0.85rem;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span>التاريخ والوقت بالضبط:</span>
-                        <strong style="color: #FF6A00;">${v.fullDateTime || v.date}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span>يصرف إلى السادة / شركة:</span>
-                        <strong>${v.supplierName}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                        <span>المبلغ المنصرف:</span>
-                        <strong style="font-size: 1.25rem; color: #DC2626; font-family: 'Tajawal', sans-serif;">${(v.amount || 0).toFixed(2)} ج.م</strong>
-                    </div>
-                    <div style="background: #FFFFFF; border: 1px dashed #CBD5E1; padding: 6px; border-radius: 4px; font-weight: bold; font-size: 0.82rem; margin-top: 6px;">
-                        المبلغ بالحروف: ${v.tafqeetWords}
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem; color: #64748B;">
-                        <span>المستحق قبل الصرف: ${(v.balanceBefore || 0).toFixed(2)} ج.م</span>
-                        <span style="color: #0F172A; font-weight: bold;">المتبقي للمورد: ${(v.balanceAfter || 0).toFixed(2)} ج.م</span>
-                    </div>
-                </div>
-
-                <div style="font-size: 0.8rem; margin-bottom: 16px;">
-                    <span>البيان: <strong>${v.notes || 'سداد دفعة توريد بضاعة'}</strong></span>
-                </div>
-
-                <div style="text-align: center; margin-bottom: 14px;">
-                    ${barcodeSvg}
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center; border-top: 1px solid #CBD5E1; padding-top: 10px; font-size: 0.82rem;">
-                    <div>
-                        <strong>أمين الصندوق الصارف:</strong><br>
-                        <span>${v.cashierName || 'أحمد الشناوي'}</span><br><br>
-                        .............................
-                    </div>
-                    <div>
-                        <strong>توقيع المستلم:</strong><br><br><br>
-                        .............................
-                    </div>
-                </div>
-            `;
-        }
-
-        document.getElementById('voucherPrintModal')?.classList.add('active');
-    }
-
-    closeVoucherPrintModal() {
-        document.getElementById('voucherPrintModal')?.classList.remove('active');
+        this.printVoucherDirect('disbursement', voucher.id);
+        alert(`تم تسجيل سند الصرف [${voucher.id}] بنجاح بقيمة ${amount.toFixed(2)} ج.م`);
     }
 
     // ==========================================================================
-    // 9. REAL CAMERA BARCODE SCANNER & HARDWARE GUN LISTENER
+    // REAL CAMERA BARCODE SCANNER WITH ZXING FALLBACK & TORCH
     // ==========================================================================
     setupBarcodeDetector() {
         if ('BarcodeDetector' in window) {
@@ -1667,6 +2811,15 @@ class CarmelaApp {
                 });
             } catch (e) {
                 this.scannerDetector = null;
+            }
+        }
+
+        // Initialize ZXing fallback if window.ZXing exists
+        if (window.ZXing && !this.zxingReader) {
+            try {
+                this.zxingReader = new ZXing.BrowserMultiFormatReader();
+            } catch (e) {
+                this.zxingReader = null;
             }
         }
     }
@@ -1700,7 +2853,8 @@ class CarmelaApp {
                 }
             });
             video.srcObject = this.scannerStream;
-            video.play();
+            video.setAttribute('playsinline', 'true');
+            await video.play();
             this.isScanningActive = true;
             this.runCameraDetectionLoop(video);
             document.getElementById('btnToggleCamera')?.classList.add('active');
@@ -1712,6 +2866,9 @@ class CarmelaApp {
 
     stopCameraStream() {
         this.isScanningActive = false;
+        if (this.zxingReader) {
+            try { this.zxingReader.reset(); } catch (e) {}
+        }
         if (this.scannerStream) {
             this.scannerStream.getTracks().forEach(t => t.stop());
             this.scannerStream = null;
@@ -1719,6 +2876,8 @@ class CarmelaApp {
         const video = document.getElementById('scannerVideo');
         if (video) video.srcObject = null;
         document.getElementById('btnToggleCamera')?.classList.remove('active');
+        this.scannerTorchActive = false;
+        document.getElementById('btnToggleTorch')?.classList.remove('active');
     }
 
     toggleCameraStream() {
@@ -1749,7 +2908,10 @@ class CarmelaApp {
             });
             document.getElementById('btnToggleTorch')?.classList.toggle('active', this.scannerTorchActive);
         } catch (e) {
-            console.warn('Torch not supported on this device');
+            console.warn('Torch not supported on this camera/browser:', e);
+            alert('الكشاف غير مدعوم على هذه الكاميرا أو المتصفح');
+            this.scannerTorchActive = false;
+            document.getElementById('btnToggleTorch')?.classList.remove('active');
         }
     }
 
@@ -1773,6 +2935,23 @@ class CarmelaApp {
                     setTimeout(() => this.runCameraDetectionLoop(video), 200);
                 }
             });
+        } else if (this.zxingReader && video.readyState >= 2) {
+            // ZXing fallback loop using canvas frame
+            try {
+                this.zxingReader.decodeOnceFromVideoDevice(undefined, 'scannerVideo').then(result => {
+                    if (result && result.text) {
+                        this.handleScannedCode(result.text);
+                    }
+                }).catch(() => {
+                    if (this.isScanningActive) {
+                        setTimeout(() => this.runCameraDetectionLoop(video), 300);
+                    }
+                });
+            } catch (e) {
+                if (this.isScanningActive) {
+                    setTimeout(() => this.runCameraDetectionLoop(video), 300);
+                }
+            }
         } else {
             if (this.isScanningActive) {
                 setTimeout(() => this.runCameraDetectionLoop(video), 200);
@@ -1861,7 +3040,7 @@ class CarmelaApp {
     }
 
     // ==========================================================================
-    // 10. BARCODE LABEL STUDIO (PRINT STICKERS)
+    // BARCODE LABEL STUDIO (PRINT STICKERS)
     // ==========================================================================
     openBarcodeStudioModal() {
         const select = document.getElementById('barcodeLabelProductSelect');
@@ -1898,9 +3077,8 @@ class CarmelaApp {
                     <div class="sticker-brand">كارما كارميلا للأغذية</div>
                     <div class="sticker-name">${prod.name}</div>
                     <div class="sticker-price">${(prod.wholesalePrice || 0).toFixed(2)} ج.م</div>
-                    <div class="sticker-barcode-svg">
-                        ${barcodeSvg}
-                    </div>
+                    <div class="sticker-barcode">${barcodeSvg}</div>
+                    <div class="sticker-sku">${prod.sku}</div>
                 </div>
             `;
         }
@@ -1911,96 +3089,49 @@ class CarmelaApp {
         const preview = document.getElementById('barcodeStickersPreviewArea');
         if (!preview) return;
 
-        const printWindow = window.open('', '_blank');
-        if (!printWindow) {
-            window.print();
-            return;
-        }
-        printWindow.document.write(`
-            <!DOCTYPE html>
-            <html lang="ar" dir="rtl">
-            <head>
-                <meta charset="UTF-8">
-                <title>طباعة ملصقات الباركود - كارما كارميلا</title>
-                <style>
-                    body { font-family: 'Cairo', sans-serif; padding: 20px; direction: rtl; }
-                    .barcode-stickers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
-                    .single-barcode-sticker { border: 1px dashed #000; padding: 10px; border-radius: 6px; text-align: center; }
-                    .sticker-brand { font-size: 11px; font-weight: bold; color: #FF6A00; }
-                    .sticker-name { font-size: 13px; font-weight: bold; margin: 4px 0; }
-                    .sticker-price { font-size: 16px; font-weight: 900; }
-                    .barcode-svg { max-width: 100%; height: 40px; margin-top: 4px; }
-                    @media print { body { padding: 0; } }
-                </style>
-            </head>
-            <body>
-                <div class="barcode-stickers-grid">
+        const html = `
+            <div style="direction: rtl; font-family: 'Cairo', sans-serif;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; padding: 15px;">
                     ${preview.innerHTML}
                 </div>
-                <script>window.onload = function() { window.print(); }<\/script>
-            </body>
-            </html>
-        `);
-        printWindow.document.close();
+            </div>
+        `;
+        this.printDocument(html, 'a4');
     }
 
     // ==========================================================================
-    // 11. CUSTOMER SELECTION FOR POS
+    // CUSTOMER SELECTION FOR POS
     // ==========================================================================
     openCustomerModal() {
-        const list = document.getElementById('customerSelectionList');
-        if (list) {
-            list.innerHTML = (this.customers || []).map(c => `
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 9px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="app.selectCustomer(${c.id})">
-                    <div>
-                        <strong>${c.name}</strong>
-                        <div style="font-size: 0.72rem; color: var(--text-muted);">${c.phone} • ${c.address || ''}</div>
-                    </div>
-                    <span style="font-weight: bold; color: ${c.balance > 0 ? 'var(--accent-amber)' : 'var(--accent-emerald)'}; font-size: 0.82rem;">
-                        ${(c.balance || 0).toFixed(2)} ج.م
-                    </span>
-                </div>
-            `).join('');
-        }
-        document.getElementById('customerSelectModal')?.classList.add('active');
+        const list = document.getElementById('customerSelectList');
+        if (!list) return;
+
+        list.innerHTML = (this.customers || []).map(c => `
+            <div class="customer-select-item ${c.id === this.currentCustomerId ? 'active' : ''}" onclick="app.selectCustomer(${c.id})">
+                <div style="font-weight: bold; font-size: 0.95rem;">${c.name}</div>
+                <div style="font-size: 0.78rem; color: #64748B;">الهاتف: ${c.phone} • الرصيد المستحق: <span style="font-weight: bold; color: ${c.balance > 0 ? '#DC2626' : '#10B981'};">${(c.balance || 0).toFixed(2)} ج.م</span></div>
+            </div>
+        `).join('');
+
+        document.getElementById('customerModal')?.classList.add('active');
     }
 
     closeCustomerModal() {
-        document.getElementById('customerSelectModal')?.classList.remove('active');
-    }
-
-    filterCustomersList() {
-        const q = (document.getElementById('custSearchInput')?.value || '').toLowerCase();
-        const list = document.getElementById('customerSelectionList');
-        if (!list) return;
-        const filtered = (this.customers || []).filter(c => (c.name || '').toLowerCase().includes(q) || (c.phone || '').includes(q));
-        list.innerHTML = filtered.map(c => `
-            <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 9px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="app.selectCustomer(${c.id})">
-                <div>
-                    <strong>${c.name}</strong>
-                    <div style="font-size: 0.72rem; color: var(--text-muted);">${c.phone}</div>
-                </div>
-                <span style="font-weight: bold; color: ${c.balance > 0 ? 'var(--accent-amber)' : 'var(--accent-emerald)'};">
-                    ${(c.balance || 0).toFixed(2)} ج.م
-                </span>
-            </div>
-        `).join('');
+        document.getElementById('customerModal')?.classList.remove('active');
     }
 
     selectCustomer(customerId) {
         this.currentCustomerId = customerId;
-        const cust = (this.customers || []).find(c => c.id === customerId) || this.customers[0] || { name: 'عميل نقدي' };
-        const posLabel = document.getElementById('posCurrentCustomerName');
-        const cartLabel = document.getElementById('cartCustomerLabel');
-        if (posLabel) posLabel.innerText = cust.name;
-        if (cartLabel) cartLabel.innerText = cust.name;
         this.closeCustomerModal();
+        this.renderCart();
     }
 
     // ==========================================================================
-    // 12. SCREEN RENDERING (HOME, INVENTORY, CARDS, REPORTS)
+    // SCREEN RENDERING (HOME, INVENTORY, ORDERS)
     // ==========================================================================
     renderHomeDashboard() {
+        const fin = this.getShiftFinancials();
+
         const todaySalesEl = document.getElementById('homeTodaySales');
         const cashDrawerEl = document.getElementById('homeCashDrawer');
         const receivablesEl = document.getElementById('homeReceivables');
@@ -2009,19 +3140,12 @@ class CarmelaApp {
         const stockValEl = document.getElementById('homeStockValuation');
         const stockCountEl = document.getElementById('homeStockCountText');
 
-        const totalSales = (this.orders || []).reduce((sum, o) => sum + (o.grandTotal || 0), 0);
-        const cashSales = (this.orders || []).filter(o => o.paymentType === 'cash').reduce((sum, o) => sum + (o.grandTotal || 0), 0);
-        const cashReceipts = (this.customerPayments || []).filter(p => (p.method || '').includes('نقد')).reduce((sum, p) => sum + (p.amount || 0), 0);
-        const cashDisbursements = (this.supplierPayments || []).filter(p => (p.method || '').includes('نقد')).reduce((sum, p) => sum + (p.amount || 0), 0);
-        const floatVal = typeof this.currentUser.startingFloat === 'number' ? this.currentUser.startingFloat : 500;
-        const netCash = floatVal + cashSales + cashReceipts - cashDisbursements;
-
         const totalReceivables = (this.customers || []).reduce((sum, c) => sum + (c.balance || 0), 0);
         const totalPayables = (this.suppliers || []).reduce((sum, s) => sum + (s.balance || 0), 0);
         const stockValuation = (this.products || []).reduce((sum, p) => sum + ((p.currentStock || 0) * (p.costPrice || 0)), 0);
 
-        if (todaySalesEl) todaySalesEl.innerText = `${totalSales.toFixed(2)} ج.م`;
-        if (cashDrawerEl) cashDrawerEl.innerText = `${netCash.toFixed(2)} ج.م`;
+        if (todaySalesEl) todaySalesEl.innerText = `${fin.totalSales.toFixed(2)} ج.م`;
+        if (cashDrawerEl) cashDrawerEl.innerText = `${fin.expectedCash.toFixed(2)} ج.م`;
         if (receivablesEl) receivablesEl.innerText = `${totalReceivables.toFixed(2)} ج.م`;
         if (payablesEl) payablesEl.innerText = `${totalPayables.toFixed(2)} ج.م`;
 
@@ -2034,12 +3158,13 @@ class CarmelaApp {
         if (recentTbody) {
             const recentTimeline = [
                 ...(this.orders || []).slice(0, 4).map(o => ({ id: o.id, party: o.customerName, date: o.date, amount: o.grandTotal, type: 'فاتورة بيع' })),
-                ...(this.customerPayments || []).slice(0, 3).map(p => ({ id: p.id, party: p.customerName, date: p.fullDateTime || p.date, amount: p.amount, type: 'سند قبض نقدية' }))
+                ...(this.customerPayments || []).slice(0, 3).map(p => ({ id: p.id, party: p.customerName, date: p.fullDateTime || p.date, amount: p.amount, type: 'سند قبض نقدية' })),
+                ...(this.expenses || []).slice(0, 2).map(e => ({ id: e.id, party: e.title, date: e.date, amount: e.amount, type: 'سند صرف مصروف' }))
             ];
 
             recentTbody.innerHTML = recentTimeline.length === 0 ? `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">لا توجد حركات مسجلة بالوردية الحالية</td></tr>` : recentTimeline.map(it => `
                 <tr>
-                    <td style="font-family: monospace; font-weight: bold;">${it.id}</td>
+                    <td style="font-family: monospace; font-weight: bold; color: var(--primary-orange);">${it.id}</td>
                     <td>${it.party}</td>
                     <td style="font-size: 0.72rem;">${it.date}</td>
                     <td style="font-weight: 900; color: var(--primary-orange);">${(it.amount || 0).toFixed(2)} ج.م</td>
@@ -2058,12 +3183,12 @@ class CarmelaApp {
                 </div>`;
             } else {
                 lowStockList.innerHTML = lowItems.map(p => `
-                    <div class="low-stock-card">
-                        <div class="low-stock-info">
-                            <h5>${p.name}</h5>
-                            <span>الحد الأدنى: ${p.minStock} • كود: ${p.sku}</span>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 8px 12px; margin-bottom: 6px;">
+                        <div>
+                            <div style="font-weight: bold; font-size: 0.82rem;">${p.name}</div>
+                            <div style="font-size: 0.72rem; color: var(--accent-rose);">المخزون الحالي: ${p.currentStock} (الحد الأدنى: ${p.minStock})</div>
                         </div>
-                        <span class="low-stock-qty">${p.currentStock} ${p.baseUnit}</span>
+                        <button type="button" class="btn-primary" style="padding: 4px 8px; font-size: 0.7rem;" onclick="app.openNewPurchaseModal()">توريد فوراً</button>
                     </div>
                 `).join('');
             }
@@ -2076,17 +3201,18 @@ class CarmelaApp {
 
         tbody.innerHTML = (this.products || []).map(p => {
             const barcodeSvg = generateCode128SVG(p.barcode || p.sku, { height: 26, showText: false });
+            const isLow = (p.currentStock || 0) <= (p.minStock || 0);
+
             return `
                 <tr>
                     <td style="font-family: monospace; font-weight: bold;">${p.sku}</td>
-                    <td style="font-weight: 800;">${p.name}</td>
-                    <td><span class="status-badge partial">${p.category}</span></td>
-                    <td>${p.baseUnit}</td>
-                    <td>${(p.costPrice || 0).toFixed(2)} ج.م</td>
+                    <td style="font-weight: bold;">${p.name}</td>
+                    <td><span class="cat-pill" style="font-size: 0.7rem; padding: 2px 8px;">${p.category}</span></td>
+                    <td style="color: var(--text-muted);">${(p.costPrice || 0).toFixed(2)} ج.م</td>
                     <td style="font-weight: bold; color: var(--primary-orange);">${(p.wholesalePrice || 0).toFixed(2)} ج.م</td>
                     <td>
-                        <span style="font-weight: 900; color: ${(p.currentStock || 0) <= (p.minStock || 0) ? 'var(--accent-rose)' : 'inherit'};">
-                            ${p.currentStock || 0}
+                        <span class="status-badge ${isLow ? 'credit' : 'paid'}">
+                            ${p.currentStock || 0} ${p.baseUnit}
                         </span>
                     </td>
                     <td>
@@ -2100,61 +3226,22 @@ class CarmelaApp {
         }).join('');
     }
 
-    renderCustomersCards() {
-        const grid = document.getElementById('customersCardsGrid');
-        if (!grid) return;
-        grid.innerHTML = (this.customers || []).map(c => `
-            <div class="bento-card cust" onclick="app.openCustomerLedger(${c.id})">
-                <div class="bento-top-row">
-                    <span class="bento-badge-pill">${c.phone}</span>
-                    <div class="bento-icon-box"><i class="fa-solid fa-user-tie"></i></div>
-                </div>
-                <h4>${c.name}</h4>
-                <div class="bento-metric-large ${(c.balance || 0) > 0 ? 'text-warning' : 'text-success'}">
-                    ${(c.balance || 0).toFixed(2)} ج.م
-                </div>
-                <p class="bento-desc">${c.address || 'لا يوجد عنوان مسجل'}</p>
-                <span class="bento-link-arrow">فتح كشف الحساب بالساعة <i class="fa-solid fa-arrow-left"></i></span>
-            </div>
-        `).join('');
-    }
-
-    renderSuppliersCards() {
-        const grid = document.getElementById('suppliersCardsGrid');
-        if (!grid) return;
-        grid.innerHTML = (this.suppliers || []).map(s => `
-            <div class="bento-card sup" onclick="app.openSupplierLedger(${s.id})">
-                <div class="bento-top-row">
-                    <span class="bento-badge-pill">${s.phone}</span>
-                    <div class="bento-icon-box"><i class="fa-solid fa-truck-ramp-box"></i></div>
-                </div>
-                <h4>${s.name}</h4>
-                <div class="bento-metric-large text-danger">
-                    ${(s.balance || 0).toFixed(2)} ج.م
-                </div>
-                <p class="bento-desc">${s.address || 'المنطقة الصناعية'}</p>
-                <span class="bento-link-arrow">كشف الحساب وسندات الصرف <i class="fa-solid fa-arrow-left"></i></span>
-            </div>
-        `).join('');
-    }
-
     renderOrdersTable() {
         const tbody = document.querySelector('#allOrdersTable tbody');
         if (!tbody) return;
         if (!this.orders || this.orders.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 25px;">لا توجد فواتير صادرة حتى الآن</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 25px;">لا توجد فواتير صادرة حتى الآن</td></tr>`;
             return;
         }
 
         tbody.innerHTML = this.orders.map(o => `
             <tr>
-                <td style="font-family: monospace; font-weight: bold;">${o.id}</td>
+                <td style="font-family: monospace; font-weight: bold; color: var(--primary-orange);">${o.id}</td>
                 <td style="font-weight: 700;">${o.customerName}</td>
                 <td style="font-size: 0.75rem;">${o.date}</td>
-                <td>${(o.subtotal || 0).toFixed(2)} ج.م</td>
-                <td style="color: var(--accent-blue);">${(o.vat || 0).toFixed(2)} ج.م</td>
                 <td style="font-weight: 900; color: var(--primary-orange);">${(o.grandTotal || 0).toFixed(2)} ج.م</td>
-                <td><span class="status-badge ${o.paymentType === 'cash' ? 'paid' : 'credit'}">${o.paymentType === 'cash' ? 'نقدي' : 'آجل'}</span></td>
+                <td><span class="status-badge ${o.paymentType === 'cash' ? 'paid' : 'partial'}">${o.paymentType === 'cash' ? 'خزينة فورية' : 'آجل على الحساب'}</span></td>
+                <td style="font-size: 0.74rem;">${o.cashierName || 'أحمد الشناوي'}</td>
                 <td>
                     <button type="button" class="btn-primary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.openInvoiceModal(app.orders.find(ord => ord.id === '${o.id}'))">
                         <i class="fa-solid fa-print"></i> معاينة وطباعة
@@ -2165,7 +3252,7 @@ class CarmelaApp {
     }
 
     // ==========================================================================
-    // 13. MODAL CREATION FORMS
+    // MODAL CREATION FORMS (NEW CUSTOMER, SUPPLIER, PRODUCT, PURCHASE)
     // ==========================================================================
     openAddCustomerModal() {
         document.getElementById('addCustomerModal')?.classList.add('active');
@@ -2245,6 +3332,8 @@ class CarmelaApp {
             const first = (this.products || [])[0];
             const costInp = document.getElementById('purchaseUnitCost');
             if (first && costInp) costInp.value = first.costPrice || 0;
+            const nameDisplay = document.getElementById('purchaseProductNameDisplay');
+            if (first && nameDisplay) nameDisplay.innerText = first.name;
         }
 
         document.getElementById('newPurchaseModal')?.classList.add('active');
@@ -2330,7 +3419,7 @@ class CarmelaApp {
     }
 
     // ==========================================================================
-    // 14. EXPORTING & BACKUPS
+    // EXPORTS & BACKUPS (WELL-ORGANIZED EXCEL/CSV BUNDLES)
     // ==========================================================================
     exportOrdersCSV() {
         if (!this.orders || this.orders.length === 0) {
@@ -2338,9 +3427,9 @@ class CarmelaApp {
             return;
         }
 
-        let csv = '\uFEFFرقم الفاتورة,العميل,التاريخ,المجموع قبل الضريبة,الضريبة 14%,الإجمالي النهائي,طريقة السداد\n';
+        let csv = '\uFEFFرقم الفاتورة,العميل,التاريخ,إجمالي الفاتورة الصافي,طريقة السداد,الكاشير\n';
         this.orders.forEach(o => {
-            csv += `"${o.id}","${o.customerName}","${o.date}",${(o.subtotal || 0).toFixed(2)},${(o.vat || 0).toFixed(2)},${(o.grandTotal || 0).toFixed(2)},"${o.paymentType}"\n`;
+            csv += `"${o.id}","${o.customerName}","${o.date}",${(o.grandTotal || 0).toFixed(2)},"${o.paymentType === 'cash' ? 'نقدي' : 'آجل'}","${o.cashierName || ''}"\n`;
         });
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -2352,6 +3441,53 @@ class CarmelaApp {
         URL.revokeObjectURL(url);
     }
 
+    exportTreasuryExcel() {
+        let csv = '\uFEFFرقم الإذن,التاريخ والوقت,النوع,البيان,الطرف,المبلغ بالجنيه,الكاشير\n';
+        const rows = document.querySelectorAll('#treasuryTable tbody tr');
+        rows.forEach(tr => {
+            const cols = tr.querySelectorAll('td');
+            if (cols.length >= 7) {
+                const id = cols[0].innerText.replace(/"/g, '""');
+                const date = cols[1].innerText.replace(/"/g, '""');
+                const type = cols[2].innerText.replace(/"/g, '""');
+                const desc = cols[3].innerText.replace(/"/g, '""');
+                const party = cols[4].innerText.replace(/"/g, '""');
+                const amt = cols[5].innerText.replace(/[^0-9\.\-\+]/g, '');
+                const cashier = cols[6].innerText.replace(/"/g, '""');
+                csv += `"${id}","${date}","${type}","${desc}","${party}",${amt},"${cashier}"\n`;
+            }
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Karma_Carmela_Treasury_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    exportShiftsExcel() {
+        let csv = '\uFEFFرقم الوردية,بداية الوردية,نهاية الوردية,الكاشير,العهدة,المبيعات,المقبوضات,المدفوعات,المصروفات,النقدية المحسوبة,النقدية الفعلية,الفارق,الحالة\n';
+        (this.shiftHistory || []).forEach(s => {
+            csv += `"${s.shiftNumber}","${s.startTime}","${s.endTime || ''}","${s.cashierName}",${(s.startingFloat || 0).toFixed(2)},${(s.totalSales || 0).toFixed(2)},${(s.customerPayments || 0).toFixed(2)},${(s.supplierPayments || 0).toFixed(2)},${(s.expenses || 0).toFixed(2)},${(s.expectedCash || 0).toFixed(2)},${(s.actualCash || 0).toFixed(2)},${(s.difference || 0).toFixed(2)},"${s.status}"\n`;
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Karma_Carmela_Shifts_Archive_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    exportAllReportsBundle() {
+        this.exportOrdersCSV();
+        setTimeout(() => this.exportTreasuryExcel(), 400);
+        setTimeout(() => this.exportShiftsExcel(), 800);
+    }
+
     exportAllData() {
         const data = {
             products: this.products,
@@ -2360,6 +3496,11 @@ class CarmelaApp {
             orders: this.orders,
             customerPayments: this.customerPayments,
             supplierPayments: this.supplierPayments,
+            expenses: this.expenses,
+            otherIncomes: this.otherIncomes,
+            returns: this.returns,
+            shiftHistory: this.shiftHistory,
+            currentShift: this.currentShift,
             user: this.currentUser,
             exportedAt: new Date().toISOString()
         };
@@ -2372,6 +3513,156 @@ class CarmelaApp {
         URL.revokeObjectURL(url);
     }
 
+    toggleSidebar() {
+        const sidebar = document.querySelector('.hydro-sidebar') || document.querySelector('.app-sidebar');
+        if (sidebar) sidebar.classList.toggle('active');
+    }
+
+    toggleCartDrawer() {
+        const panel = document.querySelector('.cart-panel');
+        const overlay = document.getElementById('cartDrawerOverlay');
+        if (panel) {
+            if (panel.classList.contains('active')) {
+                panel.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+            } else {
+                panel.classList.add('active');
+                if (overlay) overlay.classList.add('active');
+            }
+        }
+    }
+
+    navTo(screenId) {
+        this.switchScreen(screenId);
+    }
+
+    installPwaApp() {
+        if (this.deferredPwaPrompt) {
+            this.deferredPwaPrompt.prompt();
+            this.deferredPwaPrompt.userChoice.then(() => {
+                this.deferredPwaPrompt = null;
+            });
+        } else {
+            document.getElementById('pwaInstallGuideModal')?.classList.add('active');
+        }
+    }
+
+    closePwaGuideModal() {
+        document.getElementById('pwaInstallGuideModal')?.classList.remove('active');
+    }
+
+    clearPosSearch() {
+        const inp = document.getElementById('posSearchInput');
+        if (inp) {
+            inp.value = '';
+            inp.focus();
+        }
+        this.filterProducts();
+    }
+
+    openPartnerPayModal() {
+        this.openCustomerPaymentModal();
+    }
+
+    setPrintFormat(format) {
+        this.switchPrintFormat(format);
+    }
+
+    closeCustomerLedgerModal() {
+        document.getElementById('customerLedgerModal')?.classList.remove('active');
+    }
+
+    closeSupplierLedgerModal() {
+        document.getElementById('supplierLedgerModal')?.classList.remove('active');
+    }
+
+    closeVoucherPrintModal() {
+        document.getElementById('voucherPrintModal')?.classList.remove('active');
+    }
+
+    switchAccTab(tab) {
+        document.querySelectorAll('.acc-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.acc-pane').forEach(p => p.classList.remove('active'));
+        const btn = document.getElementById(`btnAccTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+        const pane = document.getElementById(`accPane${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+        if (btn) btn.classList.add('active');
+        if (pane) pane.classList.add('active');
+    }
+
+    switchSupTab(tab) {
+        document.querySelectorAll('.sup-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.sup-pane').forEach(p => p.classList.remove('active'));
+        const btn = document.getElementById(`btnSupTab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+        const pane = document.getElementById(`supPane${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+        if (btn) btn.classList.add('active');
+        if (pane) pane.classList.add('active');
+    }
+
+    handleCustomerPaymentSubmit(e) {
+        this.saveCustomerPayment(e);
+    }
+
+    handleCustomerUpdateSubmit(e) {
+        if (e) e.preventDefault();
+        const custId = this.currentLedgerCustomerId || (this.currentPartnerDetail ? this.currentPartnerDetail.id : null);
+        const cust = (this.customers || []).find(c => c.id === custId);
+        if (!cust) return;
+
+        cust.name = document.getElementById('custEditName')?.value?.trim() || cust.name;
+        cust.phone = document.getElementById('custEditPhone')?.value?.trim() || cust.phone;
+        cust.address = document.getElementById('custEditAddress')?.value?.trim() || cust.address;
+        cust.creditLimit = parseFloat(document.getElementById('custEditCreditLimit')?.value) || cust.creditLimit;
+        cust.cr = document.getElementById('custEditCr')?.value?.trim() || cust.cr;
+        cust.taxId = document.getElementById('custEditTaxId')?.value?.trim() || cust.taxId;
+
+        this.saveAll();
+        playBeep(true);
+        alert('تم تحديث بيانات العميل بنجاح');
+        this.renderPartnersScreen();
+        if (this.currentPartnerDetail && this.currentPartnerDetail.id === cust.id) {
+            this.openPartnerDetail('customer', cust.id);
+        }
+    }
+
+    handleSupplierPaymentSubmit(e) {
+        this.saveSupplierPayment(e);
+    }
+
+    handleSupplierUpdateSubmit(e) {
+        if (e) e.preventDefault();
+        const supId = this.currentLedgerSupplierId || (this.currentPartnerDetail ? this.currentPartnerDetail.id : null);
+        const sup = (this.suppliers || []).find(s => s.id === supId);
+        if (!sup) return;
+
+        sup.name = document.getElementById('supEditName')?.value?.trim() || sup.name;
+        sup.phone = document.getElementById('supEditPhone')?.value?.trim() || sup.phone;
+        sup.address = document.getElementById('supEditAddress')?.value?.trim() || sup.address;
+        sup.cr = document.getElementById('supEditCr')?.value?.trim() || sup.cr;
+        sup.taxId = document.getElementById('supEditTaxId')?.value?.trim() || sup.taxId;
+
+        this.saveAll();
+        playBeep(true);
+        alert('تم تحديث بيانات المورد بنجاح');
+        this.renderPartnersScreen();
+        if (this.currentPartnerDetail && this.currentPartnerDetail.id === sup.id) {
+            this.openPartnerDetail('supplier', sup.id);
+        }
+    }
+
+    filterCustomersList() {
+        const query = (document.getElementById('partnersSearchInput')?.value || '').trim().toLowerCase();
+        const custCards = document.querySelectorAll('#customersCardsGrid .bento-card');
+        custCards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            card.style.display = text.includes(query) ? '' : 'none';
+        });
+        const supCards = document.querySelectorAll('#suppliersCardsGrid .bento-card');
+        supCards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            card.style.display = text.includes(query) ? '' : 'none';
+        });
+    }
+
     saveAll() {
         try {
             localStorage.setItem('carmela_products', JSON.stringify(this.products));
@@ -2380,6 +3671,11 @@ class CarmelaApp {
             localStorage.setItem('carmela_orders', JSON.stringify(this.orders));
             localStorage.setItem('carmela_cust_payments', JSON.stringify(this.customerPayments));
             localStorage.setItem('carmela_sup_payments', JSON.stringify(this.supplierPayments));
+            localStorage.setItem('carmela_expenses', JSON.stringify(this.expenses));
+            localStorage.setItem('carmela_other_incomes', JSON.stringify(this.otherIncomes));
+            localStorage.setItem('carmela_returns', JSON.stringify(this.returns));
+            localStorage.setItem('carmela_shift_history', JSON.stringify(this.shiftHistory));
+            localStorage.setItem('carmela_current_shift', JSON.stringify(this.currentShift));
             localStorage.setItem('carmela_user', JSON.stringify(this.currentUser));
         } catch (e) {
             console.warn('LocalStorage save limit or private mode warning:', e);

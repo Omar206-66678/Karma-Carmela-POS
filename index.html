@@ -26,6 +26,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="كارما كارميلا">
+
+    <!-- Universal Barcode Reader (Cross-Browser including Firefox & Safari) -->
+    <script src="https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js"></script>
 </head>
 <body>
     <div id="app" class="app-container">
@@ -81,6 +84,9 @@
                     <button class="d-nav-item" id="dnav-partners" onclick="app.switchScreen('partners')">
                         <i class="fa-solid fa-handshake"></i> الحسابات (عملاء وموردين)
                     </button>
+                    <button class="d-nav-item" id="dnav-treasury" onclick="app.switchScreen('treasury')">
+                        <i class="fa-solid fa-vault"></i> الخزينة والمصروفات
+                    </button>
                     <button class="d-nav-item" id="dnav-reports" onclick="app.switchScreen('reports')">
                         <i class="fa-solid fa-file-invoice-dollar"></i> التقارير
                     </button>
@@ -92,9 +98,9 @@
                 <!-- Left: Header Controls (Guaranteed visible and unclipped) -->
                 <div class="hydro-controls">
                     <!-- Live Shift Indicator -->
-                    <div class="shift-status-pill">
+                    <div class="shift-status-pill" onclick="app.switchScreen('account')" style="cursor: pointer;" title="إدارة الوردية">
                         <span class="pulse-dot"></span>
-                        <span id="shiftStatusHeader">وردية نشطة</span>
+                        <span id="shiftStatusHeader">وردية #1 (نشطة)</span>
                     </div>
 
                     <!-- Theme Switcher -->
@@ -106,11 +112,6 @@
                     <!-- Universal Barcode Scanner Trigger -->
                     <button class="btn-header-action" onclick="app.openScannerModal()" title="قارئ الباركود">
                         <i class="fa-solid fa-barcode"></i>
-                    </button>
-
-                    <!-- PWA Download/Install Trigger -->
-                    <button class="btn-header-action btn-pwa-install" onclick="app.installPwaApp()" title="تنزيل وتثبيت التطبيق على جهازك" style="color: var(--primary-orange);">
-                        <i class="fa-solid fa-cloud-arrow-down"></i>
                     </button>
 
                     <!-- Cart Trigger Button (Invoice Basket) -->
@@ -349,29 +350,26 @@
 
                     <!-- Live Cart Register (Desktop Side-by-Side & Mobile Drawer) -->
                     <div class="pos-cart-panel" id="cartPanel">
-                        <div class="cart-panel-header">
-                            <h3><i class="fa-solid fa-cart-shopping text-warning"></i> سلة الفاتورة الحالية</h3>
+                        <div class="cart-panel-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button type="button" class="btn-close-cart" onclick="app.toggleCartDrawer()" title="إغلاق السلة" style="background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                                <h3><i class="fa-solid fa-cart-shopping text-warning"></i> سلة الفاتورة</h3>
+                            </div>
                             <button class="btn-clear-cart" onclick="app.clearCart()"><i class="fa-solid fa-trash-can"></i> إفراغ السلة</button>
                         </div>
 
                         <div class="cart-customer-strip">
-                            <span>العميل: <strong id="cartCustomerLabel">عميل نقدي</strong></span>
-                            <button class="btn-change-cust" onclick="app.openCustomerModal()">تغيير</button>
+                            <span>العميل: <strong id="cartCustomerLabel">عميل نقدي (كاشير الفرع)</strong></span>
+                            <button class="btn-change-cust" onclick="app.openCustomerModal()"><i class="fa-solid fa-user-pen"></i> تغيير</button>
                         </div>
 
                         <div class="cart-items-scroll" id="cartItemsList"></div>
 
                         <div class="cart-checkout-footer">
-                            <div class="cart-summary-line">
-                                <span>المجموع قبل الضريبة:</span>
-                                <span id="cartSubtotal">0.00 ج.م</span>
-                            </div>
-                            <div class="cart-summary-line">
-                                <span>ضريبة القيمة المضافة (14%):</span>
-                                <span id="cartVat">0.00 ج.م</span>
-                            </div>
                             <div class="cart-summary-line grand-total">
-                                <span>الإجمالي المستحق:</span>
+                                <span>إجمالي الفاتورة الصافي:</span>
                                 <span id="cartGrandTotal">0.00 ج.م</span>
                             </div>
 
@@ -487,12 +485,15 @@
                 </div>
             </section>
 
-            <!-- ================= SCREEN 5: REPORTS & TAXES (التقارير) ================= -->
+            <!-- ================= SCREEN 5: REPORTS (السجل العام للفواتير والمبيعات) ================= -->
             <section id="screen-reports" class="screen-view">
                 <div class="dashboard-panel">
                     <div class="panel-header">
-                        <h4><i class="fa-solid fa-file-invoice-dollar text-warning"></i> السجل العام للفواتير والضرائب (14%)</h4>
-                        <button class="btn-secondary" onclick="app.exportOrdersCSV()"><i class="fa-solid fa-file-excel"></i> تصدير Excel</button>
+                        <h4><i class="fa-solid fa-file-invoice-dollar text-warning"></i> السجل العام للفواتير والمبيعات الصافية</h4>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-secondary" onclick="app.exportOrdersCSV()"><i class="fa-solid fa-file-excel"></i> تصدير المبيعات Excel</button>
+                            <button class="btn-primary" onclick="app.exportAllReportsBundle()"><i class="fa-solid fa-file-zipper"></i> تصدير كافة الجداول المنظمة</button>
+                        </div>
                     </div>
 
                     <div class="table-responsive">
@@ -502,15 +503,241 @@
                                     <th>رقم الفاتورة</th>
                                     <th>العميل</th>
                                     <th>التاريخ والوقت</th>
-                                    <th>المجموع</th>
-                                    <th>ضريبة 14%</th>
-                                    <th>الإجمالي النهائي</th>
-                                    <th>الدفع</th>
+                                    <th>عدد الأصناف</th>
+                                    <th>إجمالي الفاتورة الصافي</th>
+                                    <th>طريقة الدفع</th>
+                                    <th>الكاشير</th>
                                     <th>طباعة</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= SCREEN 6: TREASURY & CASH MANAGEMENT (الخزينة والمصروفات) ================= -->
+            <section id="screen-treasury" class="screen-view">
+                <div class="welcome-card" style="margin-bottom: 16px;">
+                    <div class="welcome-header-row">
+                        <div>
+                            <span class="welcome-greeting-badge"><i class="fa-solid fa-vault"></i> الخزينة والسيولة النقدية</span>
+                            <h2 class="welcome-title">إدارة الصندوق والمصروفات وسندات القبض</h2>
+                            <p class="welcome-sub">تسجيل النفقات اليومية، الإيرادات الأخرى، وسندات الإثبات المعتمدة</p>
+                        </div>
+                        <div class="welcome-action-buttons">
+                            <button type="button" class="btn-welcome-pos" onclick="app.openNewExpenseModal()" style="background: linear-gradient(135deg, #EF4444, #B91C1C);">
+                                <i class="fa-solid fa-receipt"></i> تسجيل سند صرف مصروف
+                            </button>
+                            <button type="button" class="btn-welcome-secondary" onclick="app.openNewOtherIncomeModal()" style="border-color: #10B981; color: #10B981;">
+                                <i class="fa-solid fa-hand-holding-dollar"></i> تسجيل سند إيداع / إيراد
+                            </button>
+                            <button type="button" class="btn-welcome-secondary" onclick="app.exportTreasuryExcel()">
+                                <i class="fa-solid fa-file-excel"></i> تصدير الخزينة Excel
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Treasury KPI Row -->
+                    <div class="welcome-metrics-strip">
+                        <div class="metric-chip">
+                            <span class="metric-label">رصيد الخزينة الحالي:</span>
+                            <span class="metric-value" id="treasuryCurrentCash" style="color: var(--primary-orange); font-size: 1.3rem;">0.00 ج.م</span>
+                        </div>
+                        <div class="metric-chip">
+                            <span class="metric-label">مبيعات نقدية اليوم:</span>
+                            <span class="metric-value text-success" id="treasuryTodaySales">0.00 ج.م</span>
+                        </div>
+                        <div class="metric-chip">
+                            <span class="metric-label">إجمالي المصروفات اليوم:</span>
+                            <span class="metric-value text-danger" id="treasuryTodayExpenses">0.00 ج.م</span>
+                        </div>
+                        <div class="metric-chip">
+                            <span class="metric-label">إيرادات أخرى مودعة:</span>
+                            <span class="metric-value text-success" id="treasuryTodayIncomes">0.00 ج.م</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Treasury Transactions Table -->
+                <div class="dashboard-panel">
+                    <div class="panel-header">
+                        <h4><i class="fa-solid fa-money-bill-transfer text-warning"></i> سجل حركات الخزينة وسندات القبض والصرف</h4>
+                        <div style="display: flex; gap: 8px;">
+                            <select id="treasuryFilterType" onchange="app.renderTreasuryTable()" style="padding: 6px 10px; border-radius: 8px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 13px;">
+                                <option value="all">جميع الحركات</option>
+                                <option value="expense">سندات صرف فقط (مصروفات)</option>
+                                <option value="income">سندات قبض فقط (إيرادات)</option>
+                                <option value="sales">تحصيل مبيعات نقدية</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="custom-table" id="treasuryTransactionsTable">
+                            <thead>
+                                <tr>
+                                    <th>رقم السند</th>
+                                    <th>النوع</th>
+                                    <th>البيان والتفاصيل</th>
+                                    <th>الطرف / المستلم</th>
+                                    <th>المبلغ (ج.م)</th>
+                                    <th>التاريخ والوقت</th>
+                                    <th>الكاشير المسؤول</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="treasuryTransactionsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= SCREEN 7: PARTNER DEDICATED PROFILE (صفحة العميل / المورد المستقلة) ================= -->
+            <section id="screen-partner-detail" class="screen-view">
+                <div class="dashboard-panel" style="margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
+                        <button type="button" class="btn-secondary" onclick="app.switchScreen('partners')" style="font-weight: 700;">
+                            <i class="fa-solid fa-arrow-right"></i> رجوع لقائمة الشركاء
+                        </button>
+                        <div class="partner-detail-badges">
+                            <span class="badge-tag" id="pdPartnerTypeBadge" style="background: var(--primary-orange); color: #fff; padding: 4px 10px; border-radius: 6px; font-weight: 800;">عميل</span>
+                        </div>
+                    </div>
+
+                    <div class="partner-hero-banner" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; background: var(--bg-card); padding: 18px; border-radius: 12px; border: 1px solid var(--border-color);">
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                            <div class="partner-avatar-circle" style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, var(--primary-orange), #C73E00); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff;">
+                                <i class="fa-solid fa-user-tie" id="pdAvatarIcon"></i>
+                            </div>
+                            <div>
+                                <h2 id="pdPartnerName" style="font-size: 1.3rem; font-weight: 900; margin-bottom: 4px;">اسم الشريك</h2>
+                                <div style="display: flex; gap: 12px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap;">
+                                    <span><i class="fa-solid fa-phone"></i> <span id="pdPartnerPhone">—</span></span>
+                                    <span><i class="fa-solid fa-location-dot"></i> <span id="pdPartnerAddress">—</span></span>
+                                    <span><i class="fa-solid fa-id-card"></i> <span id="pdPartnerTaxId">س.ت/ر.ض: —</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Balance Tag & Quick Actions -->
+                        <div style="text-align: left; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                            <div style="font-size: 12px; color: var(--text-muted);">الرصيد المالي الحالي:</div>
+                            <div id="pdPartnerBalance" style="font-size: 1.5rem; font-weight: 900; color: var(--accent-amber);">0.00 ج.م</div>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <button type="button" class="btn-primary" onclick="app.openPartnerPayModal()" style="padding: 7px 12px; font-size: 12px;">
+                                    <i class="fa-solid fa-money-bill-wave"></i> تسجيل دفعة نقدية
+                                </button>
+                                <button type="button" class="btn-secondary" onclick="app.openNewReturnModal()" style="padding: 7px 12px; font-size: 12px; border-color: #EF4444; color: #EF4444;">
+                                    <i class="fa-solid fa-rotate-left"></i> إصدار فاتورة مرتجع
+                                </button>
+                                <button type="button" class="btn-secondary" onclick="app.printPartnerStatement()" style="padding: 7px 12px; font-size: 12px;">
+                                    <i class="fa-solid fa-print"></i> طباعة كشف حساب
+                                </button>
+                                <button type="button" class="btn-secondary" onclick="app.exportPartnerExcel()" style="padding: 7px 12px; font-size: 12px;">
+                                    <i class="fa-solid fa-file-excel"></i> إكسيل
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4 Sub-Tabs for this Partner -->
+                    <div class="partner-tabs-strip" style="display: flex; gap: 8px; margin-top: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; overflow-x: auto;">
+                        <button type="button" class="tab-btn active" id="btnPdTabLedger" onclick="app.switchPdTab('ledger')">
+                            <i class="fa-solid fa-scale-balanced"></i> كشف الحساب التفصيلي
+                        </button>
+                        <button type="button" class="tab-btn" id="btnPdTabInvoices" onclick="app.switchPdTab('invoices')">
+                            <i class="fa-solid fa-file-invoice-dollar"></i> سجل الفواتير
+                        </button>
+                        <button type="button" class="tab-btn" id="btnPdTabReturns" onclick="app.switchPdTab('returns')">
+                            <i class="fa-solid fa-rotate-left"></i> فواتير المرتجع
+                        </button>
+                        <button type="button" class="tab-btn" id="btnPdTabStats" onclick="app.switchPdTab('stats')">
+                            <i class="fa-solid fa-chart-line"></i> إحصائيات التعاملات
+                        </button>
+                    </div>
+
+                    <!-- Pane 1: Account Ledger Statement -->
+                    <div class="partner-pane active" id="panePdLedger" style="padding-top: 14px;">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="pdLedgerTable">
+                                <thead>
+                                    <tr>
+                                        <th>التاريخ والوقت</th>
+                                        <th>نوع الحركة</th>
+                                        <th>رقم المرجع / الفاتورة</th>
+                                        <th>البيان والتفاصيل</th>
+                                        <th style="color: #EF4444;">مدين (+)</th>
+                                        <th style="color: #10B981;">دائن (-)</th>
+                                        <th>الرصيد التراكمي</th>
+                                        <th>الإجراء</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pdLedgerBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pane 2: Partner Invoices List -->
+                    <div class="partner-pane" id="panePdInvoices" style="padding-top: 14px; display: none;">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="pdInvoicesTable">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الفاتورة</th>
+                                        <th>التاريخ</th>
+                                        <th>عدد الأصناف</th>
+                                        <th>الإجمالي الصافي</th>
+                                        <th>طريقة الدفع</th>
+                                        <th>عرض الفاتورة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pdInvoicesBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pane 3: Returns List -->
+                    <div class="partner-pane" id="panePdReturns" style="padding-top: 14px; display: none;">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="pdReturnsTable">
+                                <thead>
+                                    <tr>
+                                        <th>رقم إذن المرتجع</th>
+                                        <th>التاريخ</th>
+                                        <th>الصنف المرتجع</th>
+                                        <th>الكمية</th>
+                                        <th>المبلغ المسترد (ج.م)</th>
+                                        <th>طريقة الاسترداد</th>
+                                        <th>السبب</th>
+                                        <th>طباعة</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pdReturnsBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pane 4: Financial Statistics -->
+                    <div class="partner-pane" id="panePdStats" style="padding-top: 14px; display: none;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+                            <div class="metric-chip" style="padding: 14px;">
+                                <span class="metric-label">إجمالي المسحوبات / التعاملات:</span>
+                                <span class="metric-value text-warning" id="pdStatTotalBilled">0.00 ج.م</span>
+                            </div>
+                            <div class="metric-chip" style="padding: 14px;">
+                                <span class="metric-label">إجمالي المسدد نقداً وشيكات:</span>
+                                <span class="metric-value text-success" id="pdStatTotalPaid">0.00 ج.م</span>
+                            </div>
+                            <div class="metric-chip" style="padding: 14px;">
+                                <span class="metric-label">الرصيد المتبقي المستحق:</span>
+                                <span class="metric-value" id="pdStatBalanceDue">0.00 ج.م</span>
+                            </div>
+                            <div class="metric-chip" style="padding: 14px;">
+                                <span class="metric-label">إجمالي المرتجعات:</span>
+                                <span class="metric-value text-danger" id="pdStatTotalReturns">0.00 ج.م</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -532,39 +759,89 @@
                 <!-- Shift & Cash Drawer Details Card -->
                 <div class="shift-details-card">
                     <div class="panel-header">
-                        <h4><i class="fa-solid fa-cash-register text-warning"></i> بيانات ومطابقة الوردية الحالية</h4>
-                        <button class="btn-secondary" onclick="app.lockScreen()"><i class="fa-solid fa-lock"></i> قفل الشاشة</button>
+                        <div>
+                            <h4><i class="fa-solid fa-cash-register text-warning"></i> إدارة الوردية وجرد الخزينة</h4>
+                            <div style="font-size: 12px; color: var(--text-secondary);" id="shiftSubtitle">الوردية الحالية: رقم #1 (نشطة)</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn-secondary" id="btnToggleShiftMode" onclick="app.toggleFlexibleShiftMode()">
+                                <i class="fa-solid fa-sliders"></i> <span id="shiftModeLabelText">نظام الورديات: مفعل</span>
+                            </button>
+                            <button type="button" class="btn-secondary" onclick="app.lockScreen()"><i class="fa-solid fa-lock"></i> قفل الشاشة</button>
+                        </div>
                     </div>
 
                     <div class="shift-grid-row">
+                        <div class="shift-data-tile">
+                            <span>رقم وحالة الوردية:</span>
+                            <strong id="shiftNumberDisplay" style="color: var(--primary-orange);">الوردية #1 (نشطة)</strong>
+                        </div>
                         <div class="shift-data-tile">
                             <span>وقت فتح الوردية:</span>
                             <strong id="shiftStartTimeDisplay">اليوم 08:00 ص</strong>
                         </div>
                         <div class="shift-data-tile">
-                            <span>النقدية الافتتاحية (عهدة البداية):</span>
+                            <span>عهدة البداية (الافتتاحي):</span>
                             <strong id="shiftFloatDisplay">500.00 ج.م</strong>
                         </div>
                         <div class="shift-data-tile">
-                            <span>إجمالي المبيعات المحصلة نقدًا:</span>
+                            <span>مبيعات محصلة نقدًا:</span>
                             <strong class="text-success" id="shiftCashSalesDisplay">0.00 ج.م</strong>
                         </div>
                         <div class="shift-data-tile">
-                            <span>سندات القبض النقدية المحصلة:</span>
+                            <span>سندات قبض وإيرادات:</span>
                             <strong class="text-success" id="shiftReceiptsDisplay">0.00 ج.م</strong>
                         </div>
                         <div class="shift-data-tile">
-                            <span>سندات الصرف والمسدد للموردين:</span>
+                            <span>مصروفات ومسدد لموردين:</span>
                             <strong class="text-danger" id="shiftDisbursementsDisplay">0.00 ج.م</strong>
                         </div>
                         <div class="shift-data-tile">
-                            <span>النقدية الفعلية المفترضة بالدرج:</span>
-                            <strong style="color: var(--primary-orange); font-size: 1.2rem;" id="shiftNetDrawerDisplay">500.00 ج.م</strong>
+                            <span>مرتجعات نقدية مستردة:</span>
+                            <strong class="text-danger" id="shiftReturnsDisplay">0.00 ج.م</strong>
+                        </div>
+                        <div class="shift-data-tile">
+                            <span>النقدية المتوقعة بالدرج:</span>
+                            <strong style="color: var(--primary-orange); font-size: 1.25rem;" id="shiftNetDrawerDisplay">500.00 ج.م</strong>
                         </div>
                     </div>
 
-                    <div style="margin-top: 14px; display: flex; gap: 8px;">
-                        <button class="btn-primary" onclick="app.closeShiftConfirm()"><i class="fa-solid fa-clock-rotate-left"></i> تقفيل الوردية وجرد الخزينة</button>
+                    <div style="margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" class="btn-primary" onclick="app.openCloseShiftModal()">
+                            <i class="fa-solid fa-calculator"></i> إنهاء الوردية وجرد الخزينة الفعلي
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="app.openStartNewShiftModal()">
+                            <i class="fa-solid fa-plus-circle"></i> بدء وردية جديدة بعهدة
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="app.exportShiftsExcel()">
+                            <i class="fa-solid fa-file-excel"></i> تصدير سجل الورديات Excel
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Closed Shifts Archive Panel -->
+                <div class="dashboard-panel" style="margin-top: 16px;">
+                    <div class="panel-header">
+                        <h4><i class="fa-solid fa-clock-rotate-left text-warning"></i> أرشيف وسجل الورديات السابقة المقفلة</h4>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="custom-table" id="closedShiftsTable">
+                            <thead>
+                                <tr>
+                                    <th>رقم الوردية</th>
+                                    <th>الكاشير المسؤول</th>
+                                    <th>وقت الفتح</th>
+                                    <th>وقت الإغلاق</th>
+                                    <th>المبيعات النقدية</th>
+                                    <th>المصروفات</th>
+                                    <th>المفترض بالخزينة</th>
+                                    <th>المحصى فعلياً</th>
+                                    <th>الفارق (عجز/زيادة)</th>
+                                    <th>تقرير الإغلاق</th>
+                                </tr>
+                            </thead>
+                            <tbody id="closedShiftsBody"></tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -1113,8 +1390,9 @@
         <!-- ================= MODAL: QUICK LOCK SCREEN ================= -->
         <div class="modal-overlay" id="lockScreenModal" style="z-index: 300;">
             <div class="modal-box" style="max-width: 380px; text-align: center;">
-                <div class="modal-header" style="justify-content: center;">
+                <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <h3><i class="fa-solid fa-lock text-warning"></i> الشاشة مقفلة بأمان</h3>
+                    <button type="button" class="btn-modal-close" onclick="app.unlockScreenCancel()" title="إلغاء وإغلاق"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="modal-body">
                     <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-orange-light); color: var(--primary-orange); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 12px auto;">
@@ -1318,7 +1596,275 @@
             </div>
         </div>
 
-    </div>
+        <!-- ================= MODAL: CLOSE SHIFT & CASH DRAWER COUNT ================= -->
+        <div class="modal-overlay" id="closeShiftModal">
+            <div class="modal-box" style="max-width: 550px;">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-calculator text-warning"></i> إنهاء وتسليم الوردية وجرد الخزينة</h3>
+                    <button class="btn-modal-close" onclick="app.closeCloseShiftModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; margin-bottom: 12px; font-size: 13px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span>الوردية الحالية:</span>
+                            <strong id="csModalShiftNum" style="color: var(--primary-orange);">وردية #1</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span>العهدة النقدية الافتتاحية:</span>
+                            <strong id="csModalFloat">0.00 ج.م</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span>+ مبيعات الكاشير النقدية:</span>
+                            <strong class="text-success" id="csModalSales">0.00 ج.م</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span>+ سندات قبض وإيرادات أخرى:</span>
+                            <strong class="text-success" id="csModalIncomes">0.00 ج.م</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span>- مصروفات ومسدد للموردين:</span>
+                            <strong class="text-danger" id="csModalExpenses">0.00 ج.م</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                            <span>- مرتجعات نقدية مستردة:</span>
+                            <strong class="text-danger" id="csModalReturns">0.00 ج.م</strong>
+                        </div>
+                        <div style="border-top: 1px dashed var(--border-color); padding-top: 8px; display: flex; justify-content: space-between; font-weight: 800; font-size: 14px;">
+                            <span>المفترض تواجده بالدرج (دفترياً):</span>
+                            <span id="csModalExpectedCash" style="color: var(--primary-orange);">0.00 ج.م</span>
+                        </div>
+                    </div>
+
+                    <form onsubmit="app.finalizeCloseShift(event)">
+                        <div class="form-group">
+                            <label style="font-weight: 800; color: var(--text-primary);">النقدية الفعلية المحصاة في الخزينة الآن (ج.م):</label>
+                            <input type="number" step="0.01" id="csActualCashInput" required placeholder="0.00" oninput="app.calculateShiftDifference()" style="font-size: 1.25rem; font-weight: 800; text-align: center; color: var(--primary-orange);">
+                        </div>
+                        <div id="csDifferenceAlert" style="padding: 10px; border-radius: 8px; text-align: center; font-weight: 800; font-size: 13px; margin-bottom: 12px; display: none;"></div>
+
+                        <div class="form-group">
+                            <label>ملاحظات إغلاق الوردية:</label>
+                            <input type="text" id="csNotesInput" placeholder="تسليم الكاشير بدون عجز...">
+                        </div>
+
+                        <div class="modal-footer" style="padding: 10px 0 0 0; background: transparent;">
+                            <button type="button" class="btn-secondary" onclick="app.closeCloseShiftModal()">إلغاء</button>
+                            <button type="submit" class="btn-primary" style="font-weight: 800;">
+                                <i class="fa-solid fa-print"></i> إقفال الوردية وطباعة التقرير فوراً
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MODAL: START NEW SHIFT ================= -->
+        <div class="modal-overlay" id="startShiftModal">
+            <div class="modal-box" style="max-width: 450px;">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-clock text-warning"></i> بدء وردية عمل جديدة</h3>
+                    <button class="btn-modal-close" onclick="app.closeStartNewShiftModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="app.finalizeStartNewShift(event)">
+                        <div class="form-group">
+                            <label>العهدة النقدية الافتتاحية بالدرج (ج.م):</label>
+                            <input type="number" step="0.01" id="newShiftFloatInput" required value="500.00" style="font-size: 1.2rem; font-weight: 800;">
+                        </div>
+                        <div class="form-group">
+                            <label>اسم الكاشير / المسؤول:</label>
+                            <input type="text" id="newShiftCashierInput" required value="أحمد الشناوي">
+                        </div>
+                        <div class="modal-footer" style="padding: 10px 0 0 0; background: transparent;">
+                            <button type="button" class="btn-secondary" onclick="app.closeStartNewShiftModal()">إلغاء</button>
+                            <button type="submit" class="btn-primary">تأكيد فتح الوردية</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MODAL: NEW OPERATING EXPENSE (سند صرف مصروف) ================= -->
+        <div class="modal-overlay" id="newExpenseModal">
+            <div class="modal-box" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-receipt text-warning"></i> تسجيل سند صرف نقدية (مصروف)</h3>
+                    <button class="btn-modal-close" onclick="app.closeNewExpenseModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="app.saveExpense(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>بند المصروف:</label>
+                                <select id="expenseCategory" required>
+                                    <option value="نقل ومشال وشحن">نقل ومشال وشحن بضاعة</option>
+                                    <option value="كهرباء ومياه وغاز">كهرباء ومياه وغاز</option>
+                                    <option value="إيجار فرع ومستودع">إيجار فرع ومستودع</option>
+                                    <option value="بوفيه وضيافة ونظافة">بوفيه وضيافة ونظافة</option>
+                                    <option value="رواتب وسلف عاملين">رواتب وسلف عاملين</option>
+                                    <option value="صيانة ومعدات وسيارات">صيانة ومعدات وسيارات</option>
+                                    <option value="أدوات مكتبية ومطبوعات">أدوات مكتبية ومطبوعات</option>
+                                    <option value="مصروفات تشغيلية أخرى">مصروفات تشغيلية أخرى</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>المبلغ المصروف (ج.م):</label>
+                                <input type="number" step="0.01" id="expenseAmount" required placeholder="0.00" style="font-weight: 800; font-size: 1.1rem; color: #EF4444;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>اسم المستلم / الصادر لأمره:</label>
+                            <input type="text" id="expenseRecipient" required placeholder="اسم الشخص أو الشركة المستلمة...">
+                        </div>
+                        <div class="form-group">
+                            <label>البيان والسبب بالتفصيل:</label>
+                            <input type="text" id="expenseNotes" required placeholder="شحن طلبية زيت طعام إلى مخزن...">
+                        </div>
+                        <div class="modal-footer" style="padding: 10px 0 0 0; background: transparent;">
+                            <button type="button" class="btn-secondary" onclick="app.closeNewExpenseModal()">إلغاء</button>
+                            <button type="submit" class="btn-primary" style="font-weight: 800;">
+                                <i class="fa-solid fa-print"></i> حفظ وطباعة سند الصرف
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MODAL: NEW OTHER INCOME (سند قبض إيراد) ================= -->
+        <div class="modal-overlay" id="newOtherIncomeModal">
+            <div class="modal-box" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-hand-holding-dollar text-warning"></i> تسجيل سند إيداع وقبض نقدي (إيراد)</h3>
+                    <button class="btn-modal-close" onclick="app.closeNewOtherIncomeModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="app.saveOtherIncome(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>مصدر الإيراد / الإيداع:</label>
+                                <select id="incomeCategory" required>
+                                    <option value="ضخ رأس مال إضافي">ضخ رأس مال إضافي بالخزينة</option>
+                                    <option value="أرباح استثمارية خارجية">أرباح استثمارية خارجية</option>
+                                    <option value="استرداد سلفة مؤقتة">استرداد سلفة مؤقتة</option>
+                                    <option value="تسوية عهدة فائضة">تسوية عهدة فائضة</option>
+                                    <option value="إيراد خدمات وتوزيع">إيراد خدمات وتوزيع</option>
+                                    <option value="إيرادات أخرى متنوعة">إيرادات أخرى متنوعة</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>المبلغ المودع (ج.م):</label>
+                                <input type="number" step="0.01" id="incomeAmount" required placeholder="0.00" style="font-weight: 800; font-size: 1.1rem; color: #10B981;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>اسم المودع / الجهة:</label>
+                            <input type="text" id="incomeDepositor" required placeholder="اسم الشخص أو الشريك المودع...">
+                        </div>
+                        <div class="form-group">
+                            <label>البيان وملاحظات الإيداع:</label>
+                            <input type="text" id="incomeNotes" required placeholder="إيداع نقدي لتعزيز سيولة الخزينة...">
+                        </div>
+                        <div class="modal-footer" style="padding: 10px 0 0 0; background: transparent;">
+                            <button type="button" class="btn-secondary" onclick="app.closeNewOtherIncomeModal()">إلغاء</button>
+                            <button type="submit" class="btn-primary" style="font-weight: 800;">
+                                <i class="fa-solid fa-print"></i> حفظ وطباعة سند القبض
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MODAL: NEW RETURN INVOICE (إصدار فاتورة مرتجع) ================= -->
+        <div class="modal-overlay" id="newReturnModal">
+            <div class="modal-box" style="max-width: 550px;">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-rotate-left text-warning"></i> إصدار فاتورة / إذن مرتجع</h3>
+                    <button class="btn-modal-close" onclick="app.closeNewReturnModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 13px;">
+                        <span>الطرف المعني بالمرتجع:</span>
+                        <strong id="returnPartnerDisplay" style="color: var(--primary-orange);">—</strong>
+                    </div>
+
+                    <form onsubmit="app.saveReturnInvoice(event)">
+                        <!-- Custom Product Selector Trigger -->
+                        <div class="form-group">
+                            <label>الصنف المرتجع:</label>
+                            <div class="picker-trigger-box" onclick="app.openProductPicker('return')">
+                                <span id="returnProductLabel"><i class="fa-solid fa-box-open text-warning"></i> اضغط لاختيار الصنف المرتجع من القائمة...</span>
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                            <input type="hidden" id="returnProductId" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>الكمية المرتجعة:</label>
+                                <input type="number" id="returnQty" min="1" value="1" required oninput="app.calculateReturnTotal()">
+                            </div>
+                            <div class="form-group">
+                                <label>سعر الوحدة المرتجعة (ج.م):</label>
+                                <input type="number" step="0.01" id="returnUnitPrice" required oninput="app.calculateReturnTotal()">
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-weight: 700;">إجمالي المبلغ المسترد:</span>
+                            <span id="returnTotalDisplay" style="font-size: 1.25rem; font-weight: 900; color: #EF4444;">0.00 ج.م</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>طريقة تسوية المرتجع:</label>
+                            <select id="returnRefundMethod">
+                                <option value="cash">رد المبلغ نقدًا من الخزينة فورًا</option>
+                                <option value="ledger">تخفيض / تسوية رصيد الحساب الآجل</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>سبب الإرجاع:</label>
+                            <select id="returnReason">
+                                <option value="بضاعة تالفة / عيب تصنيع">بضاعة تالفة / عيب تصنيع</option>
+                                <option value="صلاحية منتهية أو قريبة">صلاحية منتهية أو قريبة</option>
+                                <option value="خطأ في طلب العميل / التوريد">خطأ في طلب العميل / التوريد</option>
+                                <option value="فائض عن الحاجة">فائض عن الحاجة</option>
+                            </select>
+                        </div>
+
+                        <div class="modal-footer" style="padding: 10px 0 0 0; background: transparent;">
+                            <button type="button" class="btn-secondary" onclick="app.closeNewReturnModal()">إلغاء</button>
+                            <button type="submit" class="btn-primary" style="font-weight: 800; background: #EF4444;">
+                                <i class="fa-solid fa-check"></i> اعتماد المرتجع وتحديث المخزون والخزينة
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MODAL: ELEGANT SEARCHABLE PRODUCT PICKER ================= -->
+        <div class="modal-overlay" id="productPickerModal" style="z-index: 250;">
+            <div class="modal-box" style="max-width: 650px;">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-boxes-stacked text-warning"></i> اختيار الصنف</h3>
+                    <button class="btn-modal-close" onclick="app.closeProductPicker()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: 10px;">
+                        <input type="text" id="pickerSearchInput" placeholder="بحث باسم الصنف أو الكود أو الباركود..." oninput="app.filterProductPicker()" style="width: 100%; padding: 10px; border-radius: 8px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 14px;">
+                    </div>
+                    <div id="pickerProductsGrid" style="max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- End .app-container -->
+
+    <!-- ================= DEDICATED GLOBAL PRINT CONTAINER (BULLETPROOF PRINTING) ================= -->
+    <div id="globalPrintContainer" class="global-print-container"></div>
 
     <!-- Application Engine Script -->
     <script src="js/app.js"></script>
