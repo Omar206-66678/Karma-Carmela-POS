@@ -1,6 +1,6 @@
 /**
- * Karma Carmela POS & Wholesale Food Management
- * Complete Application Logic (Vanilla JS, LocalStorage, Tafqeet, CSV Export)
+ * Karma Carmela POS & ERP - Next-Gen Application Engine
+ * Arabic RTL, Foodics/Daftra Inspired, Customer & Supplier Statements, Multi-Unit & Tafqeet
  */
 
 // ==========================================================================
@@ -15,37 +15,22 @@ function tafqeet(number, currency = 'EGP') {
     const tens = ['', '', 'عشرون', 'ثلاثون', 'أربعون', 'خمسون', 'ستون', 'سبعون', 'ثمانون', 'تسعون'];
     const hundreds = ['', 'مائة', 'مئتان', 'ثلاثمائة', 'أربعمائة', 'خمسمائة', 'ستمائة', 'سبعمائة', 'ثمانمائة', 'تسعمائة'];
 
-    const thousands = {
-        singular: 'ألف',
-        dual: 'ألفان',
-        plural: 'آلاف'
-    };
-    const millions = {
-        singular: 'مليون',
-        dual: 'مليونان',
-        plural: 'ملايين'
-    };
+    const thousands = { singular: 'ألف', dual: 'ألفان', plural: 'آلاف' };
+    const millions = { singular: 'مليون', dual: 'مليونان', plural: 'ملايين' };
 
     function convertGroup(n) {
         let h = Math.floor(n / 100);
         let rem = n % 100;
         let parts = [];
-
         if (h > 0) parts.push(hundreds[h]);
-
         if (rem > 0) {
-            if (rem < 10) {
-                parts.push(ones[rem]);
-            } else if (rem < 20) {
-                parts.push(teens[rem - 10]);
-            } else {
+            if (rem < 10) parts.push(ones[rem]);
+            else if (rem < 20) parts.push(teens[rem - 10]);
+            else {
                 let u = rem % 10;
                 let t = Math.floor(rem / 10);
-                if (u > 0) {
-                    parts.push(ones[u] + ' و' + tens[t]);
-                } else {
-                    parts.push(tens[t]);
-                }
+                if (u > 0) parts.push(ones[u] + ' و' + tens[t]);
+                else parts.push(tens[t]);
             }
         }
         return parts.join(' و');
@@ -53,7 +38,6 @@ function tafqeet(number, currency = 'EGP') {
 
     let intPart = Math.floor(number);
     let decPart = Math.round((number - intPart) * 100);
-
     let parts = [];
 
     // Millions
@@ -76,27 +60,17 @@ function tafqeet(number, currency = 'EGP') {
         else parts.push(convertGroup(thous) + ' ' + thousands.singular);
     }
 
-    // Hundreds, Tens, Ones
-    if (intPart > 0) {
-        parts.push(convertGroup(intPart));
-    }
+    if (intPart > 0) parts.push(convertGroup(intPart));
 
     let mainWord = parts.length > 0 ? parts.join(' و') : 'صفر';
-    let currencyName = 'جنيهاً مصرياً';
-    let fractionName = 'قرشاً';
-
-    let result = 'فقط ' + mainWord + ' ' + currencyName;
-
-    if (decPart > 0) {
-        result += ' و' + convertGroup(decPart) + ' ' + fractionName;
-    }
-
+    let result = 'فقط ' + mainWord + ' جنيهاً مصرياً';
+    if (decPart > 0) result += ' و' + convertGroup(decPart) + ' قرشاً';
     result += ' لا غير';
     return result;
 }
 
 // ==========================================================================
-// SOUND SYNTHESIS FOR BARCODE SCANNER (Web Audio API)
+// SOUND SYNTHESIS FOR BARCODE SCANNER
 // ==========================================================================
 function playBeep() {
     try {
@@ -104,20 +78,18 @@ function playBeep() {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(1760, audioCtx.currentTime); // High pitch POS beep
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+        osc.frequency.setValueAtTime(1760, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.12);
-    } catch (e) {
-        // Fallback silently if audio context restricted
-    }
+        osc.stop(audioCtx.currentTime + 0.1);
+    } catch (e) {}
 }
 
 // ==========================================================================
-// SEED DATA FOR FIRST-TIME RUN
+// DEFAULT SEED DATA
 // ==========================================================================
 const DEFAULT_PRODUCTS = [
     {
@@ -131,6 +103,7 @@ const DEFAULT_PRODUCTS = [
         costPrice: 95.0,
         wholesalePrice: 135.0,
         barcode: '800123456701',
+        supplierId: 1,
         units: [
             { id: 101, name: 'عبوة فردية', factor: 1, price: 135.0, cost: 95.0, barcode: '800123456701' },
             { id: 102, name: 'كرتونة (12 عبوة)', factor: 12, price: 1550.0, cost: 1140.0, barcode: '800123456718', isDefault: true },
@@ -148,6 +121,7 @@ const DEFAULT_PRODUCTS = [
         costPrice: 110.0,
         wholesalePrice: 160.0,
         barcode: '800234567802',
+        supplierId: 4,
         units: [
             { id: 201, name: 'علبة (2.5 كجم)', factor: 1, price: 160.0, cost: 110.0, barcode: '800234567802' },
             { id: 202, name: 'كرتونة (6 علب)', factor: 6, price: 920.0, cost: 660.0, barcode: '800234567819', isDefault: true },
@@ -156,7 +130,7 @@ const DEFAULT_PRODUCTS = [
     },
     {
         id: 3,
-        name: 'دقيق كابوتو ببيتزا إيطالي فاخر (Caputo 00)',
+        name: 'دقيق كابوتو بيتزا إيطالي فاخر (Caputo 00)',
         sku: 'FLR-CAP-25KG',
         category: 'الدقيق والحبوب',
         baseUnit: 'شوال (25 كجم)',
@@ -165,6 +139,7 @@ const DEFAULT_PRODUCTS = [
         costPrice: 650.0,
         wholesalePrice: 880.0,
         barcode: '800345678903',
+        supplierId: 2,
         units: [
             { id: 301, name: 'شوال (25 كجم)', factor: 1, price: 880.0, cost: 650.0, barcode: '800345678903', isDefault: true },
             { id: 302, name: 'نصف باليتة (20 شوال)', factor: 20, price: 17000.0, cost: 13000.0, barcode: '800345678910' },
@@ -182,6 +157,7 @@ const DEFAULT_PRODUCTS = [
         costPrice: 4200.0,
         wholesalePrice: 5600.0,
         barcode: '800456789004',
+        supplierId: 3,
         units: [
             { id: 401, name: 'ربع قالب (10 كجم)', factor: 1, price: 5600.0, cost: 4200.0, barcode: '800456789004', isDefault: true },
             { id: 402, name: 'نصف قالب (20 كجم)', factor: 2, price: 10900.0, cost: 8400.0, barcode: '800456789011' }
@@ -198,6 +174,7 @@ const DEFAULT_PRODUCTS = [
         costPrice: 45.0,
         wholesalePrice: 65.0,
         barcode: '800567890105',
+        supplierId: 3,
         units: [
             { id: 501, name: 'عبوة (1 لتر)', factor: 1, price: 65.0, cost: 45.0, barcode: '800567890105' },
             { id: 502, name: 'كرتونة (6 عبوات)', factor: 6, price: 370.0, cost: 270.0, barcode: '800567890112', isDefault: true },
@@ -215,6 +192,7 @@ const DEFAULT_PRODUCTS = [
         costPrice: 480.0,
         wholesalePrice: 690.0,
         barcode: '800678901206',
+        supplierId: 1,
         units: [
             { id: 601, name: 'جالون (5 لتر)', factor: 1, price: 690.0, cost: 480.0, barcode: '800678901206', isDefault: true },
             { id: 602, name: 'كرتونة (4 جيلان)', factor: 4, price: 2650.0, cost: 1920.0, barcode: '800678901213' }
@@ -231,6 +209,7 @@ const DEFAULT_PRODUCTS = [
         costPrice: 140.0,
         wholesalePrice: 210.0,
         barcode: '800789012307',
+        supplierId: 2,
         units: [
             { id: 701, name: 'كيس (5 كجم)', factor: 1, price: 210.0, cost: 140.0, barcode: '800789012307' },
             { id: 702, name: 'كرتونة (4 أكياس / 20 كجم)', factor: 4, price: 800.0, cost: 560.0, barcode: '800789012314', isDefault: true }
@@ -247,6 +226,7 @@ const DEFAULT_PRODUCTS = [
         costPrice: 85.0,
         wholesalePrice: 130.0,
         barcode: '800890123408',
+        supplierId: 4,
         units: [
             { id: 801, name: 'شوال (10 كجم)', factor: 1, price: 130.0, cost: 85.0, barcode: '800890123408', isDefault: true },
             { id: 802, name: 'ربطة جملة (5 شكاير / 50 كجم)', factor: 5, price: 600.0, cost: 425.0, barcode: '800890123415' }
@@ -261,10 +241,15 @@ const DEFAULT_CUSTOMERS = [
         contactName: 'الشيف ماركو فهمي',
         phone: '01001234567',
         taxId: 'EG-984-210',
-        tier: 2, // 5% discount
+        tier: 2,
         creditLimit: 35000,
         currentBalance: 7850,
-        paymentTerms: 30
+        paymentTerms: 30,
+        statement: [
+            { date: '2026-11-01', desc: 'رصيد مرحل افتتاحي', debit: 5000, credit: 0, balance: 5000 },
+            { date: '2026-11-05', desc: 'فاتورة مبيعات توريد أسبوعي INV-2611-1020', debit: 5850, credit: 0, balance: 10850 },
+            { date: '2026-11-08', desc: 'سداد نقدي دفعة حساب (سند قبض #401)', debit: 0, credit: 3000, balance: 7850 }
+        ]
     },
     {
         id: 2,
@@ -272,10 +257,14 @@ const DEFAULT_CUSTOMERS = [
         contactName: 'أ/ أيمن الشريف',
         phone: '01123456789',
         taxId: 'EG-114-882',
-        tier: 3, // 10% discount
+        tier: 3,
         creditLimit: 50000,
         currentBalance: 2400,
-        paymentTerms: 15
+        paymentTerms: 15,
+        statement: [
+            { date: '2026-11-03', desc: 'فاتورة مبيعات جملة INV-2611-1045', debit: 7400, credit: 0, balance: 7400 },
+            { date: '2026-11-07', desc: 'تحويل بنكي دفعة حساب (سند قبض #402)', debit: 0, credit: 5000, balance: 2400 }
+        ]
     },
     {
         id: 3,
@@ -283,42 +272,142 @@ const DEFAULT_CUSTOMERS = [
         contactName: 'م/ سامح عبد العزيز',
         phone: '01234567890',
         taxId: 'EG-551-739',
-        tier: 1, // Standard
+        tier: 1,
         creditLimit: 20000,
         currentBalance: 0,
-        paymentTerms: 30
+        paymentTerms: 30,
+        statement: [
+            { date: '2026-11-04', desc: 'فاتورة مبيعات INV-2611-1011', debit: 3200, credit: 0, balance: 3200 },
+            { date: '2026-11-04', desc: 'سداد فوري عند الاستلام نقداً', debit: 0, credit: 3200, balance: 0 }
+        ]
+    }
+];
+
+const DEFAULT_SUPPLIERS = [
+    {
+        id: 1,
+        name: 'مزارع الوادي لزيوت الزيتون الفاخرة',
+        contact: 'م/ حازم النجار',
+        phone: '01011223344',
+        paymentTerms: 30,
+        bankAccount: 'EG3300020001000987654321',
+        currentBalance: 14500,
+        statement: [
+            { date: '2026-11-01', desc: 'فاتورة توريد كراتين زيت زيتون SUP-26-01', debit: 0, credit: 24500, balance: 24500 },
+            { date: '2026-11-06', desc: 'سند صرف دفعة مورد بشيك مصرفي #901', debit: 10000, credit: 0, balance: 14500 }
+        ]
+    },
+    {
+        id: 2,
+        name: 'مطاحن ومصانع كابوتو للدقيق الإيطالي',
+        contact: 'أ/ كمال الألفي',
+        phone: '01222334455',
+        paymentTerms: 30,
+        bankAccount: 'EG5500030002000123456789',
+        currentBalance: 22000,
+        statement: [
+            { date: '2026-11-02', desc: 'فاتورة توريد باليتات دقيق كابوتو SUP-26-04', debit: 0, credit: 32000, balance: 32000 },
+            { date: '2026-11-07', desc: 'سداد دفعة للمورد بتحويل بنكي #902', debit: 10000, credit: 0, balance: 22000 }
+        ]
+    },
+    {
+        id: 3,
+        name: 'دلتا مصر لتوزيع الألبان والأجبان المستوردة',
+        contact: 'الشيف رامي يوسف',
+        phone: '01133445566',
+        paymentTerms: 15,
+        bankAccount: 'EG8800040003000456789012',
+        currentBalance: 9800,
+        statement: [
+            { date: '2026-11-05', desc: 'فاتورة توريد قوالب بارميجيانو وحليب شوفان SUP-26-08', debit: 0, credit: 15800, balance: 15800 },
+            { date: '2026-11-09', desc: 'سداد نقدي من الخزينة #903', debit: 6000, credit: 0, balance: 9800 }
+        ]
+    },
+    {
+        id: 4,
+        name: 'الأهرام للتصنيع وتوزيع المعلبات الغذائية',
+        contact: 'أ/ مدحت بركات',
+        phone: '01044556677',
+        paymentTerms: 30,
+        bankAccount: 'EG1100050004000789012345',
+        currentBalance: 5200,
+        statement: [
+            { date: '2026-11-03', desc: 'فاتورة توريد طماطم معلبة وملح بحري SUP-26-09', debit: 0, credit: 10200, balance: 10200 },
+            { date: '2026-11-08', desc: 'سداد دفعة نقدية #904', debit: 5000, credit: 0, balance: 5200 }
+        ]
+    }
+];
+
+const DEFAULT_PURCHASES = [
+    {
+        id: 1,
+        invoiceNumber: 'SUP-26-01',
+        supplierId: 1,
+        supplierName: 'مزارع الوادي لزيوت الزيتون الفاخرة',
+        date: '2026-11-01 10:30',
+        totalAmount: 24500,
+        paymentStatus: 'آجل على الحساب',
+        items: [
+            { productName: 'زيت زيتون بكر ممتاز إيطالي', quantity: 20, unitPrice: 1140, total: 22800 },
+            { productName: 'خل بلسميك إيطالي 5 لتر', quantity: 3, unitPrice: 566.6, total: 1700 }
+        ]
+    },
+    {
+        id: 2,
+        invoiceNumber: 'SUP-26-04',
+        supplierId: 2,
+        supplierName: 'مطاحن ومصانع كابوتو للدقيق الإيطالي',
+        date: '2026-11-02 11:45',
+        totalAmount: 32000,
+        paymentStatus: 'آجل على الحساب',
+        items: [
+            { productName: 'دقيق كابوتو بيتزا إيطالي فاخر 25 كجم', quantity: 40, unitPrice: 650, total: 26000 },
+            { productName: 'مكرونة ريجاتوني إيطالي 5 كجم', quantity: 10, unitPrice: 600, total: 6000 }
+        ]
     }
 ];
 
 // ==========================================================================
-// KARMA CARMELA APPLICATION CLASS
+// KARMA CARMELA POS & ERP MAIN CONTROLLER
 // ==========================================================================
 class KarmaCarmelaApp {
     constructor() {
+        // Load persistent data or defaults
         this.products = JSON.parse(localStorage.getItem('carmela_products')) || DEFAULT_PRODUCTS;
         this.customers = JSON.parse(localStorage.getItem('carmela_customers')) || DEFAULT_CUSTOMERS;
+        this.suppliers = JSON.parse(localStorage.getItem('carmela_suppliers')) || DEFAULT_SUPPLIERS;
         this.orders = JSON.parse(localStorage.getItem('carmela_orders')) || [];
+        this.purchases = JSON.parse(localStorage.getItem('carmela_purchases')) || DEFAULT_PURCHASES;
         this.auditLog = JSON.parse(localStorage.getItem('carmela_audit_log')) || [];
+        this.theme = localStorage.getItem('carmela_theme') || 'dark';
 
-        // Active State
-        this.currentScreen = 'pos';
+        // Session state
+        this.currentScreen = 'home';
         this.selectedCategory = 'ALL';
         this.searchQuery = '';
-        this.cart = []; // Line items: { product, unit, quantity }
-        this.selectedCustomer = null; // null = Walk-in
+        this.cart = [];
+        this.selectedCustomer = null;
         this.discountPercent = 0;
         this.taxPercent = 0;
         this.paymentMethod = 'CASH';
+
+        // Active Detail Modals state
+        this.activeDetailCustomer = null;
+        this.activeDetailSupplier = null;
 
         this.init();
     }
 
     init() {
+        this.applyTheme(this.theme);
         this.saveAll();
+        this.updateWelcomeGreeting();
+        this.renderHome();
         this.renderCategories();
         this.renderProducts();
         this.renderInventory();
         this.renderCustomers();
+        this.renderSuppliers();
         this.renderReports();
         this.initQuickBarcodes();
     }
@@ -326,46 +415,205 @@ class KarmaCarmelaApp {
     saveAll() {
         localStorage.setItem('carmela_products', JSON.stringify(this.products));
         localStorage.setItem('carmela_customers', JSON.stringify(this.customers));
+        localStorage.setItem('carmela_suppliers', JSON.stringify(this.suppliers));
         localStorage.setItem('carmela_orders', JSON.stringify(this.orders));
+        localStorage.setItem('carmela_purchases', JSON.stringify(this.purchases));
         localStorage.setItem('carmela_audit_log', JSON.stringify(this.auditLog));
     }
 
     // ==========================================================================
-    // SCREEN NAVIGATION
+    // THEME SWITCHER (Dark & Light Mode Toggle)
+    // ==========================================================================
+    toggleTheme() {
+        this.theme = this.theme === 'dark' ? 'light' : 'dark';
+        this.applyTheme(this.theme);
+        localStorage.setItem('carmela_theme', this.theme);
+    }
+
+    applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) {
+            metaTheme.setAttribute('content', theme === 'dark' ? '#0A0F1D' : '#F3F5F9');
+        }
+    }
+
+    // ==========================================================================
+    // SIDEBAR DRAWER (علامة الشروط الثلاثة ☰)
+    // ==========================================================================
+    toggleSidebar() {
+        const drawer = document.getElementById('sidebarDrawer');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (drawer && overlay) {
+            drawer.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+    }
+
+    navTo(screenId) {
+        this.toggleSidebar();
+        this.switchScreen(screenId);
+    }
+
+    resetShift() {
+        if (confirm('هل أنت متأكد من رغبتك في إقفال الوردية الحالية وطباعة تقرير الصندوق؟')) {
+            alert('تم إقفال الوردية الحالية بنجاح وتصفير مؤشرات اليوم للوردية القادمة.');
+            this.switchScreen('reports');
+        }
+    }
+
+    exportAllData() {
+        const backup = {
+            products: this.products,
+            customers: this.customers,
+            suppliers: this.suppliers,
+            orders: this.orders,
+            purchases: this.purchases,
+            auditLog: this.auditLog,
+            exportedAt: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Karma_Carmela_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // ==========================================================================
+    // SCREEN NAVIGATION & BOTTOM BAR
     // ==========================================================================
     switchScreen(screenId) {
         this.currentScreen = screenId;
         document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.b-nav-item').forEach(b => b.classList.remove('active'));
 
         const target = document.getElementById(`screen-${screenId}`);
-        const navBtn = document.querySelector(`.nav-item[data-screen="${screenId}"]`);
+        const navBtn = document.querySelector(`.b-nav-item[data-screen="${screenId}"]`);
+
         if (target) target.classList.add('active');
         if (navBtn) navBtn.classList.add('active');
 
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (screenId === 'home') this.renderHome();
+        if (screenId === 'pos') this.renderProducts();
         if (screenId === 'inventory') this.renderInventory();
         if (screenId === 'customers') this.renderCustomers();
+        if (screenId === 'suppliers') this.renderSuppliers();
         if (screenId === 'reports') this.renderReports();
     }
 
     // ==========================================================================
-    // POS: PRODUCTS & CATEGORIES
+    // HOME DASHBOARD & WELCOME CARD
+    // ==========================================================================
+    updateWelcomeGreeting() {
+        const greetingEl = document.getElementById('welcomeGreeting');
+        if (!greetingEl) return;
+        const hour = new Date().getHours();
+        if (hour >= 5 && hour < 12) {
+            greetingEl.innerText = 'صباح الخير والبركة، مرحباً بك ☀️';
+        } else if (hour >= 12 && hour < 18) {
+            greetingEl.innerText = 'مساء الخير، مرحباً بك في ورديتك ☕';
+        } else {
+            greetingEl.innerText = 'مساء الخير والازدهار، مرحباً بك 🌙';
+        }
+    }
+
+    renderHome() {
+        this.updateWelcomeGreeting();
+
+        // Calculate live shift stats
+        let todaySales = 0;
+        let todayCash = 0;
+
+        this.orders.forEach(o => {
+            todaySales += o.grandTotal;
+            if (o.paymentMethod === 'CASH') todayCash += o.grandTotal;
+        });
+
+        const totalReceivables = this.customers.reduce((sum, c) => sum + c.currentBalance, 0);
+        const totalPayables = this.suppliers.reduce((sum, s) => sum + s.currentBalance, 0);
+
+        let totalStockVal = 0;
+        let lowStockList = [];
+
+        this.products.forEach(p => {
+            totalStockVal += p.currentStock * p.wholesalePrice;
+            if (p.currentStock <= p.minStock) {
+                lowStockList.push(p);
+            }
+        });
+
+        // Welcome Strip
+        document.getElementById('homeTodaySales').innerText = todaySales.toLocaleString() + ' ج.م';
+        document.getElementById('homeCashDrawer').innerText = todayCash.toLocaleString() + ' ج.م';
+        document.getElementById('homeReceivables').innerText = totalReceivables.toLocaleString() + ' ج.م';
+        document.getElementById('homePayables').innerText = totalPayables.toLocaleString() + ' ج.م';
+
+        // Bento Cards Metrics
+        document.getElementById('homeStockValuation').innerText = totalStockVal.toLocaleString() + ' ج.م';
+        document.getElementById('homeStockCountText').innerText = `${this.products.length} أصناف مسجلة في المستودع`;
+        document.getElementById('homeCustomersDebt').innerText = totalReceivables.toLocaleString() + ' ج.م';
+        document.getElementById('homeCustomersCount').innerText = `${this.customers.length} عملاء ومطاعم مسجلين`;
+        document.getElementById('homeSuppliersDebt').innerText = totalPayables.toLocaleString() + ' ج.م';
+        document.getElementById('homeSuppliersCount').innerText = `${this.suppliers.length} موردين معتمدين`;
+
+        // Recent Orders Table in Home
+        const ordersTbody = document.querySelector('#homeRecentOrdersTable tbody');
+        if (ordersTbody) {
+            ordersTbody.innerHTML = this.orders.slice(0, 5).map(o => `
+                <tr>
+                    <td><strong>${o.orderNumber}</strong></td>
+                    <td>${o.customerName}</td>
+                    <td>${o.date.slice(0, 10)}</td>
+                    <td><strong>${o.grandTotal.toFixed(2)} ج.م</strong></td>
+                    <td><span class="inv-status-badge">${o.paymentMethod === 'CREDIT_NET30' ? 'آجل' : 'نقداً'}</span></td>
+                </tr>
+            `).join('') || '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">لا توجد فواتير اليوم بعد</td></tr>';
+        }
+
+        // Low Stock List in Home
+        const lowList = document.getElementById('homeLowStockList');
+        if (lowList) {
+            if (lowStockList.length === 0) {
+                lowList.innerHTML = `
+                    <div style="text-align:center; padding:20px; color:var(--accent-emerald);">
+                        <i class="fa-solid fa-circle-check fa-2x" style="margin-bottom:6px;"></i>
+                        <p style="font-size:0.85rem;">جميع أرصدة المستودع آمنة وفوق حد الطلب</p>
+                    </div>
+                `;
+            } else {
+                lowList.innerHTML = lowStockList.slice(0, 4).map(p => `
+                    <div class="low-stock-item">
+                        <div>
+                            <strong>${p.name}</strong>
+                            <div style="font-size:0.75rem; color:var(--text-muted);">${p.category} • متبقي: ${p.currentStock} ${p.baseUnit}</div>
+                        </div>
+                        <span class="low-stock-pill">طلب توريد (<${p.minStock})</span>
+                    </div>
+                `).join('');
+            }
+        }
+    }
+
+    // ==========================================================================
+    // POS: PRODUCTS, CATEGORIES, CART & CHECKOUT
     // ==========================================================================
     renderCategories() {
         const bar = document.getElementById('categoriesBar');
         if (!bar) return;
 
         const categories = ['ALL', ...new Set(this.products.map(p => p.category))];
-        const labels = {
-            'ALL': 'جميع الأصناف'
-        };
+        const labels = { 'ALL': 'جميع الأصناف' };
 
         bar.innerHTML = categories.map(cat => {
             const isSel = this.selectedCategory === cat;
             return `<button class="cat-chip ${isSel ? 'active' : ''}" onclick="app.setCategory('${cat}')">${labels[cat] || cat}</button>`;
         }).join('');
 
-        // Also update inventory category filter
         const invSelect = document.getElementById('inventoryCategoryFilter');
         if (invSelect) {
             invSelect.innerHTML = `<option value="ALL">جميع الأقسام</option>` +
@@ -419,10 +667,7 @@ class KarmaCarmelaApp {
 
         grid.innerHTML = filtered.map(prod => {
             const isLowStock = prod.currentStock <= prod.minStock;
-
-            // Unit buttons
             const unitsHtml = prod.units.map(unit => {
-                // Calculate price based on customer tier
                 const effectivePrice = this.calculateTierPrice(unit.price);
                 return `
                     <button class="unit-button" onclick="app.addToCart(${prod.id}, ${unit.id})">
@@ -441,7 +686,7 @@ class KarmaCarmelaApp {
                         <div class="prod-top-meta">
                             <span class="prod-category-tag">${prod.category}</span>
                             <span class="prod-stock-badge ${isLowStock ? 'low' : ''}">
-                                ${isLowStock ? '<i class="fa-solid fa-triangle-exclamation"></i> رصيد قليل: ' : 'متاح: '}
+                                ${isLowStock ? 'نقص: ' : 'متاح: '}
                                 ${prod.currentStock} ${prod.baseUnit}
                             </span>
                         </div>
@@ -458,14 +703,11 @@ class KarmaCarmelaApp {
 
     calculateTierPrice(basePrice) {
         if (!this.selectedCustomer) return basePrice;
-        if (this.selectedCustomer.tier === 3) return basePrice * 0.90; // 10% off
-        if (this.selectedCustomer.tier === 2) return basePrice * 0.95; // 5% off
+        if (this.selectedCustomer.tier === 3) return basePrice * 0.90;
+        if (this.selectedCustomer.tier === 2) return basePrice * 0.95;
         return basePrice;
     }
 
-    // ==========================================================================
-    // POS: CART OPERATIONS
-    // ==========================================================================
     addToCart(productId, unitId) {
         const product = this.products.find(p => p.id === productId);
         if (!product) return;
@@ -475,11 +717,7 @@ class KarmaCarmelaApp {
         if (existingIndex >= 0) {
             this.cart[existingIndex].quantity += 1;
         } else {
-            this.cart.push({
-                product,
-                unit,
-                quantity: 1
-            });
+            this.cart.push({ product, unit, quantity: 1 });
         }
 
         playBeep();
@@ -548,7 +786,6 @@ class KarmaCarmelaApp {
         const totalItemsCount = this.cart.reduce((sum, item) => sum + item.quantity, 0);
         if (badge) badge.innerText = totalItemsCount;
 
-        // Customer labels
         if (this.selectedCustomer) {
             if (custNameEl) custNameEl.innerText = this.selectedCustomer.businessName;
             if (headerCust) headerCust.innerText = this.selectedCustomer.businessName;
@@ -564,7 +801,7 @@ class KarmaCarmelaApp {
                 list.innerHTML = `
                     <div class="cart-empty-msg">
                         <i class="fa-solid fa-basket-shopping"></i>
-                        <p>سلة المبيعات فارغة حالياً</p>
+                        <p>سلة المبيعات فارغة</p>
                         <small>اضغط على أي صنف لإضافته إلى الفاتورة</small>
                     </div>
                 `;
@@ -576,7 +813,6 @@ class KarmaCarmelaApp {
         }
 
         let rawSubtotal = 0;
-
         if (list) {
             list.innerHTML = this.cart.map((item, idx) => {
                 const effectiveUnitPrice = this.calculateTierPrice(item.unit.price);
@@ -587,9 +823,7 @@ class KarmaCarmelaApp {
                     <div class="cart-item-card">
                         <div class="cart-item-top">
                             <span class="cart-item-title">${item.product.name}</span>
-                            <button class="btn-remove-item" onclick="app.removeCartItem(${idx})">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
+                            <button class="btn-remove-item" onclick="app.removeCartItem(${idx})"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                         <div class="cart-item-unit-row">
                             ${item.unit.name} • ${effectiveUnitPrice.toFixed(2)} ج.م
@@ -614,23 +848,15 @@ class KarmaCarmelaApp {
 
         if (subtotalEl) subtotalEl.innerText = rawSubtotal.toFixed(2) + ' ج.م';
         if (totalEl) totalEl.innerText = grandTotal.toFixed(2) + ' ج.م';
-
-        // TAFQEET CALL
-        if (tafqeetEl) {
-            tafqeetEl.innerText = tafqeet(grandTotal);
-        }
+        if (tafqeetEl) tafqeetEl.innerText = tafqeet(grandTotal);
     }
 
-    // ==========================================================================
-    // POS: CHECKOUT & INVOICE GENERATION
-    // ==========================================================================
     completeCheckout() {
         if (this.cart.length === 0) {
             alert('السلة فارغة! يرجى إضافة أصناف أولاً.');
             return;
         }
 
-        // Calculate totals
         let rawSubtotal = 0;
         const orderItems = this.cart.map(item => {
             const unitPrice = this.calculateTierPrice(item.unit.price);
@@ -656,7 +882,6 @@ class KarmaCarmelaApp {
         const taxAmount = taxable * (this.taxPercent / 100);
         const grandTotal = taxable + taxAmount;
 
-        // Credit check
         if (this.paymentMethod === 'CREDIT_NET30') {
             if (!this.selectedCustomer) {
                 alert('البيع الآجل يتطلب تحديد حساب عميل مسجل!');
@@ -664,7 +889,7 @@ class KarmaCarmelaApp {
                 return;
             }
             if (this.selectedCustomer.currentBalance + grandTotal > this.selectedCustomer.creditLimit) {
-                const proceed = confirm(`تحذير: الفاتورة ستتجاوز الحد الائتماني للعميل (${this.selectedCustomer.creditLimit} ج.م). هل تريد المتابعة؟`);
+                const proceed = confirm(`تحذير: الفاتورة ستتجاوز الحد الائتماني للعميل (${this.selectedCustomer.creditLimit} ج.م). متابعة؟`);
                 if (!proceed) return;
             }
             this.selectedCustomer.currentBalance += grandTotal;
@@ -695,7 +920,19 @@ class KarmaCarmelaApp {
             tafqeetWords: tafqeet(grandTotal)
         };
 
-        // Deduct inventory stock & record audit
+        // Add to customer's personal statement ledger if customer assigned
+        if (this.selectedCustomer) {
+            if (!this.selectedCustomer.statement) this.selectedCustomer.statement = [];
+            this.selectedCustomer.statement.push({
+                date: now.toISOString().slice(0, 10),
+                desc: `فاتورة مبيعات ${invNum} (${order.paymentStatus})`,
+                debit: grandTotal,
+                credit: 0,
+                balance: this.selectedCustomer.currentBalance
+            });
+        }
+
+        // Deduct inventory stock
         orderItems.forEach(oi => {
             const prod = this.products.find(p => p.id === oi.productId);
             if (prod) {
@@ -717,15 +954,13 @@ class KarmaCarmelaApp {
         this.orders.unshift(order);
         this.saveAll();
 
-        // Show Invoice Modal
         this.showInvoiceModal(order);
-
-        // Reset Cart
         this.cart = [];
         this.discountPercent = 0;
         this.renderCart();
         this.toggleCartDrawer();
         this.renderProducts();
+        this.renderHome();
         this.renderReports();
         this.renderInventory();
     }
@@ -739,7 +974,7 @@ class KarmaCarmelaApp {
 
         const methodMap = {
             'CASH': 'نقداً فوري',
-            'CARD': 'بطاقة فيزا / مدى',
+            'CARD': 'بطاقة شبكة / فيزا',
             'CREDIT_NET30': 'آجل (30 يوم)',
             'TRANSFER': 'تحويل بنكي'
         };
@@ -847,7 +1082,471 @@ class KarmaCarmelaApp {
     }
 
     // ==========================================================================
-    // INVENTORY MANAGEMENT
+    // CUSTOMER ACCOUNTS & DRILL-DOWN STATEMENT OF ACCOUNT
+    // ==========================================================================
+    renderCustomers() {
+        const grid = document.getElementById('customersGrid');
+        const receivablesEl = document.getElementById('totalReceivablesDisplay');
+
+        const totalReceivables = this.customers.reduce((sum, c) => sum + c.currentBalance, 0);
+        if (receivablesEl) receivablesEl.innerText = totalReceivables.toLocaleString() + ' ج.م';
+
+        if (!grid) return;
+
+        grid.innerHTML = this.customers.map(c => `
+            <div class="account-card">
+                <div>
+                    <div class="acc-card-top">
+                        <h4 class="acc-name">${c.businessName}</h4>
+                        <span class="account-badge">شريحة ${c.tier}</span>
+                    </div>
+                    <div class="acc-meta">
+                        <i class="fa-solid fa-user-tie"></i> ${c.contactName} • <i class="fa-solid fa-phone"></i> ${c.phone}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="acc-balance-row">
+                        <span>الرصيد الآجل المطلوب:</span>
+                        <strong style="color: ${c.currentBalance > 0 ? 'var(--accent-amber)' : 'var(--text-primary)'}">
+                            ${c.currentBalance.toLocaleString()} ج.م
+                        </strong>
+                    </div>
+
+                    <div class="acc-actions-row">
+                        <button class="btn-open-account" onclick="app.openCustomerDetail(${c.id})">
+                            <i class="fa-solid fa-folder-open"></i> فتح الحساب والبيان
+                        </button>
+                        <button class="btn-action-primary" style="font-size:0.75rem; padding:6px 10px;" onclick="app.openPaymentModal(${c.id})">
+                            <i class="fa-solid fa-hand-holding-dollar"></i> تحصيل
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    openCustomerDetail(id) {
+        const c = this.customers.find(item => item.id === id);
+        if (!c) return;
+
+        this.activeDetailCustomer = c;
+
+        document.getElementById('cdModalTitle').innerText = `ملف العميل: ${c.businessName}`;
+        document.getElementById('cdModalTier').innerText = `شريحة ${c.tier} (${c.tier === 3 ? 'خصم 10%' : c.tier === 2 ? 'خصم 5%' : 'أسعار قياسية'})`;
+        document.getElementById('cdBalanceDisplay').innerText = `${c.currentBalance.toLocaleString()} ج.م`;
+        document.getElementById('cdLimitDisplay').innerText = `${c.creditLimit.toLocaleString()} ج.م`;
+
+        // Switch to Tab 1 (Statement)
+        this.switchCustomerTab('statement');
+
+        // Populate Tab 3 (Edit)
+        document.getElementById('cdEditId').value = c.id;
+        document.getElementById('cdEditBusinessName').value = c.businessName;
+        document.getElementById('cdEditContact').value = c.contactName;
+        document.getElementById('cdEditPhone').value = c.phone;
+        document.getElementById('cdEditTier').value = c.tier;
+        document.getElementById('cdEditLimit').value = c.creditLimit;
+        document.getElementById('cdEditTaxId').value = c.taxId || '';
+
+        // Render Invoices Tab
+        const customerOrders = this.orders.filter(o => o.customerId === c.id);
+        const invTbody = document.querySelector('#cdInvoicesTable tbody');
+        if (invTbody) {
+            invTbody.innerHTML = customerOrders.map(o => `
+                <tr>
+                    <td><strong>${o.orderNumber}</strong></td>
+                    <td>${o.date}</td>
+                    <td>${o.paymentMethod === 'CREDIT_NET30' ? 'آجل' : 'نقداً'}</td>
+                    <td><strong>${o.grandTotal.toFixed(2)} ج.م</strong></td>
+                    <td><button class="btn-table-action" onclick="app.previewOrder(${o.id})"><i class="fa-solid fa-eye"></i></button></td>
+                </tr>
+            `).join('') || '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">لا توجد فواتير سابقة لهذا العميل</td></tr>';
+        }
+
+        // Render Statement Tab
+        const stmtTbody = document.querySelector('#cdStatementTable tbody');
+        if (stmtTbody) {
+            const statement = c.statement || [
+                { date: '2026-11-01', desc: 'رصيد مرحل', debit: c.currentBalance, credit: 0, balance: c.currentBalance }
+            ];
+            stmtTbody.innerHTML = statement.map(s => `
+                <tr>
+                    <td>${s.date}</td>
+                    <td><strong>${s.desc}</strong></td>
+                    <td style="color:var(--accent-rose);">${s.debit > 0 ? s.debit.toFixed(2) + ' ج.م' : '-'}</td>
+                    <td style="color:var(--accent-emerald);">${s.credit > 0 ? s.credit.toFixed(2) + ' ج.م' : '-'}</td>
+                    <td><strong>${s.balance.toFixed(2)} ج.م</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('customerDetailModal').classList.add('active');
+    }
+
+    closeCustomerDetailModal() {
+        document.getElementById('customerDetailModal').classList.remove('active');
+    }
+
+    switchCustomerTab(tabName) {
+        document.querySelectorAll('#customerDetailModal .acc-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('#customerDetailModal .acc-tab-content').forEach(c => c.classList.remove('active'));
+
+        const targetBtn = document.querySelector(`#customerDetailModal .acc-tab[data-tab="${tabName}"]`);
+        if (targetBtn) targetBtn.classList.add('active');
+
+        if (tabName === 'statement') document.getElementById('cdTabStatement')?.classList.add('active');
+        if (tabName === 'invoices') document.getElementById('cdTabInvoices')?.classList.add('active');
+        if (tabName === 'edit') document.getElementById('cdTabEdit')?.classList.add('active');
+    }
+
+    saveCustomerEdit() {
+        const id = parseInt(document.getElementById('cdEditId').value);
+        const c = this.customers.find(item => item.id === id);
+        if (!c) return;
+
+        c.businessName = document.getElementById('cdEditBusinessName').value.trim();
+        c.contactName = document.getElementById('cdEditContact').value.trim();
+        c.phone = document.getElementById('cdEditPhone').value.trim();
+        c.tier = parseInt(document.getElementById('cdEditTier').value) || 1;
+        c.creditLimit = parseFloat(document.getElementById('cdEditLimit').value) || 10000;
+        c.taxId = document.getElementById('cdEditTaxId').value.trim();
+
+        this.saveAll();
+        this.renderCustomers();
+        this.renderHome();
+        this.closeCustomerDetailModal();
+        alert('تم تعديل وحفظ بيانات العميل بنجاح.');
+    }
+
+    openPaymentFromDetail() {
+        if (this.activeDetailCustomer) {
+            this.openPaymentModal(this.activeDetailCustomer.id);
+        }
+    }
+
+    // ==========================================================================
+    // SUPPLIERS & PURCHASING INVOICES ENGINE
+    // ==========================================================================
+    renderSuppliers() {
+        const grid = document.getElementById('suppliersGrid');
+        const payablesEl = document.getElementById('totalPayablesDisplay');
+
+        const totalPayables = this.suppliers.reduce((sum, s) => sum + s.currentBalance, 0);
+        if (payablesEl) payablesEl.innerText = totalPayables.toLocaleString() + ' ج.م';
+
+        if (!grid) return;
+
+        grid.innerHTML = this.suppliers.map(s => `
+            <div class="account-card">
+                <div>
+                    <div class="acc-card-top">
+                        <h4 class="acc-name">${s.name}</h4>
+                        <span class="account-badge purple">مورد أغذية</span>
+                    </div>
+                    <div class="acc-meta">
+                        <i class="fa-solid fa-user-gear"></i> ${s.contact} • <i class="fa-solid fa-phone"></i> ${s.phone}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="acc-balance-row">
+                        <span>المستحق للمورد (الدائنون):</span>
+                        <strong style="color: ${s.currentBalance > 0 ? 'var(--accent-rose)' : 'var(--text-primary)'}">
+                            ${s.currentBalance.toLocaleString()} ج.م
+                        </strong>
+                    </div>
+
+                    <div class="acc-actions-row">
+                        <button class="btn-open-account" onclick="app.openSupplierDetail(${s.id})">
+                            <i class="fa-solid fa-folder-open"></i> كشف الحساب وفواتير التوريد
+                        </button>
+                        <button class="btn-action-primary" style="font-size:0.75rem; padding:6px 10px;" onclick="app.openSupplierPayModal(${s.id})">
+                            <i class="fa-solid fa-money-bill-transfer"></i> سداد دفعة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        // Also update purchase invoice supplier select dropdown
+        const purSupSelect = document.getElementById('purSupplierSelect');
+        if (purSupSelect) {
+            purSupSelect.innerHTML = this.suppliers.map(s => `
+                <option value="${s.id}">${s.name} (المستحق: ${s.currentBalance} ج.م)</option>
+            `).join('');
+        }
+    }
+
+    openSupplierDetail(id) {
+        const s = this.suppliers.find(item => item.id === id);
+        if (!s) return;
+
+        this.activeDetailSupplier = s;
+
+        document.getElementById('sdModalTitle').innerText = `ملف المورد: ${s.name}`;
+        document.getElementById('sdModalCompany').innerText = `شروط السداد: ${s.paymentTerms} يوم`;
+        document.getElementById('sdBalanceDisplay').innerText = `${s.currentBalance.toLocaleString()} ج.م`;
+        document.getElementById('sdTermsDisplay').innerText = `${s.paymentTerms} يوم`;
+
+        this.switchSupplierTab('statement');
+
+        // Populate Edit Tab
+        document.getElementById('sdEditId').value = s.id;
+        document.getElementById('sdEditName').value = s.name;
+        document.getElementById('sdEditContact').value = s.contact;
+        document.getElementById('sdEditPhone').value = s.phone;
+        document.getElementById('sdEditTerms').value = s.paymentTerms;
+        document.getElementById('sdEditBank').value = s.bankAccount || '';
+
+        // Purchases Table
+        const supPurchases = this.purchases.filter(p => p.supplierId === s.id);
+        const purTbody = document.querySelector('#sdPurchasesTable tbody');
+        if (purTbody) {
+            purTbody.innerHTML = supPurchases.map(p => `
+                <tr>
+                    <td><strong>${p.invoiceNumber}</strong></td>
+                    <td>${p.date}</td>
+                    <td>${p.items ? p.items.length : 1} أصناف</td>
+                    <td><strong>${p.totalAmount.toLocaleString()} ج.م</strong></td>
+                    <td><span class="inv-status-badge">${p.paymentStatus}</span></td>
+                </tr>
+            `).join('') || '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">لا توجد فواتير توريد مسجلة لهذا المورد</td></tr>';
+        }
+
+        // Statement Table
+        const stmtTbody = document.querySelector('#sdStatementTable tbody');
+        if (stmtTbody) {
+            const statement = s.statement || [
+                { date: '2026-11-01', desc: 'رصيد مرحل توريدات سابقة', debit: 0, credit: s.currentBalance, balance: s.currentBalance }
+            ];
+            stmtTbody.innerHTML = statement.map(st => `
+                <tr>
+                    <td>${st.date}</td>
+                    <td><strong>${st.desc}</strong></td>
+                    <td style="color:var(--accent-rose);">${st.credit > 0 ? st.credit.toFixed(2) + ' ج.م' : '-'}</td>
+                    <td style="color:var(--accent-emerald);">${st.debit > 0 ? st.debit.toFixed(2) + ' ج.م' : '-'}</td>
+                    <td><strong>${st.balance.toFixed(2)} ج.م</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('supplierDetailModal').classList.add('active');
+    }
+
+    closeSupplierDetailModal() {
+        document.getElementById('supplierDetailModal').classList.remove('active');
+    }
+
+    switchSupplierTab(tabName) {
+        document.querySelectorAll('#supplierDetailModal .acc-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('#supplierDetailModal .acc-tab-content').forEach(c => c.classList.remove('active'));
+
+        const targetBtn = document.querySelector(`#supplierDetailModal .acc-tab[data-tab="${tabName}"]`);
+        if (targetBtn) targetBtn.classList.add('active');
+
+        if (tabName === 'statement') document.getElementById('sdTabStatement')?.classList.add('active');
+        if (tabName === 'purchases') document.getElementById('sdTabPurchases')?.classList.add('active');
+        if (tabName === 'edit') document.getElementById('sdTabEdit')?.classList.add('active');
+    }
+
+    saveSupplierEdit() {
+        const id = parseInt(document.getElementById('sdEditId').value);
+        const s = this.suppliers.find(item => item.id === id);
+        if (!s) return;
+
+        s.name = document.getElementById('sdEditName').value.trim();
+        s.contact = document.getElementById('sdEditContact').value.trim();
+        s.phone = document.getElementById('sdEditPhone').value.trim();
+        s.paymentTerms = parseInt(document.getElementById('sdEditTerms').value) || 30;
+        s.bankAccount = document.getElementById('sdEditBank').value.trim();
+
+        this.saveAll();
+        this.renderSuppliers();
+        this.renderHome();
+        this.closeSupplierDetailModal();
+        alert('تم تعديل وحفظ بيانات المورد بنجاح.');
+    }
+
+    // Modal: Add Supplier
+    openAddSupplierModal() {
+        document.getElementById('addSupName').value = '';
+        document.getElementById('addSupContact').value = '';
+        document.getElementById('addSupPhone').value = '';
+        document.getElementById('addSupTerms').value = '30';
+        document.getElementById('addSupBank').value = '';
+        document.getElementById('addSupplierModal').classList.add('active');
+    }
+
+    closeAddSupplierModal() {
+        document.getElementById('addSupplierModal').classList.remove('active');
+    }
+
+    saveNewSupplier() {
+        const name = document.getElementById('addSupName').value.trim();
+        const contact = document.getElementById('addSupContact').value.trim();
+        const phone = document.getElementById('addSupPhone').value.trim();
+        const paymentTerms = parseInt(document.getElementById('addSupTerms').value) || 30;
+        const bankAccount = document.getElementById('addSupBank').value.trim();
+
+        if (!name || !phone) return;
+
+        this.suppliers.push({
+            id: Date.now(),
+            name,
+            contact,
+            phone,
+            paymentTerms,
+            bankAccount,
+            currentBalance: 0,
+            statement: []
+        });
+
+        this.saveAll();
+        this.closeAddSupplierModal();
+        this.renderSuppliers();
+        this.renderHome();
+    }
+
+    // Modal: Pay Supplier
+    openSupplierPayModal(id) {
+        const s = this.suppliers.find(item => item.id === id) || this.activeDetailSupplier;
+        if (!s) return;
+
+        document.getElementById('spModalSupId').value = s.id;
+        document.getElementById('spModalSummary').innerHTML = `
+            <strong>${s.name}</strong>
+            <p>المبلغ المستحق للمورد: <strong style="color:var(--accent-rose);">${s.currentBalance.toLocaleString()} ج.م</strong></p>
+        `;
+        document.getElementById('spModalAmount').value = s.currentBalance;
+        document.getElementById('supplierPayModal').classList.add('active');
+    }
+
+    closeSupplierPayModal() {
+        document.getElementById('supplierPayModal').classList.remove('active');
+    }
+
+    saveSupplierPayment() {
+        const id = parseInt(document.getElementById('spModalSupId').value);
+        const s = this.suppliers.find(item => item.id === id);
+        const amt = parseFloat(document.getElementById('spModalAmount').value) || 0;
+        const method = document.getElementById('spModalMethod').value;
+
+        if (s && amt > 0) {
+            s.currentBalance = Math.max(0, s.currentBalance - amt);
+            if (!s.statement) s.statement = [];
+            s.statement.push({
+                date: new Date().toISOString().slice(0, 10),
+                desc: `سداد دفعة للمورد (${method === 'CASH' ? 'نقداً' : method === 'TRANSFER' ? 'تحويل بنكي' : 'شيك'}) سند صرف`,
+                debit: amt,
+                credit: 0,
+                balance: s.currentBalance
+            });
+
+            this.saveAll();
+            this.closeSupplierPayModal();
+            this.renderSuppliers();
+            this.renderHome();
+            if (this.activeDetailSupplier && this.activeDetailSupplier.id === s.id) {
+                this.openSupplierDetail(s.id);
+            }
+            alert(`تم تسجيل سند صرف بقيمة ${amt.toLocaleString()} ج.م للمورد ${s.name} بنجاح.`);
+        }
+    }
+
+    // Modal: New Purchase Bill
+    openNewPurchaseModal() {
+        const prodSelect = document.getElementById('purProductSelect');
+        if (prodSelect) {
+            prodSelect.innerHTML = this.products.map(p => `
+                <option value="${p.id}" data-cost="${p.costPrice}">${p.name} (تكلفة: ${p.costPrice} ج.م)</option>
+            `).join('');
+            prodSelect.onchange = () => {
+                const opt = prodSelect.options[prodSelect.selectedIndex];
+                document.getElementById('purUnitPrice').value = opt.getAttribute('data-cost');
+            };
+            if (this.products.length > 0) {
+                document.getElementById('purUnitPrice').value = this.products[0].costPrice;
+            }
+        }
+        document.getElementById('purInvoiceNumber').value = 'SUP-' + new Date().toISOString().slice(2, 10).replace(/-/g, '') + '-' + Math.floor(100 + Math.random() * 900);
+        document.getElementById('purQty').value = '20';
+        document.getElementById('purchaseModal').classList.add('active');
+    }
+
+    closePurchaseModal() {
+        document.getElementById('purchaseModal').classList.remove('active');
+    }
+
+    savePurchaseInvoice() {
+        const supId = parseInt(document.getElementById('purSupplierSelect').value);
+        const prodId = parseInt(document.getElementById('purProductSelect').value);
+        const invNum = document.getElementById('purInvoiceNumber').value.trim();
+        const qty = parseFloat(document.getElementById('purQty').value) || 0;
+        const price = parseFloat(document.getElementById('purUnitPrice').value) || 0;
+        const method = document.getElementById('purPaymentMethod').value;
+
+        const sup = this.suppliers.find(s => s.id === supId);
+        const prod = this.products.find(p => p.id === prodId);
+
+        if (!sup || !prod || qty <= 0) return;
+
+        const total = qty * price;
+        const now = new Date();
+
+        // 1. Increase product stock
+        const prev = prod.currentStock;
+        prod.currentStock += qty;
+        prod.costPrice = price; // update cost price to latest supply
+
+        // 2. Update supplier balance if on credit
+        if (method === 'CREDIT_NET30') {
+            sup.currentBalance += total;
+        }
+
+        if (!sup.statement) sup.statement = [];
+        sup.statement.push({
+            date: now.toISOString().slice(0, 10),
+            desc: `فاتورة توريد ${invNum} (${qty} x ${prod.name})`,
+            debit: 0,
+            credit: total,
+            balance: sup.currentBalance
+        });
+
+        // 3. Save purchase invoice
+        this.purchases.unshift({
+            id: Date.now(),
+            invoiceNumber: invNum,
+            supplierId: sup.id,
+            supplierName: sup.name,
+            date: now.toLocaleString('ar-EG'),
+            totalAmount: total,
+            paymentStatus: method === 'CREDIT_NET30' ? 'آجل على الحساب' : 'مسددة فورياً',
+            items: [{ productName: prod.name, quantity: qty, unitPrice: price, total }]
+        });
+
+        // 4. Log in Audit
+        this.auditLog.unshift({
+            id: Date.now(),
+            productName: prod.name,
+            type: 'توريد بضاعة',
+            qty: qty,
+            previousStock: prev,
+            newStock: prod.currentStock,
+            date: now.toLocaleString('ar-EG'),
+            ref: invNum
+        });
+
+        this.saveAll();
+        this.closePurchaseModal();
+        this.renderInventory();
+        this.renderSuppliers();
+        this.renderHome();
+        alert(`تم استلام وتوريد ${qty} ${prod.baseUnit} من الصنف (${prod.name}) وتحديث حساب المورد.`);
+    }
+
+    // ==========================================================================
+    // INVENTORY CRUD & MODALS
     // ==========================================================================
     renderInventory() {
         const searchInput = document.getElementById('inventorySearchInput');
@@ -861,7 +1560,6 @@ class KarmaCarmelaApp {
             return matchesCat && matchesQ;
         });
 
-        // Stats
         let totalCost = 0;
         let totalWholesale = 0;
         let lowCount = 0;
@@ -888,7 +1586,7 @@ class KarmaCarmelaApp {
                 <tr>
                     <td>
                         <strong>${p.name}</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;">SKU: ${p.sku} | Barcode: ${p.barcode}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-family:monospace;">SKU: ${p.sku} | Barcode: ${p.barcode}</div>
                     </td>
                     <td><span class="prod-category-tag">${p.category}</span></td>
                     <td>
@@ -898,23 +1596,16 @@ class KarmaCarmelaApp {
                     </td>
                     <td>${p.costPrice.toFixed(2)} ج.م</td>
                     <td><strong>${p.wholesalePrice.toFixed(2)} ج.م</strong></td>
-                    <td style="font-size: 0.78rem; color: var(--text-secondary);">${unitsDesc}</td>
+                    <td style="font-size:0.78rem; color:var(--text-secondary);">${unitsDesc}</td>
                     <td>
                         <span class="prod-stock-badge ${isLow ? 'low' : ''}">
                             ${isLow ? 'نقص مخزون' : 'جيد'}
                         </span>
                     </td>
                     <td>
-                        <div class="table-action-btns">
-                            <button class="btn-table-action" onclick="app.openStockAdjustModal(${p.id})" title="توريد / تعديل رصيد">
-                                <i class="fa-solid fa-truck-ramp-box"></i>
-                            </button>
-                            <button class="btn-table-action" onclick="app.openEditProductModal(${p.id})" title="تعديل الصنف">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button class="btn-table-action" onclick="app.deleteProduct(${p.id})" title="حذف">
-                                <i class="fa-solid fa-trash" style="color: var(--accent-rose);"></i>
-                            </button>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn-table-action" onclick="app.openEditProductModal(${p.id})" title="تعديل"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="btn-table-action" onclick="app.deleteProduct(${p.id})" title="حذف"><i class="fa-solid fa-trash" style="color:var(--accent-rose);"></i></button>
                         </div>
                     </td>
                 </tr>
@@ -930,7 +1621,7 @@ class KarmaCarmelaApp {
     }
 
     openAddProductModal() {
-        document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-box"></i> إضافة صنف جملة جديد';
+        document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-box"></i> إضافة صنف جديد للمخزن';
         document.getElementById('prodId').value = '';
         document.getElementById('prodName').value = '';
         document.getElementById('prodSku').value = '';
@@ -944,12 +1635,11 @@ class KarmaCarmelaApp {
         const container = document.getElementById('unitsRowsContainer');
         container.innerHTML = `
             <div class="unit-config-row">
-                <input type="text" class="custom-input" placeholder="اسم العبوة (مثال: كرتونة 12)" value="كرتونة (12 عبوة)" style="flex:2">
+                <input type="text" class="custom-input" placeholder="اسم العبوة" value="كرتونة (12 عبوة)" style="flex:2">
                 <input type="number" class="custom-input" placeholder="المعامل" value="12" style="flex:1">
                 <input type="number" class="custom-input" placeholder="سعر البيع" value="850" style="flex:1">
             </div>
         `;
-
         document.getElementById('productModal').classList.add('active');
     }
 
@@ -957,7 +1647,7 @@ class KarmaCarmelaApp {
         const p = this.products.find(item => item.id === id);
         if (!p) return;
 
-        document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> تعديل صنف';
+        document.getElementById('productModalTitle').innerHTML = '<i class="fa-solid fa-pen-to-square"></i> تعديل الصنف';
         document.getElementById('prodId').value = p.id;
         document.getElementById('prodName').value = p.name;
         document.getElementById('prodSku').value = p.sku;
@@ -1005,7 +1695,6 @@ class KarmaCarmelaApp {
         const wholesalePrice = parseFloat(document.getElementById('prodPrice').value) || 0;
         const barcode = document.getElementById('prodBarcode').value.trim() || Math.floor(100000000000 + Math.random() * 900000000000).toString();
 
-        // Extract units
         const unitRows = document.querySelectorAll('#unitsRowsContainer .unit-config-row');
         const units = [
             { id: Date.now() + 1, name: `عبوة فردية (${baseUnit})`, factor: 1, price: wholesalePrice, cost: costPrice, barcode }
@@ -1030,13 +1719,11 @@ class KarmaCarmelaApp {
         });
 
         if (id) {
-            // Edit
             const existing = this.products.find(p => p.id == id);
             if (existing) {
                 Object.assign(existing, { name, sku, category, baseUnit, currentStock: stock, minStock, costPrice, wholesalePrice, barcode, units });
             }
         } else {
-            // Add
             this.products.unshift({
                 id: Date.now(),
                 name, sku, category, baseUnit,
@@ -1054,14 +1741,16 @@ class KarmaCarmelaApp {
         this.renderCategories();
         this.renderProducts();
         this.renderInventory();
+        this.renderHome();
     }
 
     deleteProduct(id) {
-        if (confirm('هل أنت متأكد من حذف هذا الصنف من قاعدة البيانات؟')) {
+        if (confirm('هل أنت متأكد من حذف هذا الصنف من المستودع؟')) {
             this.products = this.products.filter(p => p.id !== id);
             this.saveAll();
             this.renderProducts();
             this.renderInventory();
+            this.renderHome();
         }
     }
 
@@ -1069,137 +1758,18 @@ class KarmaCarmelaApp {
         document.getElementById('productModal').classList.remove('active');
     }
 
-    // ==========================================================================
-    // STOCK ADJUSTMENTS (توريد / جرد / تالف)
-    // ==========================================================================
-    openStockAdjustModal(id) {
-        const prod = this.products.find(p => p.id === id);
-        if (!prod) return;
-
-        document.getElementById('adjustProdId').value = prod.id;
-        document.getElementById('adjustProdInfo').innerHTML = `
-            <strong>${prod.name}</strong> • الرصيد الحالي: ${prod.currentStock} ${prod.baseUnit}
-        `;
-        document.getElementById('adjustQty').value = '';
-        document.getElementById('adjustRef').value = '';
-        document.getElementById('stockAdjustModal').classList.add('active');
-    }
-
-    closeStockAdjustModal() {
-        document.getElementById('stockAdjustModal').classList.remove('active');
-    }
-
-    saveStockAdjustment() {
-        const id = parseInt(document.getElementById('adjustProdId').value);
-        const prod = this.products.find(p => p.id === id);
-        if (!prod) return;
-
-        const type = document.getElementById('adjustType').value;
-        const qty = parseFloat(document.getElementById('adjustQty').value) || 0;
-        const ref = document.getElementById('adjustRef').value.trim() || 'حركة يدوية';
-        const prev = prod.currentStock;
-
-        let delta = 0;
-        let typeArabic = '';
-
-        if (type === 'RECEIVING') {
-            delta = qty;
-            typeArabic = 'توريد بضاعة';
-            prod.currentStock += delta;
-        } else if (type === 'SPOILAGE') {
-            delta = -qty;
-            typeArabic = 'هالك وتالف';
-            prod.currentStock = Math.max(0, prod.currentStock - qty);
-        } else if (type === 'AUDIT') {
-            delta = qty - prev;
-            typeArabic = 'تسوية جرد';
-            prod.currentStock = qty;
-        }
-
-        this.auditLog.unshift({
-            id: Date.now(),
-            productName: prod.name,
-            type: typeArabic,
-            qty: delta,
-            previousStock: prev,
-            newStock: prod.currentStock,
-            date: new Date().toLocaleString('ar-EG'),
-            ref
-        });
-
-        this.saveAll();
-        this.closeStockAdjustModal();
-        this.renderInventory();
-        this.renderProducts();
-        this.renderReports();
-    }
-
-    // ==========================================================================
-    // CUSTOMERS & CREDIT ACCOUNTS
-    // ==========================================================================
-    renderCustomers() {
-        const grid = document.getElementById('customersGrid');
-        const receivablesEl = document.getElementById('totalReceivablesDisplay');
-
-        const totalReceivables = this.customers.reduce((sum, c) => sum + c.currentBalance, 0);
-        if (receivablesEl) receivablesEl.innerText = totalReceivables.toLocaleString() + ' ج.م';
-
-        if (!grid) return;
-
-        grid.innerHTML = this.customers.map(c => {
-            const utilization = Math.min(100, Math.round((c.currentBalance / c.creditLimit) * 100));
-            const isHigh = utilization >= 80;
-
-            return `
-                <div class="customer-card">
-                    <div>
-                        <div class="cust-card-header">
-                            <h4 class="cust-name">${c.businessName}</h4>
-                            <span class="badge-pro" style="background-color: ${c.tier === 3 ? 'var(--accent-purple)' : c.tier === 2 ? 'var(--primary-orange)' : 'var(--border-color)'}">
-                                شريحة ${c.tier}
-                            </span>
-                        </div>
-                        <div class="cust-contact">
-                            <i class="fa-solid fa-user-tie"></i> ${c.contactName} • <i class="fa-solid fa-phone"></i> ${c.phone}
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="credit-progress-bar-wrap">
-                            <div class="credit-labels">
-                                <span>الرصيد الآجل المستحق: <strong style="color: ${c.currentBalance > 0 ? 'var(--accent-amber)' : 'var(--text-primary)'}">${c.currentBalance.toLocaleString()} ج.م</strong></span>
-                                <span>الحد: ${c.creditLimit.toLocaleString()} ج.م</span>
-                            </div>
-                            <div class="progress-track">
-                                <div class="progress-fill ${isHigh ? 'high' : ''}" style="width: ${utilization}%"></div>
-                            </div>
-                        </div>
-
-                        <div style="display: flex; gap: 8px; margin-top: 10px;">
-                            <button class="btn-primary-action" style="flex:1; justify-content:center; font-size:0.75rem;" onclick="app.openPaymentModal(${c.id})">
-                                <i class="fa-solid fa-hand-holding-dollar"></i> تحصيل دفعة
-                            </button>
-                            <button class="btn-secondary-action" style="font-size:0.75rem;" onclick="app.selectCustomerForSale(${c.id})">
-                                <i class="fa-solid fa-cart-plus"></i> بيع للعميل
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
+    // Customer Selection Modal
     openCustomerModal() {
         const list = document.getElementById('customerPickerList');
         if (!list) return;
 
         list.innerHTML = `
-            <div class="customer-picker-item" onclick="app.selectCustomer(null)" style="padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:8px; cursor:pointer; background:var(--bg-card);">
+            <div class="customer-picker-item" onclick="app.selectCustomer(null)" style="padding:12px; border:1px solid var(--border-color); border-radius:12px; margin-bottom:8px; cursor:pointer; background:var(--bg-card);">
                 <strong><i class="fa-solid fa-user"></i> عميل نقدي (Walk-in Buyer)</strong>
                 <p style="font-size:0.75rem; color:var(--text-muted);">أسعار الجملة القياسية (شريحة 1)</p>
             </div>
             ${this.customers.map(c => `
-                <div class="customer-picker-item" onclick="app.selectCustomer(${c.id})" style="padding:12px; border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:8px; cursor:pointer; background:var(--bg-card);">
+                <div class="customer-picker-item" onclick="app.selectCustomer(${c.id})" style="padding:12px; border:1px solid var(--border-color); border-radius:12px; margin-bottom:8px; cursor:pointer; background:var(--bg-card);">
                     <div style="display:flex; justify-content:space-between;">
                         <strong><i class="fa-solid fa-store"></i> ${c.businessName}</strong>
                         <span class="tier-pill">شريحة ${c.tier}</span>
@@ -1210,7 +1780,6 @@ class KarmaCarmelaApp {
                 </div>
             `).join('')}
         `;
-
         document.getElementById('customerModal').classList.add('active');
     }
 
@@ -1221,13 +1790,6 @@ class KarmaCarmelaApp {
     selectCustomer(id) {
         this.selectedCustomer = this.customers.find(c => c.id === id) || null;
         this.closeCustomerModal();
-        this.renderCart();
-        this.renderProducts();
-    }
-
-    selectCustomerForSale(id) {
-        this.selectedCustomer = this.customers.find(c => c.id === id) || null;
-        this.switchScreen('pos');
         this.renderCart();
         this.renderProducts();
     }
@@ -1262,12 +1824,14 @@ class KarmaCarmelaApp {
             tier,
             creditLimit,
             currentBalance: 0,
-            paymentTerms: 30
+            paymentTerms: 30,
+            statement: []
         });
 
         this.saveAll();
         this.closeAddCustomerModal();
         this.renderCustomers();
+        this.renderHome();
     }
 
     openPaymentModal(id) {
@@ -1294,10 +1858,23 @@ class KarmaCarmelaApp {
 
         if (c && amt > 0) {
             c.currentBalance = Math.max(0, c.currentBalance - amt);
+            if (!c.statement) c.statement = [];
+            c.statement.push({
+                date: new Date().toISOString().slice(0, 10),
+                desc: 'سداد نقدي دفعة حساب (سند قبض)',
+                debit: 0,
+                credit: amt,
+                balance: c.currentBalance
+            });
+
             this.saveAll();
             this.closePaymentModal();
             this.renderCustomers();
-            alert(`تم تسجيل تحصيل دفعة بقيمة ${amt.toLocaleString()} ج.م من ${c.businessName} بنجاح.`);
+            this.renderHome();
+            if (this.activeDetailCustomer && this.activeDetailCustomer.id === c.id) {
+                this.openCustomerDetail(c.id);
+            }
+            alert(`تم تحصيل ${amt.toLocaleString()} ج.م وإصدار سند القبض بنجاح.`);
         }
     }
 
@@ -1312,11 +1889,8 @@ class KarmaCarmelaApp {
 
         this.orders.forEach(o => {
             totalSales += o.grandTotal;
-            if (o.paymentMethod === 'CREDIT_NET30') {
-                creditSales += o.grandTotal;
-            } else {
-                cashSales += o.grandTotal;
-            }
+            if (o.paymentMethod === 'CREDIT_NET30') creditSales += o.grandTotal;
+            else cashSales += o.grandTotal;
             if (o.items) {
                 o.items.forEach(it => {
                     totalCostOfSold += (it.costPrice || 0) * it.quantity;
@@ -1334,7 +1908,6 @@ class KarmaCarmelaApp {
         document.getElementById('reportEstimatedProfit').innerText = estimatedProfit.toLocaleString() + ' ج.م';
         document.getElementById('reportProfitMarginRate').innerText = `${marginRate}% نسبة الربحية`;
 
-        // Render Orders Table
         const ordersTbody = document.getElementById('ordersTableBody');
         if (ordersTbody) {
             ordersTbody.innerHTML = this.orders.map(o => `
@@ -1345,23 +1918,18 @@ class KarmaCarmelaApp {
                     <td>${o.paymentMethod === 'CREDIT_NET30' ? 'آجل' : 'نقداً'}</td>
                     <td><strong>${o.grandTotal.toFixed(2)} ج.م</strong></td>
                     <td><span class="inv-status-badge">${o.paymentStatus}</span></td>
-                    <td>
-                        <button class="btn-table-action" onclick="app.previewOrder(${o.id})">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                    </td>
+                    <td><button class="btn-table-action" onclick="app.previewOrder(${o.id})"><i class="fa-solid fa-eye"></i></button></td>
                 </tr>
             `).join('');
         }
 
-        // Render Audit Table
         const auditTbody = document.getElementById('auditTableBody');
         if (auditTbody) {
             auditTbody.innerHTML = this.auditLog.slice(0, 15).map(a => `
                 <tr>
                     <td><strong>${a.productName}</strong></td>
                     <td>${a.type}</td>
-                    <td style="color: ${a.qty > 0 ? 'var(--accent-emerald)' : 'var(--accent-rose)'}; direction: ltr; text-align: right;">
+                    <td style="color:${a.qty > 0 ? 'var(--accent-emerald)' : 'var(--accent-rose)'}; direction:ltr; text-align:right;">
                         ${a.qty > 0 ? '+' : ''}${a.qty}
                     </td>
                     <td>${a.previousStock}</td>
@@ -1379,30 +1947,24 @@ class KarmaCarmelaApp {
         }
     }
 
-    // ==========================================================================
-    // EXCEL / CSV EXPORT ENGINES (UTF-8 BOM for perfect Arabic in MS Excel)
-    // ==========================================================================
+    // CSV Exports (UTF-8 with BOM for Excel compatibility)
     exportInventoryCSV() {
         const bom = '\uFEFF';
         let csv = bom + 'الكود (SKU),اسم الصنف,القسم,الوحدة الأساسية,الرصيد المتاح,سعر التكلفة,سعر الجملة,الباركود الدولي,إجمالي قيمة الشراء,إجمالي قيمة الجملة\r\n';
-
         this.products.forEach(p => {
             const costVal = p.currentStock * p.costPrice;
             const wholesaleVal = p.currentStock * p.wholesalePrice;
             csv += `"${p.sku}","${p.name}","${p.category}","${p.baseUnit}",${p.currentStock},${p.costPrice},${p.wholesalePrice},"${p.barcode}",${costVal},${wholesaleVal}\r\n`;
         });
-
         this.downloadCSV(csv, 'Karma_Carmela_Inventory_Export.csv');
     }
 
     exportSalesCSV() {
         const bom = '\uFEFF';
         let csv = bom + 'رقم الفاتورة,التاريخ,اسم العميل,طريقة السداد,حالة الفاتورة,المجموع الفرعي,الخصم,الضريبة,الصافي الإجمالي,المبلغ كتابة (تفقيط)\r\n';
-
         this.orders.forEach(o => {
             csv += `"${o.orderNumber}","${o.date}","${o.customerName}","${o.paymentMethod}","${o.paymentStatus}",${o.subtotal},${o.discountAmount},${o.taxAmount},${o.grandTotal},"${o.tafqeetWords}"\r\n`;
         });
-
         this.downloadCSV(csv, 'Karma_Carmela_Sales_Report.csv');
     }
 
@@ -1419,6 +1981,6 @@ class KarmaCarmelaApp {
     }
 }
 
-// Global App Instance
+// Global App Boot
 const app = new KarmaCarmelaApp();
 window.app = app;

@@ -1,0 +1,6 @@
+{
+  "summary":  "Architectural implementation plan for Karma Carmela POS redesign featuring:\n- Complete Customer and Supplier detail pages with account statements, invoices, and data editing\n- Modern Home Dashboard with Welcome Card, Glassmorphic Hydro Header, Dark/Light Theme toggle, and Hamburger Drawer\n- Centered Floating Action Button for Cashier in the Bottom Navigation bar\n- Redesigned Arabic UI components, cards, and icons inspired by Foodics and Daftra\n- Purchase invoice management and payment vouchers for suppliers",
+  "updatedAt":  "2026-11-11T12:13:25.273522403Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}
