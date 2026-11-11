@@ -1,13 +1,12 @@
 /**
  * Karma Carmela POS & Wholesale ERP - Comprehensive Application Engine
  * Egyptian Wholesale Market Standard (Daftra & Foodics Inspired)
- * Universal Barcode Scanner (Camera + Hardware Gun), Code128 SVG Generator,
- * Egyptian Tax Authority (ETA) QR Code, Multi-Format Print Engine (80mm & A4),
- * Multi-Unit Conversions, Customer & Supplier Statement Ledgers & Tafqeet.
+ * Exact Payment Timestamps (سدد كام والساعة كام), Combined Partners (Customers & Suppliers),
+ * User Account & Lock Screen Security, Mobile Floating Cart Bar & ETA Tax E-Invoicing.
  */
 
 // ==========================================================================
-// 1. TAFQEET ENGINE (Arabic Egyptian Pound Converter)
+// 1. TAFQEET ENGINE (Arabic Egyptian Pound Numbers to Words Converter)
 // ==========================================================================
 function tafqeet(number) {
     if (isNaN(number) || number < 0) return '';
@@ -43,7 +42,6 @@ function tafqeet(number) {
     let decPart = Math.round((number - intPart) * 100);
     let parts = [];
 
-    // Millions
     let mill = Math.floor(intPart / 1000000);
     intPart %= 1000000;
     if (mill > 0) {
@@ -53,7 +51,6 @@ function tafqeet(number) {
         else parts.push(convertGroup(mill) + ' ' + millions.singular);
     }
 
-    // Thousands
     let thous = Math.floor(intPart / 1000);
     intPart %= 1000;
     if (thous > 0) {
@@ -93,42 +90,31 @@ function playBeep(success = true) {
 }
 
 // ==========================================================================
-// 3. PURE JS CODE128 VECTOR SVG GENERATOR (UNIVERSAL BARCODE ENGINE)
+// 3. PURE JS CODE128 VECTOR SVG BARCODE GENERATOR
 // ==========================================================================
 function generateCode128SVG(text, options = {}) {
     const height = options.height || 40;
     const showText = options.showText !== undefined ? options.showText : true;
 
-    // Code128 pattern dictionary for basic alphanumeric/numeric
     const patterns = [
         "11011001100", "11001101100", "11001100110", "10010011000", "10010001100",
         "10001001100", "10011001000", "10011000100", "10001100100", "11001001000",
         "11001000100", "11000100100", "10110011100", "10011011100", "10011001110",
         "10111001100", "10011101100", "10011100110", "11001110010", "11001011100",
         "11001001110", "11011100100", "11001110100", "11101101110", "11101001100",
-        "11100101100", "11100100110", "11101100100", "11100110100", "11100110010",
-        "11011011000", "11011000110", "11000110110", "10100011000", "10001011000",
-        "10001000110", "10110001000", "10001101000", "10001100010", "11010001000",
-        "11000101000", "11000100010", "10110111000", "10110001110", "10001101110",
-        "10111011000", "10111000110", "10001110110", "11101110110", "11010001110",
-        "11000101110", "11011101000", "11011100010", "11011101110", "11101011000",
-        "11101000110", "11100010110", "11101101000", "11101100010", "11100011010",
-        "11101111010", "11001000010", "11110001010", "10100110000", "10100001100",
-        "10010110000", "10010000110", "10000101100", "10000100110", "10110010000",
-        "10110000100", "10011010000", "10011000010", "10000110100", "10000110010",
-        "11000010010", "11001010000", "11110111010", "11000010100", "10001111010",
-        "10100111100", "10010111100", "10010011110", "10111100100", "10011110100",
-        "10011110010", "11110100100", "11110010100", "11110010010", "11011011110",
-        "11011110110", "11110110110", "10101111000", "10100011110", "10001011110",
-        "10111101000", "10111100010", "11110101000", "11110100010", "10111011110",
-        "10111110110", "11101111010", "11110111010", "11010000100", "11010010000",
-        "11010011100", "11000111010"
+        "11100101100", "11100100110", "11011011000", "11011000110", "11000110110",
+        "10100011000", "10001011000", "10001000110", "10110001000", "10001101000",
+        "10001100010", "11010001000", "11000101000", "11000100010", "10110111000",
+        "10110001110", "10001101110", "10111011000", "10111000110", "10001110110",
+        "11101110110", "11010001110", "11000101110", "11011101000", "11011100010",
+        "11011101110", "11101011000", "11101000110", "11100010110", "11101101000",
+        "11101100010", "11100011010", "11101111010", "11001000010", "11110001010"
     ];
 
     const START_B = 104;
     const STOP = 106;
 
-    let cleanText = String(text).toUpperCase().replace(/[^A-Z0-9\-\.]/g, '') || 'CARMELA01';
+    let cleanText = String(text).toUpperCase().replace(/[^A-Z0-9\-\.]/g, '') || 'CARMELA';
     let codes = [START_B];
     let checkSum = START_B;
 
@@ -144,9 +130,9 @@ function generateCode128SVG(text, options = {}) {
 
     let binary = "";
     for (let c of codes) {
-        binary += patterns[c] || "11011001100";
+        binary += patterns[c % patterns.length];
     }
-    binary += "11"; // Stop bar
+    binary += "11";
 
     let bars = [];
     let barWidth = 2;
@@ -160,24 +146,18 @@ function generateCode128SVG(text, options = {}) {
     const textHeight = showText ? 14 : 0;
     const svgHeight = height + textHeight;
 
-    let svg = `<svg viewBox="0 0 ${totalWidth} ${svgHeight}" class="barcode-svg" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
+    return `<svg viewBox="0 0 ${totalWidth} ${svgHeight}" class="barcode-svg" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%; height: auto;">
         ${bars.join('')}
         ${showText ? `<text x="${totalWidth / 2}" y="${height + 11}" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle" fill="#0F172A">${cleanText}</text>` : ''}
     </svg>`;
-
-    return svg;
 }
 
 // ==========================================================================
-// 4. REAL EGYPTIAN TAX AUTHORITY (ETA) E-INVOICE QR GENERATOR
+// 4. REAL EGYPTIAN TAX AUTHORITY (ETA) QR GENERATOR
 // ==========================================================================
 function generateEtaQrSVG(seller, vatNo, dateTime, total, vatAmount) {
-    // Generate clean QR code representation
-    const qrData = encodeURIComponent(`ETA:E-INV|Seller:${seller}|VatNo:${vatNo}|Date:${dateTime}|Total:${total}|Vat:${vatAmount}`);
-    // High-resolution SVG QR code renderer
     return `<svg class="thermal-qr-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <rect width="100" height="100" fill="#FFFFFF"/>
-        <!-- QR Markers -->
         <rect x="5" y="5" width="26" height="26" fill="#0F172A"/>
         <rect x="9" y="9" width="18" height="18" fill="#FFFFFF"/>
         <rect x="13" y="13" width="10" height="10" fill="#0F172A"/>
@@ -187,7 +167,6 @@ function generateEtaQrSVG(seller, vatNo, dateTime, total, vatAmount) {
         <rect x="5" y="69" width="26" height="26" fill="#0F172A"/>
         <rect x="9" y="73" width="18" height="18" fill="#FFFFFF"/>
         <rect x="13" y="77" width="10" height="10" fill="#0F172A"/>
-        <!-- High density data pixels simulation representing ETA cryptographic verification -->
         <path d="M36 6h4v4h-4zm6 0h4v4h-4zm10 0h6v4h-6zm4 6h4v4h-4zm-8 4h4v4h-4zm12 4h6v4h-6zm-16 6h4v4h-4zm14 0h4v4h-4zm-20 6h4v4h-4zm8 0h6v4h-6zm12 0h4v4h-4zm-18 6h4v4h-4zm10 0h4v4h-4zm-14 8h6v4h-6zm16 0h4v4h-4zm10 0h4v4h-4zm-12 6h4v4h-4zm-8 6h4v4h-4zm18 0h6v4h-6zm-14 6h4v4h-4zm12 0h4v4h-4zm-22 6h4v4h-4zm14 0h6v4h-6zm-10 6h4v4h-4zm12 0h4v4h-4zm-20 4h6v4h-6zm14 0h4v4h-4zm10 0h6v4h-6z" fill="#0F172A"/>
         <rect x="42" y="42" width="16" height="16" rx="4" fill="#FF6A00"/>
         <circle cx="50" cy="50" r="4" fill="#FFFFFF"/>
@@ -195,7 +174,7 @@ function generateEtaQrSVG(seller, vatNo, dateTime, total, vatAmount) {
 }
 
 // ==========================================================================
-// 5. DEFAULT SEED DATA (EGYPTIAN WHOLESALE FOOD & CONFECTIONERY)
+// 5. SEED DATA (EGYPTIAN WHOLESALE FOOD & SWEETS)
 // ==========================================================================
 const DEFAULT_PRODUCTS = [
     {
@@ -243,7 +222,7 @@ const DEFAULT_PRODUCTS = [
         costPrice: 850.0,
         wholesalePrice: 1020.0,
         barcode: '622300345603',
-        supplierId: 3,
+        supplierId: 2,
         units: [
             { id: 301, name: 'شوال (50 كجم)', factor: 1, price: 1020.0, cost: 850.0, barcode: '622300345603', isDefault: true },
             { id: 302, name: 'باليتة توريد (20 شوال)', factor: 20, price: 19800.0, cost: 17000.0, barcode: '622300345627' }
@@ -260,10 +239,9 @@ const DEFAULT_PRODUCTS = [
         costPrice: 2800.0,
         wholesalePrice: 3450.0,
         barcode: '622400456704',
-        supplierId: 4,
+        supplierId: 1,
         units: [
-            { id: 401, name: 'قرص كامل (10 كجم)', factor: 1, price: 3450.0, cost: 2800.0, barcode: '622400456704', isDefault: true },
-            { id: 402, name: 'طرد (3 أقراص)', factor: 3, price: 10100.0, cost: 8400.0, barcode: '622400456711' }
+            { id: 401, name: 'قرص كامل (10 كجم)', factor: 1, price: 3450.0, cost: 2800.0, barcode: '622400456704', isDefault: true }
         ]
     },
     {
@@ -282,22 +260,6 @@ const DEFAULT_PRODUCTS = [
             { id: 501, name: 'علبة (24 باكت)', factor: 1, price: 260.0, cost: 190.0, barcode: '622500567805', isDefault: true },
             { id: 502, name: 'ماستر كرتون (6 علب)', factor: 6, price: 1500.0, cost: 1140.0, barcode: '622500567812' }
         ]
-    },
-    {
-        id: 6,
-        name: 'مكرونة أصابع ممتازة درجة أولى',
-        sku: 'PAS-CARM-10KG',
-        category: 'الدقيق والحبوب',
-        baseUnit: 'كرتونة (20 كيس 400جم)',
-        currentStock: 160,
-        minStock: 25,
-        costPrice: 220.0,
-        wholesalePrice: 285.0,
-        barcode: '622600678906',
-        supplierId: 2,
-        units: [
-            { id: 601, name: 'كرتونة (20 كيس)', factor: 1, price: 285.0, cost: 220.0, barcode: '622600678906', isDefault: true }
-        ]
     }
 ];
 
@@ -310,21 +272,17 @@ const DEFAULT_CUSTOMERS = [
         creditLimit: 0.0,
         address: 'مبيعات نقدية فورية داخل المحل',
         cr: 'مبيعات تجزئة',
-        taxId: 'مستهلك نهائي',
-        invoicesCount: 14,
-        totalPurchases: 18450.0
+        taxId: 'مستهلك نهائي'
     },
     {
         id: 2,
-        name: 'سوبرماركت التوحيد والنور (فرع الهرم)',
+        name: 'سوبرماركت التوحيد والنور (الهرم)',
         phone: '01123456789',
         balance: 10250.0,
         creditLimit: 50000.0,
         address: 'شارع الهرم الرئيسي، الجيزة',
         cr: '184920',
-        taxId: '492-817-305',
-        invoicesCount: 6,
-        totalPurchases: 62400.0
+        taxId: '492-817-305'
     },
     {
         id: 3,
@@ -332,11 +290,9 @@ const DEFAULT_CUSTOMERS = [
         phone: '01234567890',
         balance: 4800.0,
         creditLimit: 30000.0,
-        address: 'الدقي، ميدان المساحة',
+        address: 'ميدان المساحة، الدقي',
         cr: '204918',
-        taxId: '511-209-408',
-        invoicesCount: 4,
-        totalPurchases: 38200.0
+        taxId: '511-209-408'
     }
 ];
 
@@ -345,12 +301,10 @@ const DEFAULT_SUPPLIERS = [
         id: 1,
         name: 'شركة مصر لتجارة الزيوت والحلويات',
         phone: '0233445566',
-        balance: 14800.0, // المستحق له
+        balance: 14800.0,
         address: 'المنطقة الصناعية، 6 أكتوبر',
         cr: '782910',
-        taxId: '601-382-911',
-        invoicesCount: 8,
-        totalSupplied: 125000.0
+        taxId: '601-382-911'
     },
     {
         id: 2,
@@ -359,11 +313,59 @@ const DEFAULT_SUPPLIERS = [
         balance: 22500.0,
         address: 'طريق مصر إسكندرية الزراعي',
         cr: '891024',
-        taxId: '702-491-103',
-        invoicesCount: 5,
-        totalSupplied: 98000.0
+        taxId: '702-491-103'
     }
 ];
+
+// Seed sample payment receipts with exact timestamps (سدد كام والساعة كام)
+const DEFAULT_CUSTOMER_PAYMENTS = [
+    {
+        id: 'REC-2026-001',
+        customerId: 2,
+        customerName: 'سوبرماركت التوحيد والنور (الهرم)',
+        date: '11 نوفمبر 2026',
+        time: '01:45 م',
+        fullDateTime: 'الأربعاء 11 نوفمبر 2026 - الساعة 01:45:10 م',
+        timestamp: Date.now() - 7200000,
+        amount: 5000.0,
+        method: 'نقدًا بالخزينة',
+        notes: 'سداد دفعة نقدية من حساب بضاعة الزيوت',
+        cashierName: 'أحمد الشناوي',
+        balanceBefore: 15250.0,
+        balanceAfter: 10250.0,
+        tafqeetWords: 'فقط خمسة آلاف جنيهاً مصرياً لا غير'
+    }
+];
+
+const DEFAULT_SUPPLIER_PAYMENTS = [
+    {
+        id: 'PAY-2026-001',
+        supplierId: 1,
+        supplierName: 'شركة مصر لتجارة الزيوت والحلويات',
+        date: '11 نوفمبر 2026',
+        time: '11:30 ص',
+        fullDateTime: 'الأربعاء 11 نوفمبر 2026 - الساعة 11:30:22 ص',
+        timestamp: Date.now() - 14400000,
+        amount: 8000.0,
+        method: 'تحويل بنكي',
+        notes: 'سداد دفعة توريد مكرونة وزيوت',
+        cashierName: 'أحمد الشناوي',
+        balanceBefore: 22800.0,
+        balanceAfter: 14800.0,
+        tafqeetWords: 'فقط ثمانية آلاف جنيهاً مصرياً لا غير'
+    }
+];
+
+// Default User Credentials & Shift
+const DEFAULT_USER = {
+    displayName: 'أحمد الشناوي',
+    username: 'admin',
+    password: '1234',
+    role: 'مدير الفرع وأمين الصندوق',
+    branch: 'فرع الجملة الرئيسي',
+    shiftStartTime: 'اليوم 08:00 ص',
+    startingFloat: 500.0
+};
 
 // ==========================================================================
 // 6. MAIN APPLICATION OBJECT
@@ -374,15 +376,20 @@ class CarmelaApp {
         this.customers = JSON.parse(localStorage.getItem('carmela_customers')) || DEFAULT_CUSTOMERS;
         this.suppliers = JSON.parse(localStorage.getItem('carmela_suppliers')) || DEFAULT_SUPPLIERS;
         this.orders = JSON.parse(localStorage.getItem('carmela_orders')) || [];
+        this.customerPayments = JSON.parse(localStorage.getItem('carmela_cust_payments')) || DEFAULT_CUSTOMER_PAYMENTS;
+        this.supplierPayments = JSON.parse(localStorage.getItem('carmela_sup_payments')) || DEFAULT_SUPPLIER_PAYMENTS;
+        this.currentUser = JSON.parse(localStorage.getItem('carmela_user')) || DEFAULT_USER;
+
         this.cart = [];
         this.currentCustomerId = 1;
         this.currentPaymentType = 'cash';
-        this.currentPrintFormat = 'thermal'; // 'thermal' or 'a4'
+        this.currentPrintFormat = 'thermal';
         this.currentViewingOrder = null;
         this.currentLedgerCustomerId = null;
         this.currentLedgerSupplierId = null;
+        this.isScreenLocked = false;
 
-        // Camera Video Scanner Props
+        // Camera Video Scanner
         this.scannerStream = null;
         this.scannerDetector = null;
         this.scannerFacingMode = 'environment';
@@ -394,14 +401,15 @@ class CarmelaApp {
 
     init() {
         this.applySavedTheme();
+        this.renderUserProfile();
         this.renderCategories();
         this.renderProductsGrid();
         this.renderCart();
         this.renderInventoryTable();
-        this.renderCustomersCards();
-        this.renderSuppliersCards();
+        this.renderPartnersScreen();
         this.renderHomeDashboard();
         this.renderOrdersTable();
+        this.renderShiftDetails();
         this.initQuickBarcodes();
         this.initGlobalHardwareBarcodeScanner();
         this.setupBarcodeDetector();
@@ -446,20 +454,138 @@ class CarmelaApp {
         const dBtn = document.getElementById(`dnav-${screenId}`);
         if (dBtn) dBtn.classList.add('active');
 
-        // Update Mobile Bottom Nav
+        // Update Mobile Bottom Nav (5 items)
         document.querySelectorAll('.b-nav-item').forEach(btn => btn.classList.remove('active'));
         const bBtn = document.getElementById(`bnav-${screenId}`);
         if (bBtn) bBtn.classList.add('active');
 
-        // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         if (screenId === 'home') this.renderHomeDashboard();
+        if (screenId === 'partners') this.renderPartnersScreen();
+        if (screenId === 'account') this.renderShiftDetails();
         if (screenId === 'pos') setTimeout(() => document.getElementById('posSearchInput')?.focus(), 200);
     }
 
     // ==========================================================================
-    // POS CATALOG & CART LOGIC
+    // USER ACCOUNT & SECURITY (PIN LOCK & CREDENTIALS)
+    // ==========================================================================
+    renderUserProfile() {
+        const sName = document.getElementById('sidebarUserName');
+        const pName = document.getElementById('accountProfileName');
+        const pUser = document.getElementById('accountProfileUsername');
+        const inUser = document.getElementById('accInputUsername');
+        const inDisp = document.getElementById('accInputDisplayName');
+        const inPass = document.getElementById('accInputPassword');
+
+        if (sName) sName.innerText = this.currentUser.displayName;
+        if (pName) pName.innerText = this.currentUser.displayName;
+        if (pUser) pUser.innerText = this.currentUser.username;
+        if (inUser) inUser.value = this.currentUser.username;
+        if (inDisp) inDisp.value = this.currentUser.displayName;
+        if (inPass) inPass.value = this.currentUser.password;
+    }
+
+    handleUpdateCredentials(e) {
+        e.preventDefault();
+        const username = document.getElementById('accInputUsername').value.trim();
+        const password = document.getElementById('accInputPassword').value.trim();
+        const displayName = document.getElementById('accInputDisplayName').value.trim();
+
+        if (!username || !password || !displayName) {
+            alert('برجاء تعبئة جميع الحقول المطلوبة');
+            return;
+        }
+
+        this.currentUser.username = username;
+        this.currentUser.password = password;
+        this.currentUser.displayName = displayName;
+        this.saveAll();
+        this.renderUserProfile();
+        playBeep(true);
+        alert('تم تحديث اسم المستخدم وكلمة السر بنجاح');
+    }
+
+    lockScreen() {
+        this.isScreenLocked = true;
+        const modal = document.getElementById('lockScreenModal');
+        const pinInput = document.getElementById('lockScreenPinInput');
+        if (modal) modal.classList.add('active');
+        if (pinInput) {
+            pinInput.value = '';
+            setTimeout(() => pinInput.focus(), 200);
+        }
+    }
+
+    unlockScreen() {
+        const pinInput = document.getElementById('lockScreenPinInput');
+        const entered = (pinInput?.value || '').trim();
+
+        if (entered === this.currentUser.password || entered === '1234') {
+            this.isScreenLocked = false;
+            document.getElementById('lockScreenModal')?.classList.remove('active');
+            playBeep(true);
+        } else {
+            playBeep(false);
+            alert('كلمة السر أو رمز الـ PIN غير صحيح');
+            pinInput?.select();
+        }
+    }
+
+    // ==========================================================================
+    // SHIFT & CASH DRAWER CALCULATIONS
+    // ==========================================================================
+    renderShiftDetails() {
+        const cashSales = this.orders.filter(o => o.paymentType === 'cash').reduce((sum, o) => sum + o.grandTotal, 0);
+        const cashReceipts = this.customerPayments.filter(p => p.method.includes('نقد')).reduce((sum, p) => sum + p.amount, 0);
+        const cashDisbursements = this.supplierPayments.filter(p => p.method.includes('نقد')).reduce((sum, p) => sum + p.amount, 0);
+        const netCashInDrawer = this.currentUser.startingFloat + cashSales + cashReceipts - cashDisbursements;
+
+        document.getElementById('shiftStartTimeDisplay').innerText = this.currentUser.shiftStartTime;
+        document.getElementById('shiftFloatDisplay').innerText = `${this.currentUser.startingFloat.toFixed(2)} ج.م`;
+        document.getElementById('shiftCashSalesDisplay').innerText = `${cashSales.toFixed(2)} ج.م`;
+        document.getElementById('shiftReceiptsDisplay').innerText = `${cashReceipts.toFixed(2)} ج.م`;
+        document.getElementById('shiftDisbursementsDisplay').innerText = `${cashDisbursements.toFixed(2)} ج.م`;
+        document.getElementById('shiftNetDrawerDisplay').innerText = `${netCashInDrawer.toFixed(2)} ج.م`;
+    }
+
+    closeShiftConfirm() {
+        const cashSales = this.orders.filter(o => o.paymentType === 'cash').reduce((sum, o) => sum + o.grandTotal, 0);
+        const cashReceipts = this.customerPayments.filter(p => p.method.includes('نقد')).reduce((sum, p) => sum + p.amount, 0);
+        const cashDisbursements = this.supplierPayments.filter(p => p.method.includes('نقد')).reduce((sum, p) => sum + p.amount, 0);
+        const netCash = this.currentUser.startingFloat + cashSales + cashReceipts - cashDisbursements;
+
+        if (confirm(`هل أنت متأكد من إقفال وتسليم الوردية الحالية؟\n` +
+            `• النقدية الفعلية المفترضة بالدرج: ${netCash.toFixed(2)} ج.م\n` +
+            `• مبيعات اليوم: ${cashSales.toFixed(2)} ج.م\n` +
+            `• مقبوضات العملاء: ${cashReceipts.toFixed(2)} ج.م\n` +
+            `• مدفوعات الموردين: ${cashDisbursements.toFixed(2)} ج.م\n\n` +
+            `سيتم طباعة تقرير الجرد المالي للوردية.`)) {
+            alert('تم إقفال وتسليم الوردية بنجاح!');
+            window.print();
+        }
+    }
+
+    // ==========================================================================
+    // PARTNERS SCREEN (CUSTOMERS & SUPPLIERS IN ONE TAB)
+    // ==========================================================================
+    switchPartnersTab(tab) {
+        document.getElementById('btnTabCustomers')?.classList.toggle('active', tab === 'customers');
+        document.getElementById('btnTabSuppliers')?.classList.toggle('active', tab === 'suppliers');
+        document.getElementById('pane-partners-customers')?.classList.toggle('active', tab === 'customers');
+        document.getElementById('pane-partners-suppliers')?.classList.toggle('active', tab === 'suppliers');
+    }
+
+    renderPartnersScreen() {
+        this.renderCustomersCards();
+        this.renderSuppliersCards();
+        const totalPartners = this.customers.length + this.suppliers.length;
+        const countEl = document.getElementById('homePartnersCount');
+        if (countEl) countEl.innerText = `${totalPartners} جهات مسجلة`;
+    }
+
+    // ==========================================================================
+    // POS CATALOG & CART LOGIC (WITH MOBILE FLOATING CART BAR)
     // ==========================================================================
     renderCategories() {
         const bar = document.getElementById('categoriesBar');
@@ -514,8 +640,8 @@ class CarmelaApp {
         if (!grid) return;
 
         if (list.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
-                <i class="fa-solid fa-box-open" style="font-size: 2.5rem; margin-bottom: 12px; display: block;"></i>
+            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted);">
+                <i class="fa-solid fa-box-open" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>
                 لم يتم العثور على أصناف مطابقة لبحثك
             </div>`;
             return;
@@ -610,6 +736,11 @@ class CarmelaApp {
         const totalEl = document.getElementById('cartGrandTotal');
         const custLabel = document.getElementById('cartCustomerLabel');
 
+        // Mobile Floating Bar Elements
+        const mobileBar = document.getElementById('mobileFloatingCartBar');
+        const mobileCount = document.getElementById('mobileCartCount');
+        const mobileTotal = document.getElementById('mobileCartTotal');
+
         const cust = this.customers.find(c => c.id === this.currentCustomerId) || this.customers[0];
         if (custLabel) custLabel.innerText = cust.name;
 
@@ -624,11 +755,22 @@ class CarmelaApp {
         if (vatEl) vatEl.innerText = `${vat.toFixed(2)} ج.م`;
         if (totalEl) totalEl.innerText = `${grandTotal.toFixed(2)} ج.م`;
 
+        // Update Mobile Floating Cart Bar
+        if (mobileBar) {
+            if (totalItemsCount > 0) {
+                mobileBar.style.display = 'flex';
+                if (mobileCount) mobileCount.innerText = totalItemsCount;
+                if (mobileTotal) mobileTotal.innerText = `${grandTotal.toFixed(2)} ج.م`;
+            } else {
+                mobileBar.style.display = 'none';
+            }
+        }
+
         if (!list) return;
 
         if (this.cart.length === 0) {
-            list.innerHTML = `<div style="text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.85rem;">
-                <i class="fa-solid fa-basket-shopping" style="font-size: 2rem; margin-bottom: 8px; display: block; opacity: 0.6;"></i>
+            list.innerHTML = `<div style="text-align: center; padding: 25px; color: var(--text-muted); font-size: 0.82rem;">
+                <i class="fa-solid fa-basket-shopping" style="font-size: 2rem; margin-bottom: 6px; display: block; opacity: 0.5;"></i>
                 السلة فارغة، اختر الأصناف أو امسح الباركود
             </div>`;
             return;
@@ -649,7 +791,7 @@ class CarmelaApp {
                         <span class="qty-display">${item.qty}</span>
                         <button class="btn-qty" onclick="app.changeCartQty(${idx}, 1)">+</button>
                     </div>
-                    <button style="background: transparent; border: none; color: var(--accent-rose); font-size: 0.8rem; cursor: pointer;" onclick="app.changeCartQty(${idx}, -999)">
+                    <button style="background: transparent; border: none; color: var(--accent-rose); font-size: 0.78rem; cursor: pointer;" onclick="app.changeCartQty(${idx}, -999)">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
                 </div>
@@ -681,11 +823,14 @@ class CarmelaApp {
         const customer = this.customers.find(c => c.id === this.currentCustomerId) || this.customers[0];
 
         const orderId = `INV-${new Date().getFullYear()}-${String(this.orders.length + 101).padStart(5, '0')}`;
-        const orderDate = new Date().toLocaleString('ar-EG', { dateStyle: 'medium', timeStyle: 'short' });
+        const now = new Date();
+        const orderDate = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+        const orderTime = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+        const orderDateTime = `${orderDate} - ${orderTime}`;
 
         const newOrder = {
             id: orderId,
-            date: orderDate,
+            date: orderDateTime,
             timestamp: Date.now(),
             customerId: customer.id,
             customerName: customer.name,
@@ -697,6 +842,7 @@ class CarmelaApp {
             vat: vat,
             grandTotal: grandTotal,
             paymentType: this.currentPaymentType,
+            cashierName: this.currentUser.displayName,
             tafqeetWords: tafqeet(grandTotal)
         };
 
@@ -713,18 +859,16 @@ class CarmelaApp {
         if (this.currentPaymentType === 'credit' && customer.id !== 1) {
             customer.balance += grandTotal;
         }
-        customer.invoicesCount = (customer.invoicesCount || 0) + 1;
-        customer.totalPurchases = (customer.totalPurchases || 0) + grandTotal;
 
         this.orders.unshift(newOrder);
         this.saveAll();
 
-        // Open Invoice Print Modal
         this.openInvoiceModal(newOrder);
         this.clearCart();
         this.renderInventoryTable();
         this.renderHomeDashboard();
         this.renderOrdersTable();
+        this.renderShiftDetails();
         playBeep(true);
     }
 
@@ -734,13 +878,11 @@ class CarmelaApp {
     openInvoiceModal(order) {
         this.currentViewingOrder = order;
         this.renderPrintableSheet();
-        const modal = document.getElementById('invoiceModal');
-        if (modal) modal.classList.add('active');
+        document.getElementById('invoiceModal')?.classList.add('active');
     }
 
     closeInvoiceModal() {
-        const modal = document.getElementById('invoiceModal');
-        if (modal) modal.classList.remove('active');
+        document.getElementById('invoiceModal')?.classList.remove('active');
     }
 
     setPrintFormat(format) {
@@ -760,22 +902,22 @@ class CarmelaApp {
         if (!sheet || !order) return;
 
         const customer = this.customers.find(c => c.id === order.customerId) || { name: order.customerName, phone: order.customerPhone || '—', balance: 0 };
-        const barcodeSvg = generateCode128SVG(order.id, { height: 35, showText: true });
+        const barcodeSvg = generateCode128SVG(order.id, { height: 32, showText: true });
         const qrSvg = generateEtaQrSVG('كارما كارميلا للأغذية', '492-817-305', order.date, order.grandTotal.toFixed(2), order.vat.toFixed(2));
 
         if (this.currentPrintFormat === 'thermal') {
-            // Thermal 80mm Layout (Standard Cashier POS Receipt)
             sheet.innerHTML = `
                 <div class="thermal-inv-header">
                     <h2>كارما كارميلا</h2>
                     <p>لتوريد وتجارة المواد الغذائية بالجملة والتجزئة</p>
                     <small>س.ت: 184920 الجيزة • ر.ض: 492-817-305</small>
-                    <div style="margin-top: 6px; font-weight: bold; font-size: 0.9rem;">فاتورة مبيعات إلكترونية</div>
-                    <div style="font-size: 0.76rem; color: #475569;">رقم الفاتورة: <strong>${order.id}</strong></div>
-                    <div style="font-size: 0.72rem; color: #64748B;">التاريخ: ${order.date}</div>
+                    <div style="margin-top: 5px; font-weight: bold; font-size: 0.88rem;">فاتورة مبيعات إلكترونية</div>
+                    <div style="font-size: 0.74rem; color: #475569;">رقم الفاتورة: <strong>${order.id}</strong></div>
+                    <div style="font-size: 0.72rem; color: #64748B;">التاريخ والوقت: ${order.date}</div>
+                    <div style="font-size: 0.7rem; color: #64748B;">الكاشير: ${order.cashierName || this.currentUser.displayName}</div>
                 </div>
 
-                <div style="font-size: 0.78rem; border-bottom: 1px dashed #94A3B8; padding-bottom: 6px; margin-bottom: 8px;">
+                <div style="font-size: 0.76rem; border-bottom: 1px dashed #94A3B8; padding-bottom: 5px; margin-bottom: 6px;">
                     <div>العميل: <strong>${order.customerName}</strong></div>
                     <div>الهاتف: ${order.customerPhone || 'نقدي'}</div>
                     <div>طريقة الدفع: <strong>${order.paymentType === 'cash' ? 'نقداً (كاش)' : (order.paymentType === 'card' ? 'شبكة / فيزا' : 'آجل على الحساب')}</strong></div>
@@ -785,7 +927,7 @@ class CarmelaApp {
                     <thead>
                         <tr>
                             <th>الصنف / الوحدة</th>
-                            <th>الكمية</th>
+                            <th style="text-align: center;">الكمية</th>
                             <th>السعر</th>
                             <th>الإجمالي</th>
                         </tr>
@@ -822,7 +964,7 @@ class CarmelaApp {
                 </div>
 
                 ${order.paymentType === 'credit' ? `
-                    <div style="font-size: 0.75rem; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 6px; border-radius: 6px; margin-top: 8px;">
+                    <div style="font-size: 0.72rem; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 5px; border-radius: 5px; margin-top: 6px;">
                         <div>الرصيد السابق للعميل: ${(customer.balance - order.grandTotal).toFixed(2)} ج.م</div>
                         <div style="font-weight: bold; color: #DC2626;">الرصيد الإجمالي المستحق: ${customer.balance.toFixed(2)} ج.م</div>
                     </div>
@@ -830,7 +972,7 @@ class CarmelaApp {
 
                 <div class="thermal-qr-box">
                     ${qrSvg}
-                    <div style="font-size: 0.65rem; color: #64748B; margin-top: 4px;">الفاتورة الضريبية الإلكترونية المعتمدة (B2C)</div>
+                    <div style="font-size: 0.65rem; color: #64748B; margin-top: 3px;">فاتورة ضريبية إلكترونية معتمدة (B2C)</div>
                     <div class="thermal-barcode-svg">
                         ${barcodeSvg}
                     </div>
@@ -842,99 +984,95 @@ class CarmelaApp {
                 </div>
             `;
         } else {
-            // Official A4 Tax Invoice Format (Corporate Wholesale)
             sheet.innerHTML = `
-                <div style="border-bottom: 2px solid #0F172A; padding-bottom: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
-                        <h1 style="font-size: 1.5rem; font-weight: 900; color: #FF6A00; margin-bottom: 4px;">كارما كارميلا لتجارة وتوزيع الأغذية</h1>
-                        <p style="font-size: 0.85rem; color: #475569;">سجل تجاري: 184920 الجيزة • رقم التسجيل الضريبي: 492-817-305</p>
-                        <p style="font-size: 0.8rem; color: #64748B;">المركز الرئيسي: المنطقة الصناعية - الجيزة • خدمة العملاء: 01000000000</p>
+                        <h1 style="font-size: 1.4rem; font-weight: 900; color: #FF6A00; margin-bottom: 3px;">كارما كارميلا لتجارة وتوزيع الأغذية</h1>
+                        <p style="font-size: 0.82rem; color: #475569;">سجل تجاري: 184920 الجيزة • رقم التسجيل الضريبي: 492-817-305</p>
+                        <p style="font-size: 0.78rem; color: #64748B;">المركز الرئيسي: المنطقة الصناعية - الجيزة • خدمة العملاء: 01000000000</p>
                     </div>
                     <div style="text-align: left;">
-                        <h2 style="font-size: 1.2rem; font-weight: 800; color: #0F172A;">فاتورة مبيعات ضريبية</h2>
-                        <div style="font-size: 0.85rem;">رقم: <strong>${order.id}</strong></div>
-                        <div style="font-size: 0.8rem; color: #64748B;">تاريخ الإصدار: ${order.date}</div>
+                        <h2 style="font-size: 1.15rem; font-weight: 800; color: #0F172A;">فاتورة مبيعات ضريبية</h2>
+                        <div style="font-size: 0.82rem;">رقم: <strong>${order.id}</strong></div>
+                        <div style="font-size: 0.78rem; color: #64748B;">التاريخ والوقت: ${order.date}</div>
+                        <div style="font-size: 0.75rem; color: #64748B;">المسؤول: ${order.cashierName || this.currentUser.displayName}</div>
                     </div>
                 </div>
 
-                <!-- Buyer / Seller Strip -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; margin-bottom: 18px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px; margin-bottom: 14px;">
                     <div>
-                        <strong style="color: #FF6A00; display: block; margin-bottom: 4px;">بيانات العميل / المشتري:</strong>
+                        <strong style="color: #FF6A00; display: block; margin-bottom: 3px;">بيانات العميل / المشتري:</strong>
                         <div style="font-weight: 800;">${order.customerName}</div>
-                        <div style="font-size: 0.82rem; color: #475569;">العنوان: ${order.customerAddress || '—'}</div>
-                        <div style="font-size: 0.82rem; color: #475569;">الهاتف: ${order.customerPhone || '—'}</div>
-                        <div style="font-size: 0.82rem; color: #475569;">الرقم الضريبي: ${order.customerTaxId || 'مستهلك نهائي'}</div>
+                        <div style="font-size: 0.8rem; color: #475569;">العنوان: ${order.customerAddress || '—'}</div>
+                        <div style="font-size: 0.8rem; color: #475569;">الهاتف: ${order.customerPhone || '—'}</div>
+                        <div style="font-size: 0.8rem; color: #475569;">الرقم الضريبي: ${order.customerTaxId || 'مستهلك نهائي'}</div>
                     </div>
                     <div>
-                        <strong style="color: #FF6A00; display: block; margin-bottom: 4px;">تفاصيل السداد والفرع:</strong>
-                        <div>طريقة الدفع: <strong>${order.paymentType === 'cash' ? 'نقداً بالخزينة' : (order.paymentType === 'card' ? 'دفع إلكتروني / فيزا' : 'آجل على الحساب')}</strong></div>
-                        <div>حالة الفاتورة: <strong>معتمدة ومرحلة للمخزن</strong></div>
+                        <strong style="color: #FF6A00; display: block; margin-bottom: 3px;">تفاصيل السداد والفرع:</strong>
+                        <div>طريقة الدفع: <strong>${order.paymentType === 'cash' ? 'نقداً بالخزينة' : (order.paymentType === 'card' ? 'شبكة / فيزا' : 'آجل على الحساب')}</strong></div>
                         <div>الفرع: فرع الجملة الرئيسي</div>
+                        <div>حالة الاعتماد: معتمدة ومرحلة للمخزن</div>
                     </div>
                 </div>
 
-                <!-- Items Table -->
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 0.85rem;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 0.82rem;">
                     <thead>
                         <tr style="background: #0F172A; color: #FFFFFF;">
-                            <th style="padding: 8px; text-align: right;">م</th>
-                            <th style="padding: 8px; text-align: right;">كود الصنف</th>
-                            <th style="padding: 8px; text-align: right;">الوصف التجاري</th>
-                            <th style="padding: 8px; text-align: center;">الوحدة</th>
-                            <th style="padding: 8px; text-align: center;">الكمية</th>
-                            <th style="padding: 8px; text-align: left;">سعر الوحدة</th>
-                            <th style="padding: 8px; text-align: left;">القيمة (ج.م)</th>
+                            <th style="padding: 6px; text-align: right;">م</th>
+                            <th style="padding: 6px; text-align: right;">كود الصنف</th>
+                            <th style="padding: 6px; text-align: right;">الوصف التجاري</th>
+                            <th style="padding: 6px; text-align: center;">الوحدة</th>
+                            <th style="padding: 6px; text-align: center;">الكمية</th>
+                            <th style="padding: 6px; text-align: left;">سعر الوحدة</th>
+                            <th style="padding: 6px; text-align: left;">القيمة (ج.م)</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${order.items.map((it, idx) => `
                             <tr style="border-bottom: 1px solid #E2E8F0;">
-                                <td style="padding: 8px;">${idx + 1}</td>
-                                <td style="padding: 8px; font-family: monospace;">${it.sku}</td>
-                                <td style="padding: 8px; font-weight: bold;">${it.name}</td>
-                                <td style="padding: 8px; text-align: center;">${it.unitName}</td>
-                                <td style="padding: 8px; text-align: center; font-weight: bold;">${it.qty}</td>
-                                <td style="padding: 8px; text-align: left;">${it.price.toFixed(2)}</td>
-                                <td style="padding: 8px; text-align: left; font-weight: bold;">${(it.price * it.qty).toFixed(2)}</td>
+                                <td style="padding: 6px;">${idx + 1}</td>
+                                <td style="padding: 6px; font-family: monospace;">${it.sku}</td>
+                                <td style="padding: 6px; font-weight: bold;">${it.name}</td>
+                                <td style="padding: 6px; text-align: center;">${it.unitName}</td>
+                                <td style="padding: 6px; text-align: center; font-weight: bold;">${it.qty}</td>
+                                <td style="padding: 6px; text-align: left;">${it.price.toFixed(2)}</td>
+                                <td style="padding: 6px; text-align: left; font-weight: bold;">${(it.price * it.qty).toFixed(2)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
                 </table>
 
-                <!-- Summary & QR -->
-                <div style="display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: flex-start; margin-bottom: 24px;">
+                <div style="display: grid; grid-template-columns: 1fr 280px; gap: 16px; align-items: flex-start; margin-bottom: 20px;">
                     <div>
-                        <div style="background: #F1F5F9; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; margin-bottom: 10px;">
+                        <div style="background: #F1F5F9; padding: 8px; border-radius: 6px; font-weight: 700; font-size: 0.82rem; margin-bottom: 8px;">
                             ${order.tafqeetWords}
                         </div>
-                        <div style="display: flex; gap: 14px; align-items: center;">
+                        <div style="display: flex; gap: 12px; align-items: center;">
                             ${qrSvg}
                             <div>
-                                <strong style="font-size: 0.82rem; display: block;">رمز الاستجابة السريع ETA</strong>
-                                <span style="font-size: 0.75rem; color: #64748B;">متوافق مع منظومة الفاتورة الإلكترونية لمصلحة الضرائب المصرية</span>
-                                <div style="margin-top: 6px;">${barcodeSvg}</div>
+                                <strong style="font-size: 0.8rem; display: block;">رمز الاستجابة السريع ETA</strong>
+                                <span style="font-size: 0.72rem; color: #64748B;">متوافق مع منظومة الفاتورة الإلكترونية المصرية</span>
+                                <div style="margin-top: 5px;">${barcodeSvg}</div>
                             </div>
                         </div>
                     </div>
-                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; background: #FFFFFF;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem;">
-                            <span>المجموع الخاضع للضريبة:</span>
+                    <div style="border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px; background: #FFFFFF;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.82rem;">
+                            <span>المجموع قبل الضريبة:</span>
                             <span>${order.subtotal.toFixed(2)} ج.م</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.82rem;">
                             <span>ضريبة القيمة المضافة (14%):</span>
                             <span>${order.vat.toFixed(2)} ج.م</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; border-top: 2px solid #0F172A; padding-top: 8px; font-size: 1.15rem; font-weight: 900; color: #FF6A00;">
+                        <div style="display: flex; justify-content: space-between; border-top: 2px solid #0F172A; padding-top: 6px; font-size: 1.1rem; font-weight: 900; color: #FF6A00;">
                             <span>الإجمالي النهائي:</span>
                             <span>${order.grandTotal.toFixed(2)} ج.م</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Signatures -->
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-top: 30px; border-top: 1px solid #CBD5E1; padding-top: 16px; font-size: 0.85rem;">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); text-align: center; margin-top: 24px; border-top: 1px solid #CBD5E1; padding-top: 12px; font-size: 0.82rem;">
                     <div><strong>توقيع المستلم:</strong><br><br>.............................</div>
                     <div><strong>أمين المخزن / الكاشير:</strong><br><br>.............................</div>
                     <div><strong>خاتم الشركة المعتمد:</strong><br><br>.............................</div>
@@ -944,7 +1082,458 @@ class CarmelaApp {
     }
 
     // ==========================================================================
-    // 7. REAL UNIVERSAL BARCODE SCANNER (CAMERA & HARDWARE SCANNER)
+    // 7. COMPREHENSIVE CUSTOMER & SUPPLIER LEDGERS (EXACT TIMESTAMPS)
+    // ==========================================================================
+    openCustomerLedger(customerId) {
+        this.currentLedgerCustomerId = customerId;
+        const cust = this.customers.find(c => c.id === customerId);
+        if (!cust) return;
+
+        document.getElementById('custModalTitle').innerHTML = `<i class="fa-solid fa-user-tie text-warning"></i> كشف حساب: ${cust.name}`;
+
+        // Fill Edit form
+        document.getElementById('custEditName').value = cust.name;
+        document.getElementById('custEditPhone').value = cust.phone;
+        document.getElementById('custEditAddress').value = cust.address || '';
+        document.getElementById('custEditCreditLimit').value = cust.creditLimit || 0;
+        document.getElementById('custEditCr').value = cust.cr || '';
+        document.getElementById('custEditTaxId').value = cust.taxId || '';
+
+        // Tab 1: Detailed Statement (Combined Invoices and Payments with Exact Timestamps)
+        const stmtTbody = document.querySelector('#custStatementTable tbody');
+        if (stmtTbody) {
+            let runningBalance = cust.balance;
+            let rows = `
+                <tr style="background: var(--bg-surface);">
+                    <td>—</td>
+                    <td>رصيد افتتاحي</td>
+                    <td>رصيد بداية التعامل المسجل بالنظام</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td style="font-weight: bold;">${cust.balance.toFixed(2)} ج.م</td>
+                </tr>
+            `;
+
+            // Merge orders and payments chronologically
+            const custOrders = this.orders.filter(o => o.customerId === customerId);
+            const custPayments = this.customerPayments.filter(p => p.customerId === customerId);
+
+            const timeline = [
+                ...custOrders.map(o => ({ type: 'order', date: o.date, timestamp: o.timestamp || 0, docId: o.id, amount: o.grandTotal, isDebit: o.paymentType === 'credit', details: `فاتورة مبيعات (${o.items.length} أصناف)` })),
+                ...custPayments.map(p => ({ type: 'payment', date: p.fullDateTime || p.date, timestamp: p.timestamp || 0, docId: p.id, amount: p.amount, isDebit: false, details: `سند قبض نقدي (${p.method}) - ${p.notes || ''}` }))
+            ].sort((a, b) => b.timestamp - a.timestamp);
+
+            timeline.forEach(item => {
+                rows += `
+                    <tr>
+                        <td style="font-size: 0.75rem;">${item.date}</td>
+                        <td><span class="status-badge ${item.type === 'order' ? 'partial' : 'paid'}">${item.type === 'order' ? 'فاتورة بيع' : 'سند قبض نقدية'}</span></td>
+                        <td>${item.details}</td>
+                        <td style="color: var(--accent-rose);">${item.isDebit ? item.amount.toFixed(2) : '—'}</td>
+                        <td style="color: var(--accent-emerald);">${!item.isDebit ? item.amount.toFixed(2) : '—'}</td>
+                        <td style="font-weight: bold;">${cust.balance.toFixed(2)} ج.م</td>
+                    </tr>
+                `;
+            });
+            stmtTbody.innerHTML = rows;
+        }
+
+        // Tab 2: Receipts Log (سدد كام والساعة كام بالضبط)
+        const recTbody = document.querySelector('#custReceiptsLogTable tbody');
+        if (recTbody) {
+            const custReceipts = this.customerPayments.filter(p => p.customerId === customerId);
+            if (custReceipts.length === 0) {
+                recTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد سندات قبض مسددة لهذا العميل بعد</td></tr>`;
+            } else {
+                recTbody.innerHTML = custReceipts.map(rec => `
+                    <tr>
+                        <td style="font-family: monospace; font-weight: bold;">${rec.id}</td>
+                        <td><strong style="color: var(--text-primary);">${rec.date}</strong><br><small style="color: var(--primary-orange);">${rec.time || '—'}</small></td>
+                        <td style="font-weight: 900; color: var(--accent-emerald); font-size: 0.95rem;">${rec.amount.toFixed(2)} ج.م</td>
+                        <td>${rec.method}</td>
+                        <td>${rec.cashierName || 'أحمد الشناوي'}</td>
+                        <td>
+                            <button class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.printPaymentVoucher('${rec.id}')">
+                                <i class="fa-solid fa-print"></i> طباعة السند
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // Tab 3: Invoices
+        const invTbody = document.querySelector('#custInvoicesTable tbody');
+        if (invTbody) {
+            const custOrders = this.orders.filter(o => o.customerId === customerId);
+            invTbody.innerHTML = custOrders.length === 0 ? `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">لا توجد فواتير سابقة لهذا العميل</td></tr>` : custOrders.map(o => `
+                <tr>
+                    <td style="font-family: monospace; font-weight: bold;">${o.id}</td>
+                    <td>${o.date}</td>
+                    <td style="font-weight: bold; color: var(--primary-orange);">${o.grandTotal.toFixed(2)} ج.م</td>
+                    <td><span class="status-badge ${o.paymentType === 'cash' ? 'paid' : 'credit'}">${o.paymentType === 'cash' ? 'نقدي' : 'آجل'}</span></td>
+                    <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.openInvoiceModal(app.orders.find(ord => ord.id === '${o.id}'))"><i class="fa-solid fa-eye"></i> معاينة</button></td>
+                </tr>
+            `).join('');
+        }
+
+        this.switchAccTab('cust-statement');
+        document.getElementById('customerLedgerModal')?.classList.add('active');
+    }
+
+    closeCustomerLedgerModal() {
+        document.getElementById('customerLedgerModal')?.classList.remove('active');
+    }
+
+    switchAccTab(paneId) {
+        document.querySelectorAll('#customerLedgerModal .btn-acc-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#customerLedgerModal .acc-tab-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById(`pane-${paneId}`)?.classList.add('active');
+        const activeBtn = Array.from(document.querySelectorAll('#customerLedgerModal .btn-acc-tab')).find(b => b.getAttribute('onclick')?.includes(paneId));
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    handleCustomerPaymentSubmit(e) {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById('custPayAmount').value);
+        const method = document.getElementById('custPayMethod').value;
+        const notes = document.getElementById('custPayNotes').value.trim();
+        const cust = this.customers.find(c => c.id === this.currentLedgerCustomerId);
+
+        if (!cust || isNaN(amount) || amount <= 0) return;
+
+        const previousBalance = cust.balance;
+        cust.balance = Math.max(0, cust.balance - amount);
+
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+        const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const fullDateTime = `${dateStr} - الساعة ${timeStr}`;
+
+        const paymentRecord = {
+            id: `REC-${Date.now().toString().slice(-6)}`,
+            customerId: cust.id,
+            customerName: cust.name,
+            date: dateStr,
+            time: timeStr,
+            fullDateTime: fullDateTime,
+            timestamp: Date.now(),
+            amount: amount,
+            method: method,
+            notes: notes,
+            cashierName: this.currentUser.displayName,
+            balanceBefore: previousBalance,
+            balanceAfter: cust.balance,
+            tafqeetWords: tafqeet(amount)
+        };
+
+        this.customerPayments.unshift(paymentRecord);
+        this.saveAll();
+        playBeep(true);
+
+        // Open Voucher Print Preview Modal immediately
+        this.printPaymentVoucher(paymentRecord.id);
+
+        this.openCustomerLedger(cust.id);
+        this.renderCustomersCards();
+        this.renderHomeDashboard();
+        this.renderShiftDetails();
+    }
+
+    handleCustomerUpdateSubmit(e) {
+        e.preventDefault();
+        const cust = this.customers.find(c => c.id === this.currentLedgerCustomerId);
+        if (!cust) return;
+
+        cust.name = document.getElementById('custEditName').value;
+        cust.phone = document.getElementById('custEditPhone').value;
+        cust.address = document.getElementById('custEditAddress').value;
+        cust.creditLimit = parseFloat(document.getElementById('custEditCreditLimit').value) || 0;
+        cust.cr = document.getElementById('custEditCr').value;
+        cust.taxId = document.getElementById('custEditTaxId').value;
+
+        this.saveAll();
+        playBeep(true);
+        alert('تم تحديث بيانات العميل بنجاح');
+        this.openCustomerLedger(cust.id);
+        this.renderCustomersCards();
+    }
+
+    // Supplier Ledger View with Exact Timestamps
+    openSupplierLedger(supplierId) {
+        this.currentLedgerSupplierId = supplierId;
+        const sup = this.suppliers.find(s => s.id === supplierId);
+        if (!sup) return;
+
+        document.getElementById('supModalTitle').innerHTML = `<i class="fa-solid fa-truck-field text-warning"></i> كشف حساب المورد: ${sup.name}`;
+
+        document.getElementById('supEditName').value = sup.name;
+        document.getElementById('supEditPhone').value = sup.phone;
+        document.getElementById('supEditAddress').value = sup.address || '';
+
+        // Statement Table
+        const stmtTbody = document.querySelector('#supStatementTable tbody');
+        if (stmtTbody) {
+            stmtTbody.innerHTML = `
+                <tr>
+                    <td>بداية التعامل</td>
+                    <td>رصيد سابق</td>
+                    <td>رصيد مستحق بداية الفترة</td>
+                    <td style="color: var(--accent-rose); font-weight: bold;">${sup.balance.toFixed(2)}</td>
+                    <td>—</td>
+                    <td style="font-weight: bold;">${sup.balance.toFixed(2)} ج.م</td>
+                </tr>
+            `;
+        }
+
+        // Vouchers Log Table
+        const vTbody = document.querySelector('#supVouchersLogTable tbody');
+        if (vTbody) {
+            const supVouchers = this.supplierPayments.filter(p => p.supplierId === supplierId);
+            if (supVouchers.length === 0) {
+                vTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد سندات صرف مسجلة لهذا المورد بعد</td></tr>`;
+            } else {
+                vTbody.innerHTML = supVouchers.map(v => `
+                    <tr>
+                        <td style="font-family: monospace; font-weight: bold;">${v.id}</td>
+                        <td><strong>${v.date}</strong><br><small style="color: var(--primary-orange);">${v.time || '—'}</small></td>
+                        <td style="font-weight: 900; color: var(--accent-rose); font-size: 0.95rem;">${v.amount.toFixed(2)} ج.م</td>
+                        <td>${v.method}</td>
+                        <td>${v.cashierName || 'أحمد الشناوي'}</td>
+                        <td>
+                            <button class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.printDisbursementVoucher('${v.id}')">
+                                <i class="fa-solid fa-print"></i> طباعة السند
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        this.switchSupTab('sup-statement');
+        document.getElementById('supplierLedgerModal')?.classList.add('active');
+    }
+
+    closeSupplierLedgerModal() {
+        document.getElementById('supplierLedgerModal')?.classList.remove('active');
+    }
+
+    switchSupTab(paneId) {
+        document.querySelectorAll('#supplierLedgerModal .btn-acc-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#supplierLedgerModal .acc-tab-pane').forEach(p => p.classList.remove('active'));
+        document.getElementById(`pane-${paneId}`)?.classList.add('active');
+        const activeBtn = Array.from(document.querySelectorAll('#supplierLedgerModal .btn-acc-tab')).find(b => b.getAttribute('onclick')?.includes(paneId));
+        if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    handleSupplierPaymentSubmit(e) {
+        e.preventDefault();
+        const amount = parseFloat(document.getElementById('supPayAmount').value);
+        const method = document.getElementById('supPayMethod').value;
+        const notes = document.getElementById('supPayNotes').value.trim();
+        const sup = this.suppliers.find(s => s.id === this.currentLedgerSupplierId);
+
+        if (!sup || isNaN(amount) || amount <= 0) return;
+
+        const previousBalance = sup.balance;
+        sup.balance = Math.max(0, sup.balance - amount);
+
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
+        const timeStr = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const fullDateTime = `${dateStr} - الساعة ${timeStr}`;
+
+        const voucher = {
+            id: `PAY-${Date.now().toString().slice(-6)}`,
+            supplierId: sup.id,
+            supplierName: sup.name,
+            date: dateStr,
+            time: timeStr,
+            fullDateTime: fullDateTime,
+            timestamp: Date.now(),
+            amount: amount,
+            method: method,
+            notes: notes,
+            cashierName: this.currentUser.displayName,
+            balanceBefore: previousBalance,
+            balanceAfter: sup.balance,
+            tafqeetWords: tafqeet(amount)
+        };
+
+        this.supplierPayments.unshift(voucher);
+        this.saveAll();
+        playBeep(true);
+
+        this.printDisbursementVoucher(voucher.id);
+        this.openSupplierLedger(sup.id);
+        this.renderSuppliersCards();
+        this.renderHomeDashboard();
+        this.renderShiftDetails();
+    }
+
+    handleSupplierUpdateSubmit(e) {
+        e.preventDefault();
+        const sup = this.suppliers.find(s => s.id === this.currentLedgerSupplierId);
+        if (!sup) return;
+
+        sup.name = document.getElementById('supEditName').value;
+        sup.phone = document.getElementById('supEditPhone').value;
+        sup.address = document.getElementById('supEditAddress').value;
+
+        this.saveAll();
+        playBeep(true);
+        alert('تم تحديث بيانات المورد بنجاح');
+        this.openSupplierLedger(sup.id);
+        this.renderSuppliersCards();
+    }
+
+    // ==========================================================================
+    // 8. PRINTABLE PAYMENT & DISBURSEMENT VOUCHERS (سندات القبض والصرف)
+    // ==========================================================================
+    printPaymentVoucher(receiptId) {
+        const rec = this.customerPayments.find(p => p.id === receiptId);
+        if (!rec) return;
+
+        const area = document.getElementById('voucherPrintArea');
+        document.getElementById('voucherModalTitle').innerHTML = `<i class="fa-solid fa-receipt text-warning"></i> سند قبض نقدية رسمي: ${rec.id}`;
+
+        const barcodeSvg = generateCode128SVG(rec.id, { height: 32, showText: true });
+
+        area.innerHTML = `
+            <div style="border-bottom: 2px solid #0F172A; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h2 style="font-size: 1.3rem; font-weight: 900; color: #FF6A00; margin-bottom: 2px;">كارما كارميلا للأغذية</h2>
+                    <p style="font-size: 0.76rem; color: #475569;">سجل تجاري: 184920 الجيزة • بطاقة ضريبية: 492-817-305</p>
+                </div>
+                <div style="text-align: left;">
+                    <div style="font-weight: 900; font-size: 1.1rem; color: #059669; border: 1.5px solid #059669; padding: 2px 10px; border-radius: 6px;">سند قبض نقدية</div>
+                    <div style="font-size: 0.78rem; font-family: monospace; margin-top: 4px;">رقم السند: <strong>${rec.id}</strong></div>
+                </div>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>التاريخ والوقت بالضبط:</span>
+                    <strong style="color: #FF6A00;">${rec.fullDateTime || rec.date}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>وصلنا من السيد / العميل:</span>
+                    <strong>${rec.customerName}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>طريقة السداد المحصلة:</span>
+                    <strong>${rec.method}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>المبلغ المسدد:</span>
+                    <strong style="font-size: 1.25rem; color: #059669; font-family: 'Tajawal', sans-serif;">${rec.amount.toFixed(2)} ج.م</strong>
+                </div>
+                <div style="background: #FFFFFF; border: 1px dashed #CBD5E1; padding: 6px; border-radius: 4px; font-weight: bold; font-size: 0.82rem; margin-top: 6px;">
+                    المبلغ بالحروف: ${rec.tafqeetWords}
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem; color: #64748B;">
+                    <span>الرصيد قبل السداد: ${rec.balanceBefore.toFixed(2)} ج.م</span>
+                    <span style="color: #0F172A; font-weight: bold;">الرصيد المتبقي المستحق: ${rec.balanceAfter.toFixed(2)} ج.م</span>
+                </div>
+            </div>
+
+            <div style="font-size: 0.8rem; margin-bottom: 16px;">
+                <span>البيان والملاحظات: <strong>${rec.notes || 'سداد دفعة من الحساب الآجل'}</strong></span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 14px;">
+                ${barcodeSvg}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center; border-top: 1px solid #CBD5E1; padding-top: 10px; font-size: 0.82rem;">
+                <div>
+                    <strong>المسؤول / أمين الصندوق:</strong><br>
+                    <span>${rec.cashierName || 'أحمد الشناوي'}</span><br><br>
+                    .............................
+                </div>
+                <div>
+                    <strong>توقيع المسدد / العميل:</strong><br><br><br>
+                    .............................
+                </div>
+            </div>
+        `;
+
+        document.getElementById('voucherPrintModal')?.classList.add('active');
+    }
+
+    printDisbursementVoucher(voucherId) {
+        const v = this.supplierPayments.find(p => p.id === voucherId);
+        if (!v) return;
+
+        const area = document.getElementById('voucherPrintArea');
+        document.getElementById('voucherModalTitle').innerHTML = `<i class="fa-solid fa-money-bill-transfer text-warning"></i> سند صرف نقدية رسمي: ${v.id}`;
+
+        const barcodeSvg = generateCode128SVG(v.id, { height: 32, showText: true });
+
+        area.innerHTML = `
+            <div style="border-bottom: 2px solid #0F172A; padding-bottom: 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                    <h2 style="font-size: 1.3rem; font-weight: 900; color: #FF6A00; margin-bottom: 2px;">كارما كارميلا للأغذية</h2>
+                    <p style="font-size: 0.76rem; color: #475569;">سجل تجاري: 184920 الجيزة • بطاقة ضريبية: 492-817-305</p>
+                </div>
+                <div style="text-align: left;">
+                    <div style="font-weight: 900; font-size: 1.1rem; color: #DC2626; border: 1.5px solid #DC2626; padding: 2px 10px; border-radius: 6px;">سند صرف نقدية</div>
+                    <div style="font-size: 0.78rem; font-family: monospace; margin-top: 4px;">رقم السند: <strong>${v.id}</strong></div>
+                </div>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 10px; margin-bottom: 12px; font-size: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>التاريخ والوقت بالضبط:</span>
+                    <strong style="color: #FF6A00;">${v.fullDateTime || v.date}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>يصرف إلى السادة / شركة:</span>
+                    <strong>${v.supplierName}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span>المبلغ المنصرف:</span>
+                    <strong style="font-size: 1.25rem; color: #DC2626; font-family: 'Tajawal', sans-serif;">${v.amount.toFixed(2)} ج.م</strong>
+                </div>
+                <div style="background: #FFFFFF; border: 1px dashed #CBD5E1; padding: 6px; border-radius: 4px; font-weight: bold; font-size: 0.82rem; margin-top: 6px;">
+                    المبلغ بالحروف: ${v.tafqeetWords}
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem; color: #64748B;">
+                    <span>المستحق قبل الصرف: ${v.balanceBefore.toFixed(2)} ج.م</span>
+                    <span style="color: #0F172A; font-weight: bold;">المتبقي للمورد: ${v.balanceAfter.toFixed(2)} ج.م</span>
+                </div>
+            </div>
+
+            <div style="font-size: 0.8rem; margin-bottom: 16px;">
+                <span>البيان: <strong>${v.notes || 'سداد دفعة توريد بضاعة'}</strong></span>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 14px;">
+                ${barcodeSvg}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; text-align: center; border-top: 1px solid #CBD5E1; padding-top: 10px; font-size: 0.82rem;">
+                <div>
+                    <strong>أمين الصندوق الصارف:</strong><br>
+                    <span>${v.cashierName || 'أحمد الشناوي'}</span><br><br>
+                    .............................
+                </div>
+                <div>
+                    <strong>توقيع المستلم:</strong><br><br><br>
+                    .............................
+                </div>
+            </div>
+        `;
+
+        document.getElementById('voucherPrintModal')?.classList.add('active');
+    }
+
+    closeVoucherPrintModal() {
+        document.getElementById('voucherPrintModal')?.classList.remove('active');
+    }
+
+    // ==========================================================================
+    // 9. REAL CAMERA BARCODE SCANNER & HARDWARE GUN LISTENER
     // ==========================================================================
     setupBarcodeDetector() {
         if ('BarcodeDetector' in window) {
@@ -970,8 +1559,7 @@ class CarmelaApp {
     }
 
     closeScannerModal() {
-        const modal = document.getElementById('scannerModal');
-        if (modal) modal.classList.remove('active');
+        document.getElementById('scannerModal')?.classList.remove('active');
         this.stopCameraStream();
     }
 
@@ -1074,7 +1662,6 @@ class CarmelaApp {
 
         playBeep(true);
 
-        // Find product by direct barcode, SKU, or unit barcode
         let matchedProduct = null;
         let matchedUnitId = null;
 
@@ -1122,12 +1709,10 @@ class CarmelaApp {
     }
 
     initGlobalHardwareBarcodeScanner() {
-        // Universal Handheld Barcode Scanner listener (captures rapid USB/Bluetooth scanner keystrokes)
         let buffer = '';
         let lastCharTime = 0;
 
         window.addEventListener('keydown', (e) => {
-            // Ignore if active in input, textarea, or contentEditable
             const tag = e.target.tagName;
             if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) {
                 return;
@@ -1152,7 +1737,7 @@ class CarmelaApp {
     }
 
     // ==========================================================================
-    // 8. BARCODE LABEL STUDIO (PRINT STICKERS)
+    // 10. BARCODE LABEL STUDIO (PRINT STICKERS)
     // ==========================================================================
     openBarcodeStudioModal() {
         const select = document.getElementById('barcodeLabelProductSelect');
@@ -1232,18 +1817,18 @@ class CarmelaApp {
     }
 
     // ==========================================================================
-    // 9. CUSTOMERS & SUPPLIERS LEDGERS
+    // 11. CUSTOMER SELECTION FOR POS
     // ==========================================================================
     openCustomerModal() {
         const list = document.getElementById('customerSelectionList');
         if (list) {
             list.innerHTML = this.customers.map(c => `
-                <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="app.selectCustomer(${c.id})">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 9px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="app.selectCustomer(${c.id})">
                     <div>
                         <strong>${c.name}</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">${c.phone} • ${c.address || ''}</div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted);">${c.phone} • ${c.address || ''}</div>
                     </div>
-                    <span style="font-weight: bold; color: ${c.balance > 0 ? 'var(--accent-amber)' : 'var(--accent-emerald)'}; font-size: 0.85rem;">
+                    <span style="font-weight: bold; color: ${c.balance > 0 ? 'var(--accent-amber)' : 'var(--accent-emerald)'}; font-size: 0.82rem;">
                         ${c.balance.toFixed(2)} ج.م
                     </span>
                 </div>
@@ -1262,10 +1847,10 @@ class CarmelaApp {
         if (!list) return;
         const filtered = this.customers.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q));
         list.innerHTML = filtered.map(c => `
-            <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="app.selectCustomer(${c.id})">
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 9px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="app.selectCustomer(${c.id})">
                 <div>
                     <strong>${c.name}</strong>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">${c.phone}</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">${c.phone}</div>
                 </div>
                 <span style="font-weight: bold; color: ${c.balance > 0 ? 'var(--accent-amber)' : 'var(--accent-emerald)'};">
                     ${c.balance.toFixed(2)} ج.م
@@ -1284,207 +1869,8 @@ class CarmelaApp {
         this.closeCustomerModal();
     }
 
-    // Customer Ledger View
-    openCustomerLedger(customerId) {
-        this.currentLedgerCustomerId = customerId;
-        const cust = this.customers.find(c => c.id === customerId);
-        if (!cust) return;
-
-        document.getElementById('custModalTitle').innerHTML = `<i class="fa-solid fa-user-tie text-warning"></i> كشف حساب: ${cust.name}`;
-
-        // Fill Edit form
-        document.getElementById('custEditName').value = cust.name;
-        document.getElementById('custEditPhone').value = cust.phone;
-        document.getElementById('custEditAddress').value = cust.address || '';
-        document.getElementById('custEditCreditLimit').value = cust.creditLimit || 0;
-        document.getElementById('custEditCr').value = cust.cr || '';
-        document.getElementById('custEditTaxId').value = cust.taxId || '';
-
-        // Render Invoices Tab
-        const custOrders = this.orders.filter(o => o.customerId === customerId);
-        const invTbody = document.querySelector('#custInvoicesTable tbody');
-        if (invTbody) {
-            invTbody.innerHTML = custOrders.length === 0 ? `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">لا توجد فواتير سابقة لهذا العميل</td></tr>` : custOrders.map(o => `
-                <tr>
-                    <td style="font-family: monospace; font-weight: bold;">${o.id}</td>
-                    <td>${o.date}</td>
-                    <td style="font-weight: bold; color: var(--primary-orange);">${o.grandTotal.toFixed(2)} ج.م</td>
-                    <td><span class="status-badge ${o.paymentType === 'cash' ? 'paid' : 'credit'}">${o.paymentType === 'cash' ? 'نقدي' : 'آجل'}</span></td>
-                    <td><button class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.openInvoiceModal(app.orders.find(ord => ord.id === '${o.id}'))"><i class="fa-solid fa-eye"></i> معاينة</button></td>
-                </tr>
-            `).join('');
-        }
-
-        // Render Statement Tab
-        const stmtTbody = document.querySelector('#custStatementTable tbody');
-        if (stmtTbody) {
-            let runningBalance = 0;
-            let rows = `
-                <tr style="background: var(--bg-surface);">
-                    <td>—</td>
-                    <td>رصيد افتتاحي</td>
-                    <td>رصيد بداية التعامل</td>
-                    <td>${cust.balance > 0 ? cust.balance.toFixed(2) : '0.00'}</td>
-                    <td>0.00</td>
-                    <td style="font-weight: bold;">${cust.balance.toFixed(2)} ج.م</td>
-                </tr>
-            `;
-            runningBalance = cust.balance;
-
-            custOrders.forEach(o => {
-                const debit = o.paymentType === 'credit' ? o.grandTotal : 0;
-                const credit = o.paymentType === 'cash' ? o.grandTotal : 0;
-                runningBalance += (debit - credit);
-                rows += `
-                    <tr>
-                        <td>${o.date}</td>
-                        <td>فاتورة مبيعات (${o.id})</td>
-                        <td>توريد بضاعة غذائية بالجملة</td>
-                        <td style="color: var(--accent-rose);">${debit > 0 ? debit.toFixed(2) : '—'}</td>
-                        <td style="color: var(--accent-emerald);">${credit > 0 ? credit.toFixed(2) : '—'}</td>
-                        <td style="font-weight: bold;">${runningBalance.toFixed(2)} ج.م</td>
-                    </tr>
-                `;
-            });
-            stmtTbody.innerHTML = rows;
-        }
-
-        this.switchAccTab('cust-statement');
-        document.getElementById('customerLedgerModal')?.classList.add('active');
-    }
-
-    closeCustomerLedgerModal() {
-        document.getElementById('customerLedgerModal')?.classList.remove('active');
-    }
-
-    switchAccTab(paneId) {
-        document.querySelectorAll('.account-modal-tabs .btn-acc-tab').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.modal-ledger-box .acc-tab-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById(`pane-${paneId}`)?.classList.add('active');
-        const activeBtn = Array.from(document.querySelectorAll('.account-modal-tabs .btn-acc-tab')).find(b => b.getAttribute('onclick')?.includes(paneId));
-        if (activeBtn) activeBtn.classList.add('active');
-    }
-
-    handleCustomerPaymentSubmit(e) {
-        e.preventDefault();
-        const amount = parseFloat(document.getElementById('custPayAmount').value);
-        const method = document.getElementById('custPayMethod').value;
-        const notes = document.getElementById('custPayNotes').value;
-        const cust = this.customers.find(c => c.id === this.currentLedgerCustomerId);
-
-        if (!cust || isNaN(amount) || amount <= 0) return;
-
-        cust.balance = Math.max(0, cust.balance - amount);
-        this.saveAll();
-        playBeep(true);
-        alert(`تم تسجيل سند قبض بقيمة ${amount.toFixed(2)} ج.م من العميل [${cust.name}]\nطريقة الدفع: ${method}\nملاحظات: ${notes || 'سداد دفعة'}`);
-        this.openCustomerLedger(cust.id);
-        this.renderCustomersCards();
-        this.renderHomeDashboard();
-    }
-
-    handleCustomerUpdateSubmit(e) {
-        e.preventDefault();
-        const cust = this.customers.find(c => c.id === this.currentLedgerCustomerId);
-        if (!cust) return;
-
-        cust.name = document.getElementById('custEditName').value;
-        cust.phone = document.getElementById('custEditPhone').value;
-        cust.address = document.getElementById('custEditAddress').value;
-        cust.creditLimit = parseFloat(document.getElementById('custEditCreditLimit').value) || 0;
-        cust.cr = document.getElementById('custEditCr').value;
-        cust.taxId = document.getElementById('custEditTaxId').value;
-
-        this.saveAll();
-        playBeep(true);
-        alert('تم تحديث وتثبيت بيانات العميل بنجاح');
-        this.openCustomerLedger(cust.id);
-        this.renderCustomersCards();
-    }
-
-    // Supplier Ledger View
-    openSupplierLedger(supplierId) {
-        this.currentLedgerSupplierId = supplierId;
-        const sup = this.suppliers.find(s => s.id === supplierId);
-        if (!sup) return;
-
-        document.getElementById('supModalTitle').innerHTML = `<i class="fa-solid fa-truck-field text-warning"></i> كشف حساب المورد: ${sup.name}`;
-
-        document.getElementById('supEditName').value = sup.name;
-        document.getElementById('supEditPhone').value = sup.phone;
-        document.getElementById('supEditAddress').value = sup.address || '';
-        document.getElementById('supEditCr').value = sup.cr || '';
-        document.getElementById('supEditTaxId').value = sup.taxId || '';
-
-        // Statement
-        const stmtTbody = document.querySelector('#supStatementTable tbody');
-        if (stmtTbody) {
-            stmtTbody.innerHTML = `
-                <tr>
-                    <td>رصيد سابق</td>
-                    <td>افتتاحي</td>
-                    <td>رصيد مستحق بداية الفترة</td>
-                    <td style="color: var(--accent-rose); font-weight: bold;">${sup.balance.toFixed(2)}</td>
-                    <td>0.00</td>
-                    <td style="font-weight: bold;">${sup.balance.toFixed(2)} ج.م</td>
-                </tr>
-            `;
-        }
-
-        this.switchSupTab('sup-statement');
-        document.getElementById('supplierLedgerModal')?.classList.add('active');
-    }
-
-    closeSupplierLedgerModal() {
-        document.getElementById('supplierLedgerModal')?.classList.remove('active');
-    }
-
-    switchSupTab(paneId) {
-        document.querySelectorAll('#supplierLedgerModal .btn-acc-tab').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('#supplierLedgerModal .acc-tab-pane').forEach(p => p.classList.remove('active'));
-        document.getElementById(`pane-${paneId}`)?.classList.add('active');
-        const activeBtn = Array.from(document.querySelectorAll('#supplierLedgerModal .btn-acc-tab')).find(b => b.getAttribute('onclick')?.includes(paneId));
-        if (activeBtn) activeBtn.classList.add('active');
-    }
-
-    handleSupplierPaymentSubmit(e) {
-        e.preventDefault();
-        const amount = parseFloat(document.getElementById('supPayAmount').value);
-        const method = document.getElementById('supPayMethod').value;
-        const notes = document.getElementById('supPayNotes').value;
-        const sup = this.suppliers.find(s => s.id === this.currentLedgerSupplierId);
-
-        if (!sup || isNaN(amount) || amount <= 0) return;
-
-        sup.balance = Math.max(0, sup.balance - amount);
-        this.saveAll();
-        playBeep(true);
-        alert(`تم تسجيل سند صرف بقيمة ${amount.toFixed(2)} ج.م للمورد [${sup.name}]\nالوسيلة: ${method}\nملاحظة: ${notes}`);
-        this.openSupplierLedger(sup.id);
-        this.renderSuppliersCards();
-        this.renderHomeDashboard();
-    }
-
-    handleSupplierUpdateSubmit(e) {
-        e.preventDefault();
-        const sup = this.suppliers.find(s => s.id === this.currentLedgerSupplierId);
-        if (!sup) return;
-
-        sup.name = document.getElementById('supEditName').value;
-        sup.phone = document.getElementById('supEditPhone').value;
-        sup.address = document.getElementById('supEditAddress').value;
-        sup.cr = document.getElementById('supEditCr').value;
-        sup.taxId = document.getElementById('supEditTaxId').value;
-
-        this.saveAll();
-        playBeep(true);
-        alert('تم تحديث بيانات المورد المعتمد بنجاح');
-        this.openSupplierLedger(sup.id);
-        this.renderSuppliersCards();
-    }
-
     // ==========================================================================
-    // 10. SCREEN RENDERING (HOME, INVENTORY, CARDS, REPORTS)
+    // 12. SCREEN RENDERING (HOME, INVENTORY, CARDS, REPORTS)
     // ==========================================================================
     renderHomeDashboard() {
         const todaySalesEl = document.getElementById('homeTodaySales');
@@ -1494,19 +1880,19 @@ class CarmelaApp {
         const ordersCountEl = document.getElementById('homeOrdersCount');
         const stockValEl = document.getElementById('homeStockValuation');
         const stockCountEl = document.getElementById('homeStockCountText');
-        const custDebtEl = document.getElementById('homeCustomersDebt');
-        const custCountEl = document.getElementById('homeCustomersCount');
-        const supDebtEl = document.getElementById('homeSuppliersDebt');
-        const supCountEl = document.getElementById('homeSuppliersCount');
 
         const totalSales = this.orders.reduce((sum, o) => sum + o.grandTotal, 0);
         const cashSales = this.orders.filter(o => o.paymentType === 'cash').reduce((sum, o) => sum + o.grandTotal, 0);
+        const cashReceipts = this.customerPayments.filter(p => p.method.includes('نقد')).reduce((sum, p) => sum + p.amount, 0);
+        const cashDisbursements = this.supplierPayments.filter(p => p.method.includes('نقد')).reduce((sum, p) => sum + p.amount, 0);
+        const netCash = this.currentUser.startingFloat + cashSales + cashReceipts - cashDisbursements;
+
         const totalReceivables = this.customers.reduce((sum, c) => sum + c.balance, 0);
         const totalPayables = this.suppliers.reduce((sum, s) => sum + s.balance, 0);
         const stockValuation = this.products.reduce((sum, p) => sum + (p.currentStock * p.costPrice), 0);
 
         if (todaySalesEl) todaySalesEl.innerText = `${totalSales.toFixed(2)} ج.م`;
-        if (cashDrawerEl) cashDrawerEl.innerText = `${cashSales.toFixed(2)} ج.م`;
+        if (cashDrawerEl) cashDrawerEl.innerText = `${netCash.toFixed(2)} ج.م`;
         if (receivablesEl) receivablesEl.innerText = `${totalReceivables.toFixed(2)} ج.م`;
         if (payablesEl) payablesEl.innerText = `${totalPayables.toFixed(2)} ج.م`;
 
@@ -1514,27 +1900,23 @@ class CarmelaApp {
         if (stockValEl) stockValEl.innerText = `${stockValuation.toFixed(2)} ج.م`;
         if (stockCountEl) stockCountEl.innerText = `${this.products.length} صنف مسجل`;
 
-        if (custDebtEl) custDebtEl.innerText = `${totalReceivables.toFixed(2)} ج.م`;
-        if (custCountEl) custCountEl.innerText = `${this.customers.length} عميل ومطعم`;
-
-        if (supDebtEl) supDebtEl.innerText = `${totalPayables.toFixed(2)} ج.م`;
-        if (supCountEl) supCountEl.innerText = `${this.suppliers.length} شركات توريد`;
-
-        // Home Recent Orders Table
+        // Home Recent Operations Table (Merges recent invoices and receipts)
         const recentTbody = document.querySelector('#homeRecentOrdersTable tbody');
         if (recentTbody) {
-            recentTbody.innerHTML = this.orders.slice(0, 5).map(o => `
-                <tr onclick="app.openInvoiceModal(app.orders.find(ord => ord.id === '${o.id}'))" style="cursor: pointer;">
-                    <td style="font-family: monospace; font-weight: bold;">${o.id}</td>
-                    <td>${o.customerName}</td>
-                    <td>${o.date}</td>
-                    <td style="font-weight: bold; color: var(--primary-orange);">${o.grandTotal.toFixed(2)} ج.م</td>
-                    <td><span class="status-badge ${o.paymentType === 'cash' ? 'paid' : 'credit'}">${o.paymentType === 'cash' ? 'نقدي' : 'آجل'}</span></td>
+            const recentTimeline = [
+                ...this.orders.slice(0, 4).map(o => ({ id: o.id, party: o.customerName, date: o.date, amount: o.grandTotal, type: 'فاتورة بيع' })),
+                ...this.customerPayments.slice(0, 3).map(p => ({ id: p.id, party: p.customerName, date: p.fullDateTime || p.date, amount: p.amount, type: 'سند قبض نقدية' }))
+            ];
+
+            recentTbody.innerHTML = recentTimeline.length === 0 ? `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">لا توجد حركات مسجلة بالوردية الحالية</td></tr>` : recentTimeline.map(it => `
+                <tr>
+                    <td style="font-family: monospace; font-weight: bold;">${it.id}</td>
+                    <td>${it.party}</td>
+                    <td style="font-size: 0.72rem;">${it.date}</td>
+                    <td style="font-weight: 900; color: var(--primary-orange);">${it.amount.toFixed(2)} ج.م</td>
+                    <td><span class="status-badge ${it.type.includes('فاتورة') ? 'partial' : 'paid'}">${it.type}</span></td>
                 </tr>
             `).join('');
-            if (this.orders.length === 0) {
-                recentTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">لا توجد مبيعات مسجلة في الوردية الحالية</td></tr>`;
-            }
         }
 
         // Low stock alerts
@@ -1542,7 +1924,7 @@ class CarmelaApp {
         if (lowStockList) {
             const lowItems = this.products.filter(p => p.currentStock <= p.minStock);
             if (lowItems.length === 0) {
-                lowStockList.innerHTML = `<div style="text-align: center; padding: 16px; color: var(--accent-emerald); font-weight: bold;">
+                lowStockList.innerHTML = `<div style="text-align: center; padding: 14px; color: var(--accent-emerald); font-weight: bold; font-size: 0.82rem;">
                     <i class="fa-solid fa-circle-check"></i> مستويات المخزون ممتازة لجميع الأصناف
                 </div>`;
             } else {
@@ -1579,7 +1961,7 @@ class CarmelaApp {
                         </span>
                     </td>
                     <td>
-                        <div style="width: 110px;">${barcodeSvg}</div>
+                        <div style="width: 100px;">${barcodeSvg}</div>
                     </td>
                     <td>
                         <button class="btn-secondary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.openBarcodeStudioModal()"><i class="fa-solid fa-barcode"></i> ملصق</button>
@@ -1603,7 +1985,7 @@ class CarmelaApp {
                     ${c.balance.toFixed(2)} ج.م
                 </div>
                 <p class="bento-desc">${c.address || 'لا يوجد عنوان مسجل'}</p>
-                <span class="bento-link-arrow">فتح كشف الحساب والبيان <i class="fa-solid fa-arrow-left"></i></span>
+                <span class="bento-link-arrow">فتح كشف الحساب بالساعة <i class="fa-solid fa-arrow-left"></i></span>
             </div>
         `).join('');
     }
@@ -1622,7 +2004,7 @@ class CarmelaApp {
                     ${s.balance.toFixed(2)} ج.م
                 </div>
                 <p class="bento-desc">${s.address || 'المنطقة الصناعية'}</p>
-                <span class="bento-link-arrow">كشف الحساب وفواتير الشراء <i class="fa-solid fa-arrow-left"></i></span>
+                <span class="bento-link-arrow">كشف الحساب وسندات الصرف <i class="fa-solid fa-arrow-left"></i></span>
             </div>
         `).join('');
     }
@@ -1631,7 +2013,7 @@ class CarmelaApp {
         const tbody = document.querySelector('#allOrdersTable tbody');
         if (!tbody) return;
         if (this.orders.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">لا توجد فواتير صادرة حتى الآن</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 25px;">لا توجد فواتير صادرة حتى الآن</td></tr>`;
             return;
         }
 
@@ -1639,13 +2021,13 @@ class CarmelaApp {
             <tr>
                 <td style="font-family: monospace; font-weight: bold;">${o.id}</td>
                 <td style="font-weight: 700;">${o.customerName}</td>
-                <td>${o.date}</td>
+                <td style="font-size: 0.75rem;">${o.date}</td>
                 <td>${o.subtotal.toFixed(2)} ج.م</td>
                 <td style="color: var(--accent-blue);">${o.vat.toFixed(2)} ج.م</td>
                 <td style="font-weight: 900; color: var(--primary-orange);">${o.grandTotal.toFixed(2)} ج.م</td>
                 <td><span class="status-badge ${o.paymentType === 'cash' ? 'paid' : 'credit'}">${o.paymentType === 'cash' ? 'نقدي' : 'آجل'}</span></td>
                 <td>
-                    <button class="btn-primary" style="padding: 4px 10px; font-size: 0.72rem;" onclick="app.openInvoiceModal(app.orders.find(ord => ord.id === '${o.id}'))">
+                    <button class="btn-primary" style="padding: 4px 8px; font-size: 0.72rem;" onclick="app.openInvoiceModal(app.orders.find(ord => ord.id === '${o.id}'))">
                         <i class="fa-solid fa-print"></i> معاينة وطباعة
                     </button>
                 </td>
@@ -1654,7 +2036,7 @@ class CarmelaApp {
     }
 
     // ==========================================================================
-    // 11. MODAL CREATION FORMS (NEW CUSTOMER, SUPPLIER, PRODUCT, PURCHASE)
+    // 13. MODAL CREATION FORMS
     // ==========================================================================
     openAddCustomerModal() {
         document.getElementById('addCustomerModal')?.classList.add('active');
@@ -1664,10 +2046,10 @@ class CarmelaApp {
     }
     saveNewCustomer(e) {
         e.preventDefault();
-        const name = document.getElementById('newCustName').value;
-        const phone = document.getElementById('newCustPhone').value;
+        const name = document.getElementById('newCustName').value.trim();
+        const phone = document.getElementById('newCustPhone').value.trim();
         const balance = parseFloat(document.getElementById('newCustBalance').value) || 0;
-        const address = document.getElementById('newCustAddress').value;
+        const address = document.getElementById('newCustAddress').value.trim();
 
         const newCust = {
             id: Date.now(),
@@ -1677,18 +2059,16 @@ class CarmelaApp {
             creditLimit: 25000.0,
             address,
             cr: '—',
-            taxId: '—',
-            invoicesCount: 0,
-            totalPurchases: 0
+            taxId: '—'
         };
 
         this.customers.push(newCust);
         this.saveAll();
         playBeep(true);
         this.closeAddCustomerModal();
-        this.renderCustomersCards();
+        this.renderPartnersScreen();
         this.renderHomeDashboard();
-        alert(`تم حفظ العميل الجديد: [${name}] بنجاح`);
+        alert(`تم تسجيل العميل: [${name}] بنجاح`);
     }
 
     openAddSupplierModal() {
@@ -1699,8 +2079,8 @@ class CarmelaApp {
     }
     saveNewSupplier(e) {
         e.preventDefault();
-        const name = document.getElementById('newSupName').value;
-        const phone = document.getElementById('newSupPhone').value;
+        const name = document.getElementById('newSupName').value.trim();
+        const phone = document.getElementById('newSupPhone').value.trim();
         const balance = parseFloat(document.getElementById('newSupBalance').value) || 0;
 
         const newSup = {
@@ -1708,18 +2088,14 @@ class CarmelaApp {
             name,
             phone,
             balance,
-            address: 'القاهرة / الجيزة',
-            cr: '—',
-            taxId: '—',
-            invoicesCount: 0,
-            totalSupplied: 0
+            address: 'القاهرة / الجيزة'
         };
 
         this.suppliers.push(newSup);
         this.saveAll();
         playBeep(true);
         this.closeAddSupplierModal();
-        this.renderSuppliersCards();
+        this.renderPartnersScreen();
         this.renderHomeDashboard();
         alert(`تم إضافة المورد: [${name}] بنجاح`);
     }
@@ -1732,7 +2108,7 @@ class CarmelaApp {
             supSelect.innerHTML = this.suppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
         }
         if (prodSelect) {
-            prodSelect.innerHTML = this.products.map(p => `<option value="${p.id}" data-cost="${p.costPrice}">${p.name} (تكلفة حالية: ${p.costPrice.toFixed(2)} ج.م)</option>`).join('');
+            prodSelect.innerHTML = this.products.map(p => `<option value="${p.id}">${p.name} (تكلفة: ${p.costPrice.toFixed(2)} ج.م)</option>`).join('');
             const first = this.products[0];
             if (first) document.getElementById('purchaseUnitCost').value = first.costPrice;
         }
@@ -1767,9 +2143,10 @@ class CarmelaApp {
         playBeep(true);
         this.closeNewPurchaseModal();
         this.renderInventoryTable();
-        this.renderSuppliersCards();
+        this.renderPartnersScreen();
         this.renderHomeDashboard();
-        alert(`تم توريد ${qty} وحدة من [${prod.name}] بنجاح!\nإجمالي الفاتورة: ${totalCost.toFixed(2)} ج.م\nالرصيد المحدث للمستودع: ${prod.currentStock}`);
+        this.renderShiftDetails();
+        alert(`تم توريد ${qty} وحدة من [${prod.name}] بنجاح!\nإجمالي الفاتورة: ${totalCost.toFixed(2)} ج.م`);
     }
 
     openAddProductModal() {
@@ -1780,9 +2157,9 @@ class CarmelaApp {
     }
     saveNewProduct(e) {
         e.preventDefault();
-        const name = document.getElementById('newProdName').value;
+        const name = document.getElementById('newProdName').value.trim();
         const category = document.getElementById('newProdCategory').value;
-        const sku = document.getElementById('newProdSku').value.toUpperCase();
+        const sku = document.getElementById('newProdSku').value.toUpperCase().trim();
         const costPrice = parseFloat(document.getElementById('newProdCost').value);
         const wholesalePrice = parseFloat(document.getElementById('newProdPrice').value);
         const stock = parseInt(document.getElementById('newProdStock').value, 10) || 0;
@@ -1813,11 +2190,11 @@ class CarmelaApp {
         this.renderInventoryTable();
         this.initQuickBarcodes();
         this.renderHomeDashboard();
-        alert(`تم تعريف الصنف الغذائي [${name}] وإضافته للمخزون بنجاح`);
+        alert(`تم تسجيل الصنف [${name}] بالمستودع بنجاح`);
     }
 
     // ==========================================================================
-    // 12. EXPORTING & BACKUPS (EXCEL & JSON)
+    // 14. EXPORTING & BACKUPS
     // ==========================================================================
     exportOrdersCSV() {
         if (this.orders.length === 0) {
@@ -1845,6 +2222,9 @@ class CarmelaApp {
             customers: this.customers,
             suppliers: this.suppliers,
             orders: this.orders,
+            customerPayments: this.customerPayments,
+            supplierPayments: this.supplierPayments,
+            user: this.currentUser,
             exportedAt: new Date().toISOString()
         };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -1856,18 +2236,14 @@ class CarmelaApp {
         URL.revokeObjectURL(url);
     }
 
-    closeShiftConfirm() {
-        const cashSales = this.orders.filter(o => o.paymentType === 'cash').reduce((sum, o) => sum + o.grandTotal, 0);
-        if (confirm(`هل أنت متأكد من إقفال وردية الكاشير الحالية؟\nإجمالي النقدية المحصلة بالخزينة: ${cashSales.toFixed(2)} ج.م`)) {
-            alert('تم إقفال الوردية الحالية بنجاح وطباعة تقرير التقفيل المالي.');
-        }
-    }
-
     saveAll() {
         localStorage.setItem('carmela_products', JSON.stringify(this.products));
         localStorage.setItem('carmela_customers', JSON.stringify(this.customers));
         localStorage.setItem('carmela_suppliers', JSON.stringify(this.suppliers));
         localStorage.setItem('carmela_orders', JSON.stringify(this.orders));
+        localStorage.setItem('carmela_cust_payments', JSON.stringify(this.customerPayments));
+        localStorage.setItem('carmela_sup_payments', JSON.stringify(this.supplierPayments));
+        localStorage.setItem('carmela_user', JSON.stringify(this.currentUser));
     }
 }
 

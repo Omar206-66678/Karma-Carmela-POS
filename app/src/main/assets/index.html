@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>كارما كارميلا | Karma Carmela POS & Wholesale ERP</title>
-    <meta name="description" content="منظومة نقاط البيع وتجارة الأغذية بالجملة ومخازن كارما كارميلا المتوافقة مع الفاتورة الإلكترونية والباركود الموحد">
+    <meta name="description" content="منظومة نقاط البيع وتجارة الأغذية بالجملة وإدارة الحسابات المتوافقة مع السوق المصري">
     <meta name="theme-color" content="#0B0F19">
     
     <!-- Google Fonts: Cairo & Tajawal -->
@@ -21,12 +21,12 @@
 <body>
     <div id="app" class="app-container">
 
-        <!-- ================= HYDRO BAR (HEADER) ================= -->
+        <!-- ================= HYDRO BAR (HEADER - ZERO CLIPPING) ================= -->
         <header class="hydro-bar">
             <div class="hydro-content">
                 <!-- Right: Hamburger Menu & Brand Logo -->
                 <div class="hydro-brand-group">
-                    <button class="btn-hamburger" id="hamburgerBtn" onclick="app.toggleSidebar()" title="القائمة الجانبية (الشروط الثلاثة)">
+                    <button class="btn-hamburger" id="hamburgerBtn" onclick="app.toggleSidebar()" title="القائمة الرئيسية (☰)">
                         <span class="hamburger-bar"></span>
                         <span class="hamburger-bar"></span>
                         <span class="hamburger-bar"></span>
@@ -36,7 +36,6 @@
                     <div class="brand-logo-wrap" onclick="app.switchScreen('home')" title="الرئيسية">
                         <svg class="brand-svg-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect width="48" height="48" rx="12" fill="url(#logo_grad)" />
-                            <!-- Modern Food & Wholesale Crown Emblem -->
                             <path d="M14 34L18 20L24 26L30 20L34 34H14Z" fill="#FFFFFF" fill-opacity="0.95" />
                             <circle cx="24" cy="16" r="3.5" fill="#FFE2B8" />
                             <circle cx="15" cy="18" r="2.5" fill="#FFE2B8" />
@@ -70,38 +69,38 @@
                     <button class="d-nav-item" id="dnav-inventory" onclick="app.switchScreen('inventory')">
                         <i class="fa-solid fa-boxes-stacked"></i> المخزون
                     </button>
-                    <button class="d-nav-item" id="dnav-customers" onclick="app.switchScreen('customers')">
-                        <i class="fa-solid fa-users"></i> العملاء
-                    </button>
-                    <button class="d-nav-item" id="dnav-suppliers" onclick="app.switchScreen('suppliers')">
-                        <i class="fa-solid fa-truck-field"></i> الموردين
+                    <button class="d-nav-item" id="dnav-partners" onclick="app.switchScreen('partners')">
+                        <i class="fa-solid fa-handshake"></i> الحسابات (عملاء وموردين)
                     </button>
                     <button class="d-nav-item" id="dnav-reports" onclick="app.switchScreen('reports')">
                         <i class="fa-solid fa-file-invoice-dollar"></i> التقارير
                     </button>
+                    <button class="d-nav-item" id="dnav-account" onclick="app.switchScreen('account')">
+                        <i class="fa-solid fa-circle-user"></i> حسابي والوردية
+                    </button>
                 </nav>
 
-                <!-- Left: Header Controls (Shift, Theme Switch, Barcode, Cart) -->
+                <!-- Left: Header Controls (Guaranteed visible and unclipped) -->
                 <div class="hydro-controls">
                     <!-- Live Shift Indicator -->
                     <div class="shift-status-pill">
                         <span class="pulse-dot"></span>
-                        <span>وردية نشطة</span>
+                        <span id="shiftStatusHeader">وردية نشطة</span>
                     </div>
 
-                    <!-- Theme Switcher (علامة تغير الموضوع) -->
+                    <!-- Theme Switcher -->
                     <button class="btn-header-action" id="themeToggleBtn" onclick="app.toggleTheme()" title="تبديل الوضع (داكن / فاتح)">
                         <i class="fa-solid fa-moon icon-moon"></i>
                         <i class="fa-solid fa-sun icon-sun"></i>
                     </button>
 
                     <!-- Universal Barcode Scanner Trigger -->
-                    <button class="btn-header-action" onclick="app.openScannerModal()" title="مسح باركود ذكي">
+                    <button class="btn-header-action" onclick="app.openScannerModal()" title="قارئ الباركود">
                         <i class="fa-solid fa-barcode"></i>
                     </button>
 
-                    <!-- Cart Trigger Button with Live Counter Badge -->
-                    <button class="btn-header-cart" onclick="app.toggleCartDrawer()" title="سلة المبيعات">
+                    <!-- Cart Trigger Button (Invoice Basket) -->
+                    <button class="btn-header-cart" id="headerCartBtn" onclick="app.toggleCartDrawer()" title="سلة الفاتورة الحالية">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span class="cart-count-badge" id="cartCountBadge">0</span>
                     </button>
@@ -114,24 +113,23 @@
         <aside class="sidebar-drawer" id="sidebarDrawer">
             <div class="sidebar-header">
                 <div class="sidebar-brand">
-                    <svg class="brand-svg-icon" viewBox="0 0 48 48" fill="none" style="width: 32px; height: 32px;">
-                        <rect width="48" height="48" rx="10" fill="#FF6A00" />
+                    <svg class="brand-svg-icon" viewBox="0 0 48 48" fill="none" style="width: 30px; height: 30px;">
+                        <rect width="48" height="48" rx="8" fill="#FF6A00" />
                         <path d="M14 34L18 20L24 26L30 20L34 34H14Z" fill="#FFFFFF" />
-                        <circle cx="24" cy="16" r="3" fill="#FFE2B8" />
                     </svg>
                     <div>
                         <h3>كارما كارميلا</h3>
-                        <small>نظام تجارة الأغذية v3.0</small>
+                        <small>Karma Carmela Wholesale v3.2</small>
                     </div>
                 </div>
                 <button class="btn-close-sidebar" onclick="app.toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
-            <div class="sidebar-user-card">
-                <div class="sidebar-user-avatar"><i class="fa-solid fa-user-check"></i></div>
+            <div class="sidebar-user-card" onclick="app.navTo('account')">
+                <div class="sidebar-user-avatar"><i class="fa-solid fa-user-shield"></i></div>
                 <div class="sidebar-user-info">
-                    <strong>الكاشير / مدير الفرع</strong>
-                    <span><i class="fa-solid fa-circle text-success" style="font-size: 8px;"></i> فرع الجملة الرئيسي</span>
+                    <strong id="sidebarUserName">أحمد الشناوي</strong>
+                    <span><i class="fa-solid fa-circle text-success" style="font-size: 7px;"></i> كاشير ومدير فرع (وردية نشطة)</span>
                 </div>
             </div>
 
@@ -139,40 +137,39 @@
                 <a class="sidebar-link active" onclick="app.navTo('home')"><i class="fa-solid fa-chart-pie"></i> لوحة التحكم الرئيسية</a>
                 <a class="sidebar-link" onclick="app.navTo('pos')"><i class="fa-solid fa-cash-register"></i> نقطة البيع السريع (الكاشير)</a>
                 <a class="sidebar-link" onclick="app.navTo('inventory')"><i class="fa-solid fa-boxes-stacked"></i> المخازن ووحدات التعبئة</a>
-                <a class="sidebar-link" onclick="app.navTo('customers')"><i class="fa-solid fa-users"></i> كشوف حسابات العملاء والآجل</a>
-                <a class="sidebar-link" onclick="app.navTo('suppliers')"><i class="fa-solid fa-truck-field"></i> الموردين وفواتير الشراء</a>
-                <a class="sidebar-link" onclick="app.navTo('reports')"><i class="fa-solid fa-file-invoice-dollar"></i> التقارير الضريبية والأرباح</a>
+                <a class="sidebar-link" onclick="app.navTo('partners')"><i class="fa-solid fa-handshake"></i> الحسابات (العملاء والموردين)</a>
+                <a class="sidebar-link" onclick="app.navTo('reports')"><i class="fa-solid fa-file-invoice-dollar"></i> التقارير والضرائب (14%)</a>
+                <a class="sidebar-link" onclick="app.navTo('account')"><i class="fa-solid fa-circle-user"></i> حساب المستخدم وجرد الخزينة</a>
 
                 <div class="sidebar-divider"></div>
 
                 <a class="sidebar-link" onclick="app.openScannerModal()"><i class="fa-solid fa-barcode"></i> قارئ الباركود والكاميرا</a>
                 <a class="sidebar-link" onclick="app.openBarcodeStudioModal()"><i class="fa-solid fa-tags"></i> طباعة ملصقات الباركود والأسعار</a>
                 <a class="sidebar-link" onclick="app.openAddProductModal()"><i class="fa-solid fa-plus-circle"></i> إضافة صنف جديد للمخزن</a>
-                <a class="sidebar-link" onclick="app.openNewPurchaseModal()"><i class="fa-solid fa-truck-ramp-box"></i> تسجيل فاتورة توريد واردة</a>
+                <a class="sidebar-link" onclick="app.openNewPurchaseModal()"><i class="fa-solid fa-truck-ramp-box"></i> تسجيل فاتورة توريد (مشتريات)</a>
 
                 <div class="sidebar-divider"></div>
 
-                <a class="sidebar-link text-warning" onclick="app.closeShiftConfirm()"><i class="fa-solid fa-lock"></i> إقفال الوردية وجرد الخزينة</a>
+                <a class="sidebar-link text-warning" onclick="app.lockScreen()"><i class="fa-solid fa-lock"></i> قفل الشاشة مؤقتاً (PIN)</a>
                 <a class="sidebar-link" onclick="app.exportAllData()"><i class="fa-solid fa-download"></i> تصدير نسخة احتياطية (Excel/JSON)</a>
             </nav>
         </aside>
 
-        <!-- ================= MAIN APP CONTAINER ================= -->
+        <!-- ================= MAIN APP SCREENS ================= -->
         <main class="app-main">
 
             <!-- ================= SCREEN 1: HOME DASHBOARD (الرئيسية) ================= -->
             <section id="screen-home" class="screen-view active">
-                <!-- Welcome Card (بطاقة ترحيب عصرية متناسقة) -->
+                <!-- Welcome Card (بطاقة ترحيب عصرية) -->
                 <div class="welcome-card" id="welcomeCard">
                     <div class="welcome-header-row">
                         <div>
                             <span class="welcome-greeting-badge" id="welcomeGreeting">
-                                <i class="fa-solid fa-hand-wave"></i> صباح الخير، مرحباً بك في ورديتك
+                                <i class="fa-solid fa-hand-wave"></i> مرحباً بك في ورديتك اليوم 👋
                             </span>
                             <h2 class="welcome-title">لوحة عمليات كارما كارميلا</h2>
                             <p class="welcome-sub">منظومة توريد وتوزيع المواد الغذائية بالجملة • الوردية الحالية نشطة</p>
                         </div>
-                        <!-- Quick Actions Grid (2 equal columns on mobile) -->
                         <div class="welcome-action-buttons">
                             <button class="btn-welcome-pos" onclick="app.switchScreen('pos')">
                                 <i class="fa-solid fa-cash-register"></i> بدء بيع سريع (كاشير)
@@ -183,7 +180,7 @@
                         </div>
                     </div>
 
-                    <!-- Welcome Metrics 4-Box Strip (2x2 on mobile, 4-col on desktop) -->
+                    <!-- 4-Box Metrics Strip -->
                     <div class="welcome-metrics-strip">
                         <div class="metric-chip">
                             <span class="metric-label">مبيعات وردية اليوم:</span>
@@ -204,7 +201,7 @@
                     </div>
                 </div>
 
-                <!-- Modern Bento Quick Cards Grid -->
+                <!-- Bento Quick Grid -->
                 <div class="bento-grid">
                     <!-- Bento 1: POS -->
                     <div class="bento-card cashier" onclick="app.switchScreen('pos')">
@@ -214,7 +211,7 @@
                         </div>
                         <h4>كاشير وفواتير الجملة</h4>
                         <div class="bento-metric-large" id="homeOrdersCount">0 فواتير</div>
-                        <p class="bento-desc">تسجيل سريع، باركود ذكي، خصم الشرائح، وتفقيط فوري</p>
+                        <p class="bento-desc">تسجيل سريع، باركود ذكي، وتفقيط فوري</p>
                         <span class="bento-link-arrow">فتح شاشة الكاشير <i class="fa-solid fa-arrow-left"></i></span>
                     </div>
 
@@ -227,107 +224,98 @@
                         <h4>قيمة البضاعة المخزنة</h4>
                         <div class="bento-metric-large text-success" id="homeStockValuation">0.00 ج.م</div>
                         <p class="bento-desc" id="homeStockCountText">0 صنف متوفر في المستودع</p>
-                        <span class="bento-link-arrow">إدارة وتعديل المخزون <i class="fa-solid fa-arrow-left"></i></span>
+                        <span class="bento-link-arrow">معاينة وإدارة المخزون <i class="fa-solid fa-arrow-left"></i></span>
                     </div>
 
-                    <!-- Bento 3: Customers -->
-                    <div class="bento-card cust" onclick="app.switchScreen('customers')">
+                    <!-- Bento 3: Customers & Suppliers Combined -->
+                    <div class="bento-card cust" onclick="app.switchScreen('partners')">
                         <div class="bento-top-row">
-                            <span class="bento-badge-pill">العملاء والآجل</span>
-                            <div class="bento-icon-box"><i class="fa-solid fa-users"></i></div>
+                            <span class="bento-badge-pill">الشركاء والجهات</span>
+                            <div class="bento-icon-box"><i class="fa-solid fa-handshake"></i></div>
                         </div>
-                        <h4>كشوف حسابات العملاء</h4>
-                        <div class="bento-metric-large text-warning" id="homeCustomersDebt">0.00 ج.م</div>
-                        <p class="bento-desc" id="homeCustomersCount">0 عميل مسجل بالنظام</p>
+                        <h4>العملاء والموردين</h4>
+                        <div class="bento-metric-large text-warning" id="homePartnersCount">0 حسابات</div>
+                        <p class="bento-desc">كشوف الحسابات وسندات القبض والصرف بالساعة والدقيقة</p>
                         <span class="bento-link-arrow">متابعة الحسابات والتحصيل <i class="fa-solid fa-arrow-left"></i></span>
                     </div>
 
-                    <!-- Bento 4: Suppliers -->
-                    <div class="bento-card sup" onclick="app.switchScreen('suppliers')">
+                    <!-- Bento 4: Shift & Cashier Account -->
+                    <div class="bento-card sup" onclick="app.switchScreen('account')">
                         <div class="bento-top-row">
-                            <span class="bento-badge-pill">الموردين والتوريد</span>
-                            <div class="bento-icon-box"><i class="fa-solid fa-truck-ramp-box"></i></div>
+                            <span class="bento-badge-pill">المستخدم والوردية</span>
+                            <div class="bento-icon-box"><i class="fa-solid fa-user-shield"></i></div>
                         </div>
-                        <h4>فواتير ومستحقات الموردين</h4>
-                        <div class="bento-metric-large text-danger" id="homeSuppliersDebt">0.00 ج.م</div>
-                        <p class="bento-desc" id="homeSuppliersCount">0 مورد وشركة توزيع</p>
-                        <span class="bento-link-arrow">فواتير التوريد والسداد <i class="fa-solid fa-arrow-left"></i></span>
+                        <h4>حساب الكاشير والخزينة</h4>
+                        <div class="bento-metric-large text-primary" id="homeShiftTime">08:00 ص</div>
+                        <p class="bento-desc">كلمة السر، اسم المستخدم، وجرد الوردية</p>
+                        <span class="bento-link-arrow">إدارة الحساب والخزينة <i class="fa-solid fa-arrow-left"></i></span>
                     </div>
                 </div>
 
-                <!-- Recent Activities & Low Stock Split Row -->
+                <!-- Recent Activities & Low Stock Row -->
                 <div class="home-split-row">
                     <div class="dashboard-panel">
                         <div class="panel-header">
-                            <h4><i class="fa-solid fa-receipt text-warning"></i> أحدث فواتير المبيعات</h4>
-                            <button class="btn-panel-action" onclick="app.switchScreen('reports')">عرض تقرير المبيعات</button>
+                            <h4><i class="fa-solid fa-receipt text-warning"></i> أحدث العمليات والفواتير الصادرة</h4>
+                            <button class="btn-panel-action" onclick="app.switchScreen('reports')">عرض الكل</button>
                         </div>
                         <div class="table-responsive">
                             <table class="custom-table" id="homeRecentOrdersTable">
                                 <thead>
                                     <tr>
-                                        <th>رقم الفاتورة</th>
-                                        <th>العميل</th>
-                                        <th>التاريخ</th>
-                                        <th>الإجمالي</th>
-                                        <th>السداد</th>
+                                        <th>رقم المستند</th>
+                                        <th>العميل / الطرف</th>
+                                        <th>التاريخ والوقت</th>
+                                        <th>القيمة</th>
+                                        <th>النوع</th>
                                     </tr>
                                 </thead>
-                                <tbody><!-- Injected by JS --></tbody>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
 
                     <div class="dashboard-panel">
                         <div class="panel-header">
-                            <h4><i class="fa-solid fa-triangle-exclamation text-danger"></i> نواقص المخزون وإعادة الطلب</h4>
+                            <h4><i class="fa-solid fa-triangle-exclamation text-danger"></i> تنبيهات النواقص وإعادة الطلب</h4>
                             <button class="btn-panel-action" onclick="app.switchScreen('inventory')">إدارة المخزن</button>
                         </div>
-                        <div class="low-stock-list" id="homeLowStockList">
-                            <!-- Injected by JS -->
-                        </div>
+                        <div class="low-stock-list" id="homeLowStockList"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- ================= SCREEN 2: POS CASHIER (الكاشير السريع) ================= -->
+            <!-- ================= SCREEN 2: POS CASHIER (نقطة البيع) ================= -->
             <section id="screen-pos" class="screen-view">
                 <div class="pos-layout-wrapper">
                     
-                    <!-- Right Column: Catalog, Search & Categories -->
+                    <!-- Products Column -->
                     <div class="pos-catalog-column">
-                        <!-- Toolbar -->
                         <div class="pos-toolbar-box">
                             <div class="pos-search-group">
                                 <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="text" id="posSearchInput" placeholder="بحث بالاسم، كود SKU، أو امسح الباركود مباشرة..." oninput="app.filterProducts()">
+                                <input type="text" id="posSearchInput" placeholder="بحث بالاسم، كود SKU، أو امسح الباركود..." oninput="app.filterProducts()">
                                 <button type="button" class="btn-clear-search" onclick="app.clearPosSearch()"><i class="fa-solid fa-xmark"></i></button>
                             </div>
                             
-                            <!-- Customer Selection Pill -->
                             <button class="btn-pos-action-pill" onclick="app.openCustomerModal()" title="تحديد العميل">
                                 <i class="fa-solid fa-user-tag text-warning"></i>
                                 <span id="posCurrentCustomerName">عميل نقدي</span>
                             </button>
 
-                            <!-- Scanner Trigger -->
                             <button class="btn-pos-scanner-btn" onclick="app.openScannerModal()">
                                 <i class="fa-solid fa-barcode"></i> مسح باركود
                             </button>
                         </div>
 
                         <!-- Categories Bar -->
-                        <div class="pos-categories-bar" id="categoriesBar">
-                            <!-- Injected by JS -->
-                        </div>
+                        <div class="pos-categories-bar" id="categoriesBar"></div>
 
                         <!-- Products Grid -->
-                        <div class="pos-products-grid" id="productsGrid">
-                            <!-- Injected by JS -->
-                        </div>
+                        <div class="pos-products-grid" id="productsGrid"></div>
                     </div>
 
-                    <!-- Left Column: Live Cart Register (Desktop Side-by-Side & Mobile Drawer) -->
+                    <!-- Live Cart Register (Desktop Side-by-Side & Mobile Drawer) -->
                     <div class="pos-cart-panel" id="cartPanel">
                         <div class="cart-panel-header">
                             <h3><i class="fa-solid fa-cart-shopping text-warning"></i> سلة الفاتورة الحالية</h3>
@@ -335,19 +323,15 @@
                         </div>
 
                         <div class="cart-customer-strip">
-                            <span>العميل المفوتر: <strong id="cartCustomerLabel">عميل نقدي</strong></span>
+                            <span>العميل: <strong id="cartCustomerLabel">عميل نقدي</strong></span>
                             <button class="btn-change-cust" onclick="app.openCustomerModal()">تغيير</button>
                         </div>
 
-                        <!-- Scrollable Cart Items -->
-                        <div class="cart-items-scroll" id="cartItemsList">
-                            <!-- Injected by JS -->
-                        </div>
+                        <div class="cart-items-scroll" id="cartItemsList"></div>
 
-                        <!-- Checkout Summary Footer -->
                         <div class="cart-checkout-footer">
                             <div class="cart-summary-line">
-                                <span>المجموع الفرعي:</span>
+                                <span>المجموع قبل الضريبة:</span>
                                 <span id="cartSubtotal">0.00 ج.م</span>
                             </div>
                             <div class="cart-summary-line">
@@ -355,11 +339,10 @@
                                 <span id="cartVat">0.00 ج.م</span>
                             </div>
                             <div class="cart-summary-line grand-total">
-                                <span>الإجمالي النهائي:</span>
+                                <span>الإجمالي المستحق:</span>
                                 <span id="cartGrandTotal">0.00 ج.م</span>
                             </div>
 
-                            <!-- Payment Tabs -->
                             <div class="payment-type-tabs">
                                 <button class="btn-pay-tab active" data-type="cash" onclick="app.setPaymentType('cash')">
                                     <i class="fa-solid fa-money-bill-wave"></i> نقدًا
@@ -379,19 +362,33 @@
                     </div>
 
                 </div>
+
+                <!-- CRITICAL: Mobile Floating Cart Bar (Guarantees invoice access on phone) -->
+                <div class="mobile-floating-cart-bar" id="mobileFloatingCartBar">
+                    <div class="mobile-cart-info">
+                        <div class="mobile-cart-badge" id="mobileCartCount">0</div>
+                        <div>
+                            <span style="font-size: 0.72rem; color: #CBD5E1;">إجمالي الفاتورة:</span>
+                            <div class="mobile-cart-total" id="mobileCartTotal">0.00 ج.م</div>
+                        </div>
+                    </div>
+                    <button class="btn-mobile-open-cart" onclick="app.toggleCartDrawer()">
+                        <i class="fa-solid fa-receipt"></i> عرض الفاتورة وإتمام البيع
+                    </button>
+                </div>
             </section>
 
-            <!-- ================= SCREEN 3: INVENTORY (المخزون ووحدات التعبئة) ================= -->
+            <!-- ================= SCREEN 3: INVENTORY (المخزون) ================= -->
             <section id="screen-inventory" class="screen-view">
-                <div class="dashboard-panel" style="margin-bottom: 16px;">
+                <div class="dashboard-panel">
                     <div class="panel-header">
                         <div>
                             <h4><i class="fa-solid fa-boxes-stacked text-warning"></i> إدارة المخزون والمستودعات</h4>
-                            <p style="font-size: 0.78rem; color: var(--text-muted);">متابعة كميات الأصناف، وحدات التحويل (كرتونة/علبة/قطعة)، وطباعة ملصقات الباركود</p>
+                            <p style="font-size: 0.76rem; color: var(--text-muted);">متابعة الأرصدة، وحدات التعبئة والتسعير، وطباعة ملصقات الباركود</p>
                         </div>
-                        <div style="display: flex; gap: 8px;">
+                        <div style="display: flex; gap: 6px;">
                             <button class="btn-secondary" onclick="app.openBarcodeStudioModal()"><i class="fa-solid fa-barcode"></i> ملصقات الباركود</button>
-                            <button class="btn-primary" onclick="app.openAddProductModal()"><i class="fa-solid fa-plus"></i> إضافة صنف جديد</button>
+                            <button class="btn-primary" onclick="app.openAddProductModal()"><i class="fa-solid fa-plus"></i> إضافة صنف</button>
                         </div>
                     </div>
 
@@ -399,7 +396,7 @@
                         <table class="custom-table" id="inventoryTable">
                             <thead>
                                 <tr>
-                                    <th>كود الصنف / SKU</th>
+                                    <th>كود SKU</th>
                                     <th>اسم الصنف التجاري</th>
                                     <th>القسم</th>
                                     <th>الوحدة الأساسية</th>
@@ -410,57 +407,60 @@
                                     <th>إجراءات</th>
                                 </tr>
                             </thead>
-                            <tbody><!-- Injected by JS --></tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
-            <!-- ================= SCREEN 4: CUSTOMERS (العملاء وكشوف الحسابات) ================= -->
-            <section id="screen-customers" class="screen-view">
+            <!-- ================= SCREEN 4: PARTNERS (العملاء والموردين في خانة واحدة) ================= -->
+            <section id="screen-partners" class="screen-view">
                 <div class="dashboard-panel">
-                    <div class="panel-header">
-                        <div>
-                            <h4><i class="fa-solid fa-users text-warning"></i> حسابات العملاء والديون الآجلة</h4>
-                            <p style="font-size: 0.78rem; color: var(--text-muted);">كشف حساب تحليلي، فواتير المبيعات، سندات القبض، وتعديل البيانات التجارية</p>
-                        </div>
-                        <button class="btn-primary" onclick="app.openAddCustomerModal()"><i class="fa-solid fa-user-plus"></i> إضافة عميل جديد</button>
+                    <!-- Dual Toggle Bar (عملاء وموردين في خانة واحدة) -->
+                    <div class="partners-toggle-bar">
+                        <button class="btn-partner-toggle active" id="btnTabCustomers" onclick="app.switchPartnersTab('customers')">
+                            <i class="fa-solid fa-users"></i> حسابات العملاء والديون الآجلة
+                        </button>
+                        <button class="btn-partner-toggle" id="btnTabSuppliers" onclick="app.switchPartnersTab('suppliers')">
+                            <i class="fa-solid fa-truck-field"></i> حسابات الموردين وفواتير التوريد
+                        </button>
                     </div>
 
-                    <div class="pos-products-grid" id="customersCardsGrid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
-                        <!-- Injected by JS -->
+                    <!-- Pane 1: Customers -->
+                    <div class="partners-pane active" id="pane-partners-customers">
+                        <div class="panel-header">
+                            <div>
+                                <h4><i class="fa-solid fa-users text-warning"></i> سجل العملاء والمطاعم والسوبرماركت</h4>
+                                <p style="font-size: 0.74rem; color: var(--text-muted);">كشف حساب تحليلي بالساعة والتاريخ، سندات القبض، وفواتير المبيعات</p>
+                            </div>
+                            <button class="btn-primary" onclick="app.openAddCustomerModal()"><i class="fa-solid fa-user-plus"></i> إضافة عميل جديد</button>
+                        </div>
+                        <div class="pos-products-grid" id="customersCardsGrid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));"></div>
+                    </div>
+
+                    <!-- Pane 2: Suppliers -->
+                    <div class="partners-pane" id="pane-partners-suppliers">
+                        <div class="panel-header">
+                            <div>
+                                <h4><i class="fa-solid fa-truck-field text-warning"></i> سجل شركات التوريد والموردين</h4>
+                                <p style="font-size: 0.74rem; color: var(--text-muted);">كشف حساب التوريد، فواتير الشراء، وسندات الصرف المسددة بالساعة</p>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <button class="btn-secondary" onclick="app.openNewPurchaseModal()"><i class="fa-solid fa-truck-ramp-box"></i> تسجيل توريد</button>
+                                <button class="btn-primary" onclick="app.openAddSupplierModal()"><i class="fa-solid fa-handshake"></i> إضافة مورد</button>
+                            </div>
+                        </div>
+                        <div class="pos-products-grid" id="suppliersCardsGrid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- ================= SCREEN 5: SUPPLIERS (الموردين وفواتير التوريد) ================= -->
-            <section id="screen-suppliers" class="screen-view">
-                <div class="dashboard-panel">
-                    <div class="panel-header">
-                        <div>
-                            <h4><i class="fa-solid fa-truck-field text-warning"></i> حسابات الموردين وفواتير المشتريات</h4>
-                            <p style="font-size: 0.78rem; color: var(--text-muted);">تسجيل فواتير التوريد الواردة، سندات الصرف، ومتابعة الأرصدة الدائنة</p>
-                        </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn-secondary" onclick="app.openNewPurchaseModal()"><i class="fa-solid fa-truck-ramp-box"></i> تسجيل فاتورة توريد</button>
-                            <button class="btn-primary" onclick="app.openAddSupplierModal()"><i class="fa-solid fa-handshake"></i> إضافة مورد جديد</button>
-                        </div>
-                    </div>
-
-                    <div class="pos-products-grid" id="suppliersCardsGrid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
-                        <!-- Injected by JS -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- ================= SCREEN 6: REPORTS & STATS (التقارير) ================= -->
+            <!-- ================= SCREEN 5: REPORTS & TAXES (التقارير) ================= -->
             <section id="screen-reports" class="screen-view">
                 <div class="dashboard-panel">
                     <div class="panel-header">
-                        <h4><i class="fa-solid fa-file-invoice-dollar text-warning"></i> السجل العام للفواتير وحسابات الضرائب</h4>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn-secondary" onclick="app.exportOrdersCSV()"><i class="fa-solid fa-file-excel"></i> تصدير Excel</button>
-                        </div>
+                        <h4><i class="fa-solid fa-file-invoice-dollar text-warning"></i> السجل العام للفواتير والضرائب (14%)</h4>
+                        <button class="btn-secondary" onclick="app.exportOrdersCSV()"><i class="fa-solid fa-file-excel"></i> تصدير Excel</button>
                     </div>
 
                     <div class="table-responsive">
@@ -470,33 +470,115 @@
                                     <th>رقم الفاتورة</th>
                                     <th>العميل</th>
                                     <th>التاريخ والوقت</th>
-                                    <th>المجموع قبل الضريبة</th>
+                                    <th>المجموع</th>
                                     <th>ضريبة 14%</th>
                                     <th>الإجمالي النهائي</th>
-                                    <th>طريقة الدفع</th>
-                                    <th>معاينة وطباعة</th>
+                                    <th>الدفع</th>
+                                    <th>طباعة</th>
                                 </tr>
                             </thead>
-                            <tbody><!-- Injected by JS --></tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
+            <!-- ================= SCREEN 6: USER ACCOUNT & SHIFT (حساب المستخدم والوردية) ================= -->
+            <section id="screen-account" class="screen-view">
+                <!-- User Profile Card -->
+                <div class="account-profile-card">
+                    <div class="account-avatar-large">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div class="account-info-box">
+                        <h3 id="accountProfileName">أحمد الشناوي</h3>
+                        <p>اسم المستخدم: <strong id="accountProfileUsername">admin</strong> • فرع الجملة الرئيسي</p>
+                        <span class="account-role-tag"><i class="fa-solid fa-shield-halved"></i> مدير الفرع وأمين الصندوق (صلاحية كاملة)</span>
+                    </div>
+                </div>
+
+                <!-- Shift & Cash Drawer Details Card -->
+                <div class="shift-details-card">
+                    <div class="panel-header">
+                        <h4><i class="fa-solid fa-cash-register text-warning"></i> بيانات ومطابقة الوردية الحالية</h4>
+                        <button class="btn-secondary" onclick="app.lockScreen()"><i class="fa-solid fa-lock"></i> قفل الشاشة</button>
+                    </div>
+
+                    <div class="shift-grid-row">
+                        <div class="shift-data-tile">
+                            <span>وقت فتح الوردية:</span>
+                            <strong id="shiftStartTimeDisplay">اليوم 08:00 ص</strong>
+                        </div>
+                        <div class="shift-data-tile">
+                            <span>النقدية الافتتاحية (عهدة البداية):</span>
+                            <strong id="shiftFloatDisplay">500.00 ج.م</strong>
+                        </div>
+                        <div class="shift-data-tile">
+                            <span>إجمالي المبيعات المحصلة نقدًا:</span>
+                            <strong class="text-success" id="shiftCashSalesDisplay">0.00 ج.م</strong>
+                        </div>
+                        <div class="shift-data-tile">
+                            <span>سندات القبض النقدية المحصلة:</span>
+                            <strong class="text-success" id="shiftReceiptsDisplay">0.00 ج.م</strong>
+                        </div>
+                        <div class="shift-data-tile">
+                            <span>سندات الصرف والمسدد للموردين:</span>
+                            <strong class="text-danger" id="shiftDisbursementsDisplay">0.00 ج.م</strong>
+                        </div>
+                        <div class="shift-data-tile">
+                            <span>النقدية الفعلية المفترضة بالدرج:</span>
+                            <strong style="color: var(--primary-orange); font-size: 1.2rem;" id="shiftNetDrawerDisplay">500.00 ج.م</strong>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 14px; display: flex; gap: 8px;">
+                        <button class="btn-primary" onclick="app.closeShiftConfirm()"><i class="fa-solid fa-clock-rotate-left"></i> تقفيل الوردية وجرد الخزينة</button>
+                    </div>
+                </div>
+
+                <!-- Security & Password Change Card -->
+                <div class="dashboard-panel">
+                    <div class="panel-header">
+                        <h4><i class="fa-solid fa-key text-warning"></i> بيانات الحساب وكلمة السر</h4>
+                    </div>
+
+                    <form onsubmit="app.handleUpdateCredentials(event)" style="max-width: 500px;">
+                        <div class="form-group">
+                            <label>اسم المستخدم (Username):</label>
+                            <input type="text" id="accInputUsername" required value="admin">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>كلمة السر / رمز الـ PIN:</label>
+                                <input type="password" id="accInputPassword" required value="1234">
+                            </div>
+                            <div class="form-group">
+                                <label>الاسم الظاهر في الفواتير:</label>
+                                <input type="text" id="accInputDisplayName" required value="أحمد الشناوي">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> حفظ وتحديث كلمة السر</button>
+                    </form>
+                </div>
+            </section>
+
         </main>
 
-        <!-- ================= MOBILE BOTTOM NAVIGATION BAR ================= -->
+        <!-- ================= 5-ITEM MOBILE BOTTOM NAVIGATION BAR ================= -->
         <nav class="bottom-nav-bar">
+            <!-- 1: Home -->
             <button class="b-nav-item active" id="bnav-home" onclick="app.switchScreen('home')">
                 <i class="fa-solid fa-house"></i>
                 <span>الرئيسية</span>
             </button>
+
+            <!-- 2: Inventory -->
             <button class="b-nav-item" id="bnav-inventory" onclick="app.switchScreen('inventory')">
                 <i class="fa-solid fa-boxes-stacked"></i>
                 <span>المخزون</span>
             </button>
 
-            <!-- Centered Elevated Cashier FAB -->
+            <!-- 3: Cashier Elevated Center FAB -->
             <div class="b-nav-center-wrap">
                 <button class="b-nav-cashier-fab" onclick="app.switchScreen('pos')" title="الكاشير السريع">
                     <div class="cashier-fab-inner">
@@ -506,17 +588,20 @@
                 </button>
             </div>
 
-            <button class="b-nav-item" id="bnav-customers" onclick="app.switchScreen('customers')">
-                <i class="fa-solid fa-users"></i>
-                <span>العملاء</span>
+            <!-- 4: Accounts (Customers & Suppliers in ONE TAB as requested) -->
+            <button class="b-nav-item" id="bnav-partners" onclick="app.switchScreen('partners')">
+                <i class="fa-solid fa-handshake"></i>
+                <span>الحسابات</span>
             </button>
-            <button class="b-nav-item" id="bnav-suppliers" onclick="app.switchScreen('suppliers')">
-                <i class="fa-solid fa-truck-field"></i>
-                <span>الموردين</span>
+
+            <!-- 5: User Account & Shift -->
+            <button class="b-nav-item" id="bnav-account" onclick="app.switchScreen('account')">
+                <i class="fa-solid fa-circle-user"></i>
+                <span>حسابي</span>
             </button>
         </nav>
 
-        <!-- ================= MODAL 1: UNIVERSAL REAL BARCODE SCANNER ================= -->
+        <!-- ================= MODAL: REAL VIDEO CAMERA BARCODE SCANNER ================= -->
         <div class="modal-overlay" id="scannerModal">
             <div class="modal-box modal-scanner">
                 <div class="modal-header">
@@ -524,7 +609,6 @@
                     <button class="btn-modal-close" onclick="app.closeScannerModal()"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Real Camera Video Box with Laser Animation -->
                     <div class="scanner-video-box">
                         <video id="scannerVideo" autoplay playsinline muted></video>
                         <div class="scanner-viewfinder-overlay">
@@ -536,7 +620,6 @@
                         </div>
                     </div>
 
-                    <!-- Camera Action Controls -->
                     <div class="scanner-controls-strip">
                         <button class="btn-cam-control active" id="btnToggleCamera" onclick="app.toggleCameraStream()">
                             <i class="fa-solid fa-video"></i> تشغيل الكاميرا
@@ -549,7 +632,6 @@
                         </button>
                     </div>
 
-                    <!-- CRITICAL FIX: Manual Input Group never overlaps or overflows -->
                     <div class="manual-input-box">
                         <input type="text" id="manualScannerInput" placeholder="أدخل كود الصنف أو امسح بالقارئ اللاسلكي..." onkeydown="if(event.key==='Enter') app.processManualBarcode()">
                         <button type="button" class="btn-manual-submit-action" onclick="app.processManualBarcode()">
@@ -557,20 +639,17 @@
                         </button>
                     </div>
 
-                    <!-- Quick Barcode Test Buttons -->
                     <div class="quick-barcodes-box">
                         <span>أكواد تجريبية فورية للسلع الغذائية:</span>
-                        <div class="quick-barcodes-cloud" id="quickBarcodesCloud">
-                            <!-- Injected by JS -->
-                        </div>
+                        <div class="quick-barcodes-cloud" id="quickBarcodesCloud"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= MODAL 2: BARCODE LABEL STUDIO (PRINTABLE STICKERS) ================= -->
+        <!-- ================= MODAL: BARCODE LABEL STUDIO ================= -->
         <div class="modal-overlay" id="barcodeStudioModal">
-            <div class="modal-box" style="max-width: 680px;">
+            <div class="modal-box" style="max-width: 660px;">
                 <div class="modal-header">
                     <h3><i class="fa-solid fa-tags text-warning"></i> استوديو طباعة ملصقات الباركود والأسعار</h3>
                     <button class="btn-modal-close" onclick="app.closeBarcodeStudioModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -586,25 +665,22 @@
                             <select id="barcodeLabelCountSelect" onchange="app.renderBarcodeStickerPreview()">
                                 <option value="1">ملصق واحد (1)</option>
                                 <option value="4">4 ملصقات</option>
-                                <option value="8">8 ملصقات (شيت صغير)</option>
+                                <option value="8">8 ملصقات</option>
                                 <option value="16">16 ملصق (صفحة A4 كاملة)</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Sticker Preview Grid -->
-                    <div id="barcodeStickersPreviewArea" class="barcode-stickers-grid" style="margin-top: 14px;">
-                        <!-- Injected by JS -->
-                    </div>
+                    <div id="barcodeStickersPreviewArea" class="barcode-stickers-grid" style="margin-top: 12px;"></div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn-secondary" onclick="app.closeBarcodeStudioModal()">إغلاق</button>
-                    <button class="btn-primary" onclick="app.printBarcodeStickers()"><i class="fa-solid fa-print"></i> طباعة الملصقات الآن</button>
+                    <button class="btn-primary" onclick="app.printBarcodeStickers()"><i class="fa-solid fa-print"></i> طباعة الملصقات</button>
                 </div>
             </div>
         </div>
 
-        <!-- ================= MODAL 3: INVOICE / RECEIPT VIEWER & PRINT ENGINE ================= -->
+        <!-- ================= MODAL: INVOICE / RECEIPT VIEWER ================= -->
         <div class="modal-overlay" id="invoiceModal">
             <div class="modal-box modal-invoice" style="max-width: 760px;">
                 <div class="modal-header no-print">
@@ -616,9 +692,8 @@
                 </div>
 
                 <div class="modal-body" style="background: var(--bg-main);">
-                    <!-- Format Switcher Toolbar -->
                     <div class="print-options-toolbar no-print">
-                        <span style="font-size: 0.8rem; font-weight: 700;">شكل وتنسيق الطباعة:</span>
+                        <span style="font-size: 0.78rem; font-weight: 700;">صيغة الطباعة:</span>
                         <div class="print-format-switcher">
                             <button class="btn-format-switch active" id="btnFormatThermal" onclick="app.setPrintFormat('thermal')">
                                 <i class="fa-solid fa-receipt"></i> بون كاشير حراري (80mm)
@@ -629,37 +704,35 @@
                         </div>
                     </div>
 
-                    <!-- Root Container for Printable Content -->
-                    <div id="printableSheetRoot" class="printable-document-container format-thermal">
-                        <!-- Injected dynamically by JS based on format (thermal or A4) -->
-                    </div>
+                    <div id="printableSheetRoot" class="printable-document-container format-thermal"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= MODAL 4: CUSTOMER ACCOUNT LEDGER MODAL ================= -->
+        <!-- ================= MODAL: CUSTOMER ACCOUNT LEDGER (COMPREHENSIVE WITH EXACT TIMESTAMPS) ================= -->
         <div class="modal-overlay" id="customerLedgerModal">
             <div class="modal-box modal-ledger-box">
                 <div class="modal-header">
-                    <h3 id="custModalTitle"><i class="fa-solid fa-user-tie text-warning"></i> كشف حساب العميل</h3>
+                    <h3 id="custModalTitle"><i class="fa-solid fa-user-tie text-warning"></i> كشف حساب العميل الشامل</h3>
                     <button class="btn-modal-close" onclick="app.closeCustomerLedgerModal()"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="modal-body">
                     <!-- Tabs -->
                     <div class="account-modal-tabs">
-                        <button class="btn-acc-tab active" onclick="app.switchAccTab('cust-statement')">كشف الحساب المالي</button>
+                        <button class="btn-acc-tab active" onclick="app.switchAccTab('cust-statement')">كشف الحساب بالساعة والتاريخ</button>
+                        <button class="btn-acc-tab" onclick="app.switchAccTab('cust-receipts')">سندات القبض المسددة</button>
                         <button class="btn-acc-tab" onclick="app.switchAccTab('cust-invoices')">فواتير المبيعات</button>
-                        <button class="btn-acc-tab" onclick="app.switchAccTab('cust-payment')">تسجيل سند قبض نقدية</button>
+                        <button class="btn-acc-tab" onclick="app.switchAccTab('cust-payment')">تسجيل سند قبض جديد</button>
                         <button class="btn-acc-tab" onclick="app.switchAccTab('cust-edit')">تعديل بيانات العميل</button>
                     </div>
 
-                    <!-- Tab 1: Statement -->
+                    <!-- Tab 1: Detailed Statement with Exact Time -->
                     <div class="acc-tab-pane active" id="pane-cust-statement">
                         <div class="table-responsive">
                             <table class="custom-table" id="custStatementTable">
                                 <thead>
                                     <tr>
-                                        <th>التاريخ</th>
+                                        <th>التاريخ والوقت بالتفصيل</th>
                                         <th>نوع الحركة</th>
                                         <th>البيان والتفاصيل</th>
                                         <th>مدين (+)</th>
@@ -672,17 +745,18 @@
                         </div>
                     </div>
 
-                    <!-- Tab 2: Invoices -->
-                    <div class="acc-tab-pane" id="pane-cust-invoices">
+                    <!-- Tab 2: Customer Receipts Log with Time -->
+                    <div class="acc-tab-pane" id="pane-cust-receipts">
                         <div class="table-responsive">
-                            <table class="custom-table" id="custInvoicesTable">
+                            <table class="custom-table" id="custReceiptsLogTable">
                                 <thead>
                                     <tr>
-                                        <th>رقم الفاتورة</th>
-                                        <th>التاريخ</th>
-                                        <th>الإجمالي</th>
+                                        <th>رقم السند</th>
+                                        <th>التاريخ والوقت بالضبط</th>
+                                        <th>المبلغ المسدد</th>
                                         <th>طريقة السداد</th>
-                                        <th>إجراء</th>
+                                        <th>الكاشير المستلم</th>
+                                        <th>طباعة السند</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -690,32 +764,52 @@
                         </div>
                     </div>
 
-                    <!-- Tab 3: Payment Receipt -->
+                    <!-- Tab 3: Invoices -->
+                    <div class="acc-tab-pane" id="pane-cust-invoices">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="custInvoicesTable">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الفاتورة</th>
+                                        <th>التاريخ والوقت</th>
+                                        <th>الإجمالي</th>
+                                        <th>طريقة السداد</th>
+                                        <th>معاينة</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: New Payment Form -->
                     <div class="acc-tab-pane" id="pane-cust-payment">
                         <form onsubmit="app.handleCustomerPaymentSubmit(event)">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>المبلغ المسدد (ج.م):</label>
+                                    <label>المبلغ المسدد نقدًا (ج.م):</label>
                                     <input type="number" step="0.01" id="custPayAmount" required placeholder="0.00">
                                 </div>
                                 <div class="form-group">
-                                    <label>طريقة الدفع:</label>
+                                    <label>طريقة السداد:</label>
                                     <select id="custPayMethod">
-                                        <option value="كاش / خزينة">نقدًا (خزينة الفرع)</option>
-                                        <option value="تحويل بنكي / فودافون كاش">تحويل بنكي / محفظة إلكترونية</option>
-                                        <option value="شيك بنكي">شيك بنكي مقبول الدفع</option>
+                                        <option value="نقدًا بالخزينة">نقدًا بخزينة الفرع</option>
+                                        <option value="تحويل بنكي / فودافون كاش">تحويل بنكي / فودافون كاش</option>
+                                        <option value="شيك بنكي مقبول الدفع">شيك بنكي مقبول الدفع</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>ملاحظات وسند الإيداع:</label>
-                                <input type="text" id="custPayNotes" placeholder="رقم الإشعار أو الملاحظة...">
+                                <label>ملاحظات السند / رقم الإشعار:</label>
+                                <input type="text" id="custPayNotes" placeholder="سداد دفعة تحت الحساب...">
                             </div>
-                            <button type="submit" class="btn-primary" style="width: 100%;"><i class="fa-solid fa-receipt"></i> إصدار سند القبض وترحيل الحساب</button>
+                            <button type="submit" class="btn-primary" style="width: 100%;">
+                                <i class="fa-solid fa-receipt"></i> إصدار سند القبض مع تسجيل الوقت الفعلي
+                            </button>
                         </form>
                     </div>
 
-                    <!-- Tab 4: Edit Details -->
+                    <!-- Tab 5: Edit Details -->
                     <div class="acc-tab-pane" id="pane-cust-edit">
                         <form onsubmit="app.handleCustomerUpdateSubmit(event)">
                             <div class="form-row">
@@ -730,7 +824,7 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>العنوان / المنطقة:</label>
+                                    <label>العنوان بالتفصيل:</label>
                                     <input type="text" id="custEditAddress">
                                 </div>
                                 <div class="form-group">
@@ -755,33 +849,32 @@
             </div>
         </div>
 
-        <!-- ================= MODAL 5: SUPPLIER ACCOUNT LEDGER MODAL ================= -->
+        <!-- ================= MODAL: SUPPLIER ACCOUNT LEDGER (COMPREHENSIVE) ================= -->
         <div class="modal-overlay" id="supplierLedgerModal">
             <div class="modal-box modal-ledger-box">
                 <div class="modal-header">
-                    <h3 id="supModalTitle"><i class="fa-solid fa-truck-field text-warning"></i> كشف حساب المورد</h3>
+                    <h3 id="supModalTitle"><i class="fa-solid fa-truck-field text-warning"></i> كشف حساب المورد الشامل</h3>
                     <button class="btn-modal-close" onclick="app.closeSupplierLedgerModal()"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Tabs -->
                     <div class="account-modal-tabs">
-                        <button class="btn-acc-tab active" onclick="app.switchSupTab('sup-statement')">كشف الحساب التحليلي</button>
-                        <button class="btn-acc-tab" onclick="app.switchSupTab('sup-purchases')">فواتير التوريد</button>
+                        <button class="btn-acc-tab active" onclick="app.switchSupTab('sup-statement')">كشف الحساب بالساعة والتاريخ</button>
+                        <button class="btn-acc-tab" onclick="app.switchSupTab('sup-vouchers')">سندات الصرف والمسدد</button>
+                        <button class="btn-acc-tab" onclick="app.switchSupTab('sup-purchases')">فواتير التوريد الواردة</button>
                         <button class="btn-acc-tab" onclick="app.switchSupTab('sup-payment')">تسجيل سند صرف دفعة</button>
                         <button class="btn-acc-tab" onclick="app.switchSupTab('sup-edit')">تعديل بيانات المورد</button>
                     </div>
 
-                    <!-- Tab 1: Statement -->
                     <div class="acc-tab-pane active" id="pane-sup-statement">
                         <div class="table-responsive">
                             <table class="custom-table" id="supStatementTable">
                                 <thead>
                                     <tr>
-                                        <th>التاريخ</th>
+                                        <th>التاريخ والوقت</th>
                                         <th>نوع المستند</th>
                                         <th>البيان والتفاصيل</th>
-                                        <th>دائن (فاتورة +)</th>
-                                        <th>مدين (سداد -)</th>
+                                        <th>دائن (+)</th>
+                                        <th>مدين (-)</th>
                                         <th>الرصيد المستحق</th>
                                     </tr>
                                 </thead>
@@ -790,14 +883,31 @@
                         </div>
                     </div>
 
-                    <!-- Tab 2: Purchases -->
+                    <div class="acc-tab-pane" id="pane-sup-vouchers">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="supVouchersLogTable">
+                                <thead>
+                                    <tr>
+                                        <th>رقم السند</th>
+                                        <th>التاريخ والوقت بالضبط</th>
+                                        <th>المبلغ المنصرف</th>
+                                        <th>وسيلة الصرف</th>
+                                        <th>المسؤول</th>
+                                        <th>طباعة السند</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <div class="acc-tab-pane" id="pane-sup-purchases">
                         <div class="table-responsive">
                             <table class="custom-table" id="supPurchasesTable">
                                 <thead>
                                     <tr>
                                         <th>رقم إذن التوريد</th>
-                                        <th>التاريخ</th>
+                                        <th>التاريخ والوقت</th>
                                         <th>الإجمالي</th>
                                         <th>حالة السداد</th>
                                         <th>معاينة</th>
@@ -808,37 +918,37 @@
                         </div>
                     </div>
 
-                    <!-- Tab 3: Payment Disbursement -->
                     <div class="acc-tab-pane" id="pane-sup-payment">
                         <form onsubmit="app.handleSupplierPaymentSubmit(event)">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>المبلغ المنصرف (ج.م):</label>
+                                    <label>المبلغ المنصرف للمورد (ج.م):</label>
                                     <input type="number" step="0.01" id="supPayAmount" required placeholder="0.00">
                                 </div>
                                 <div class="form-group">
-                                    <label>طريقة الصرف:</label>
+                                    <label>وسيلة الصرف:</label>
                                     <select id="supPayMethod">
                                         <option value="نقدًا من الخزينة">نقدًا من خزينة الفرع</option>
-                                        <option value="تحويل بنكي">تحويل بنكي من حساب الشركة</option>
-                                        <option value="شيك بنكي">شيك لأمر المورد</option>
+                                        <option value="تحويل بنكي">تحويل بنكي من الحساب</option>
+                                        <option value="شيك بنكي">شيك بنكي لأمر المورد</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>ملاحظات وسند الصرف:</label>
-                                <input type="text" id="supPayNotes" placeholder="سداد فاتورة توريد أو دفعة تحت الحساب...">
+                                <label>ملاحظات سند الصرف:</label>
+                                <input type="text" id="supPayNotes" placeholder="سداد فاتورة توريد...">
                             </div>
-                            <button type="submit" class="btn-primary" style="width: 100%;"><i class="fa-solid fa-money-bill-transfer"></i> تأكيد سند الصرف وخصمه من الخزينة</button>
+                            <button type="submit" class="btn-primary" style="width: 100%;">
+                                <i class="fa-solid fa-money-bill-transfer"></i> تأكيد سند الصرف وخصم المبلغ من الخزينة
+                            </button>
                         </form>
                     </div>
 
-                    <!-- Tab 4: Edit Details -->
                     <div class="acc-tab-pane" id="pane-sup-edit">
                         <form onsubmit="app.handleSupplierUpdateSubmit(event)">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>اسم الشركة / المورد:</label>
+                                    <label>اسم الشركة أو المورد:</label>
                                     <input type="text" id="supEditName" required>
                                 </div>
                                 <div class="form-group">
@@ -846,19 +956,9 @@
                                     <input type="tel" id="supEditPhone" required>
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>العنوان والمستودع:</label>
-                                    <input type="text" id="supEditAddress">
-                                </div>
-                                <div class="form-group">
-                                    <label>السجل التجاري:</label>
-                                    <input type="text" id="supEditCr">
-                                </div>
-                            </div>
                             <div class="form-group">
-                                <label>الرقم الضريبي:</label>
-                                <input type="text" id="supEditTaxId">
+                                <label>العنوان والمخزن:</label>
+                                <input type="text" id="supEditAddress">
                             </div>
                             <button type="submit" class="btn-primary" style="width: 100%;"><i class="fa-solid fa-floppy-disk"></i> حفظ بيانات المورد</button>
                         </form>
@@ -867,7 +967,44 @@
             </div>
         </div>
 
-        <!-- ================= MODAL 6: ADD/SELECT CUSTOMER ================= -->
+        <!-- ================= MODAL: PRINTABLE RECEIPT / DISBURSEMENT VOUCHER ================= -->
+        <div class="modal-overlay" id="voucherPrintModal">
+            <div class="modal-box" style="max-width: 600px;">
+                <div class="modal-header no-print">
+                    <h3 id="voucherModalTitle"><i class="fa-solid fa-receipt text-warning"></i> سند مالي معتمد</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة السند</button>
+                        <button class="btn-modal-close" onclick="app.closeVoucherPrintModal()"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+                <div class="modal-body" style="background: var(--bg-main);">
+                    <div id="voucherPrintArea" class="printable-document-container" style="max-width: 520px; font-size: 13px;">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MODAL: QUICK LOCK SCREEN ================= -->
+        <div class="modal-overlay" id="lockScreenModal" style="z-index: 300;">
+            <div class="modal-box" style="max-width: 380px; text-align: center;">
+                <div class="modal-header" style="justify-content: center;">
+                    <h3><i class="fa-solid fa-lock text-warning"></i> الشاشة مقفلة بأمان</h3>
+                </div>
+                <div class="modal-body">
+                    <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-orange-light); color: var(--primary-orange); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 12px auto;">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <p style="font-size: 0.85rem; margin-bottom: 12px;">أدخل كلمة السر أو رمز PIN لفتح الشاشة واستئناف العمل:</p>
+                    <input type="password" id="lockScreenPinInput" placeholder="أدخل كلمة السر..." style="width: 100%; padding: 10px; text-align: center; font-size: 1.2rem; letter-spacing: 4px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary); margin-bottom: 12px;" onkeydown="if(event.key==='Enter') app.unlockScreen()">
+                    <button class="btn-primary" style="width: 100%;" onclick="app.unlockScreen()">
+                        <i class="fa-solid fa-unlock"></i> إلغاء القفل
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= MODAL: SELECT CUSTOMER ================= -->
         <div class="modal-overlay" id="customerSelectModal">
             <div class="modal-box">
                 <div class="modal-header">
@@ -875,16 +1012,16 @@
                     <button class="btn-modal-close" onclick="app.closeCustomerModal()"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 <div class="modal-body">
-                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                        <input type="text" id="custSearchInput" placeholder="بحث بالاسم أو رقم الهاتف..." oninput="app.filterCustomersList()" style="width: 100%; padding: 8px 12px; border-radius: 8px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary);">
+                    <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                        <input type="text" id="custSearchInput" placeholder="بحث بالاسم أو رقم الهاتف..." oninput="app.filterCustomersList()" style="width: 100%; padding: 8px 10px; border-radius: 8px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary);">
                         <button class="btn-primary" onclick="app.openAddCustomerModal()"><i class="fa-solid fa-plus"></i> جديد</button>
                     </div>
-                    <div id="customerSelectionList" style="max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;"></div>
+                    <div id="customerSelectionList" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;"></div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= MODAL 7: ADD NEW CUSTOMER ================= -->
+        <!-- ================= MODAL: ADD NEW CUSTOMER ================= -->
         <div class="modal-overlay" id="addCustomerModal">
             <div class="modal-box">
                 <div class="modal-header">
@@ -894,16 +1031,16 @@
                 <div class="modal-body">
                     <form onsubmit="app.saveNewCustomer(event)">
                         <div class="form-group">
-                            <label>اسم العميل / المحل / السوبرماركت:</label>
-                            <input type="text" id="newCustName" required placeholder="مثال: هايبر النور">
+                            <label>اسم العميل أو المتجر:</label>
+                            <input type="text" id="newCustName" required placeholder="مثال: سوبرماركت الإيمان">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>رقم الهاتف / الواتساب:</label>
+                                <label>رقم الهاتف:</label>
                                 <input type="tel" id="newCustPhone" required placeholder="010XXXXXXXX">
                             </div>
                             <div class="form-group">
-                                <label>الرصيد الافتتاحي (مدين به):</label>
+                                <label>رصيد افتتاحي (مدين به):</label>
                                 <input type="number" step="0.01" id="newCustBalance" value="0.00">
                             </div>
                         </div>
@@ -920,7 +1057,7 @@
             </div>
         </div>
 
-        <!-- ================= MODAL 8: ADD NEW SUPPLIER ================= -->
+        <!-- ================= MODAL: ADD NEW SUPPLIER ================= -->
         <div class="modal-overlay" id="addSupplierModal">
             <div class="modal-box">
                 <div class="modal-header">
@@ -931,7 +1068,7 @@
                     <form onsubmit="app.saveNewSupplier(event)">
                         <div class="form-group">
                             <label>اسم الشركة أو المورد:</label>
-                            <input type="text" id="newSupName" required placeholder="مثال: شركة وادي النيل للأغذية">
+                            <input type="text" id="newSupName" required placeholder="مثال: مطاحن وادي النيل">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
@@ -939,7 +1076,7 @@
                                 <input type="tel" id="newSupPhone" required placeholder="01XXXXXXXXX">
                             </div>
                             <div class="form-group">
-                                <label>الرصيد الافتتاحي (مستحق له):</label>
+                                <label>رصيد افتتاحي (مستحق له):</label>
                                 <input type="number" step="0.01" id="newSupBalance" value="0.00">
                             </div>
                         </div>
@@ -952,9 +1089,9 @@
             </div>
         </div>
 
-        <!-- ================= MODAL 9: NEW PURCHASE INVOICE ================= -->
+        <!-- ================= MODAL: NEW PURCHASE INVOICE ================= -->
         <div class="modal-overlay" id="newPurchaseModal">
-            <div class="modal-box" style="max-width: 620px;">
+            <div class="modal-box" style="max-width: 600px;">
                 <div class="modal-header">
                     <h3><i class="fa-solid fa-truck-ramp-box text-warning"></i> إذن توريد بضاعة للمستودع</h3>
                     <button class="btn-modal-close" onclick="app.closeNewPurchaseModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -982,7 +1119,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label>طريقة السداد للمورد:</label>
+                            <label>طريقة السداد:</label>
                             <select id="purchasePaymentType">
                                 <option value="آجل (يضاف لحساب المورد)">آجل (يضاف لمديونية المورد)</option>
                                 <option value="نقداً (يخصم من الخزينة)">نقداً (خصم مباشر من خزينة اليوم)</option>
@@ -997,7 +1134,7 @@
             </div>
         </div>
 
-        <!-- ================= MODAL 10: ADD NEW PRODUCT ================= -->
+        <!-- ================= MODAL: ADD NEW PRODUCT ================= -->
         <div class="modal-overlay" id="addProductModal">
             <div class="modal-box">
                 <div class="modal-header">
@@ -1044,7 +1181,7 @@
                             </div>
                             <div class="form-group">
                                 <label>الباركود (إن وجد أو يولد تلقائياً):</label>
-                                <input type="text" id="newProdBarcode" placeholder="800123456789">
+                                <input type="text" id="newProdBarcode" placeholder="622100000000">
                             </div>
                         </div>
                         <div class="modal-footer" style="padding: 10px 0 0 0; background: transparent;">
