@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6A00"/>
+      <stop offset="100%" stop-color="#C73E00"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <g filter="url(#shadow)" fill="#FFFFFF">
+    <!-- Stylized Crown & Food Crest -->
+    <path d="M140 370L190 220L256 280L322 220L372 370H140Z" fill="#FFFFFF"/>
+    <circle cx="256" cy="170" r="38" fill="#FFE2B8"/>
+    <circle cx="160" cy="195" r="28" fill="#FFE2B8"/>
+    <circle cx="352" cy="195" r="28" fill="#FFE2B8"/>
+    <rect x="160" y="348" width="192" height="34" rx="17" fill="#FFE2B8"/>
+  </g>
+</svg>
