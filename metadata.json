@@ -1,0 +1,8 @@
+{
+  "name": "Carmela POS",
+  "description": "Wholesale food inventory management & Point of Sale with multi-unit pricing, barcode scanning, and reporting",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
